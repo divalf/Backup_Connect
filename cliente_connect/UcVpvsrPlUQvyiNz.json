@@ -1,0 +1,300 @@
+{
+  "createdAt": "2025-03-04T00:45:03.756Z",
+  "updatedAt": "2025-03-04T01:19:49.928Z",
+  "id": "UcVpvsrPlUQvyiNz",
+  "name": "#11 Tool | Delete Event",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "sessionID"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -200
+      ],
+      "id": "cff5e546-f684-4e84-8493-113d63d67e75",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $json.sessionID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -340,
+        -200
+      ],
+      "id": "2e79251c-47dd-44f0-8e7f-8535ec563251",
+      "name": "Fetch Lead",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.cal.com/v2/bookings/{{ $json.id_agendamento }}/cancel",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cal-api-version",
+              "value": "2024-08-13"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -180,
+        -200
+      ],
+      "id": "c5182738-f2dd-4788-822d-40db4ddf532a",
+      "name": "Delete Event"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('When Executed by Another Workflow').item.json.sessionID }}",
+            "id_agendamento": "={{ '' }}",
+            "dataConsulta": "={{ '' }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_agendamento",
+              "displayName": "id_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "dataConsulta",
+              "displayName": "dataConsulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -20,
+        -200
+      ],
+      "id": "ca4bdfa4-f7f6-4c5c-bd41-68c92b801a64",
+      "name": "Update DB",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5f96928f-ac53-4ef8-9ee7-ef401757a2a4",
+              "name": "messageToolassistant",
+              "value": "=A consulta com {{ $json.userName }}, foi cancelada com sucesso!!!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        140,
+        -200
+      ],
+      "id": "1cca99cd-9880-4913-826a-cc50f3ba8df4",
+      "name": "End Tool"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Fetch Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Lead": {
+      "main": [
+        [
+          {
+            "node": "Delete Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Event": {
+      "main": [
+        [
+          {
+            "node": "Update DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update DB": {
+      "main": [
+        [
+          {
+            "node": "End Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "sessionID": "5511985401987@s.whatsapp.net"
+        }
+      }
+    ]
+  },
+  "versionId": "5a52b358-d4e8-46a9-a2b5-ff46ebb4339a",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
