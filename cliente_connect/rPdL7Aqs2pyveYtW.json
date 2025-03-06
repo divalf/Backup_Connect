@@ -1,0 +1,363 @@
+{
+  "createdAt": "2025-03-01T18:45:17.158Z",
+  "updatedAt": "2025-03-04T00:15:19.656Z",
+  "id": "rPdL7Aqs2pyveYtW",
+  "name": "#7 Tool | Create_Event",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "dataEscolhida"
+            },
+            {
+              "name": "sessionID"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1100,
+        -320
+      ],
+      "id": "b445138a-d484-42a3-a388-d714f8867e21",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $json.sessionID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -920,
+        -320
+      ],
+      "id": "7928b53f-7f8b-43da-a7e8-0c5ac50ddda1",
+      "name": "Fetch Lead",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cal.com/v2/bookings",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cal-api-version",
+              "value": "2024-08-13"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "cal_live_2a396f0db1fb509037cc253820d8d25b"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "attendee.name",
+              "value": "={{ $('Fetch Lead').item.json.userName }}"
+            },
+            {
+              "name": "start",
+              "value": "={{ $json.start }}"
+            },
+            {
+              "name": "eventTypeId",
+              "value": "={{ Number('1959664') }}"
+            },
+            {
+              "name": "attendee.email",
+              "value": "={{    Math.random().toString(36).substring(2, 12) +    ['@email.com', '@empresa.com'][Math.floor(Math.random() * 2)] }}"
+            },
+            {
+              "name": "attendee.timeZone",
+              "value": "America/Sao_Paulo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        -320
+      ],
+      "id": "61d25369-c272-418c-b6da-ba21efa3c211",
+      "name": "Create_Event"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5f96928f-ac53-4ef8-9ee7-ef401757a2a4",
+              "name": "messageToolassistant",
+              "value": "=Consulta com {{ $json.userName }}, agendada com sucesso para {{ $('When Executed by Another Workflow').item.json.dataEscolhida }}!!!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -200,
+        -320
+      ],
+      "id": "d31da8d5-ec19-491d-8c0e-2bfee67f40f1",
+      "name": "End Tool"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      start: new Date(\n        new Date($('When Executed by Another Workflow').item.json.dataEscolhida).getTime() + 3 * 60 * 60 * 1000\n      )\n        .toISOString()\n        .split('.')[0] + 'Z'\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -740,
+        -320
+      ],
+      "id": "4b3e114d-e4db-409d-863b-c01ae55fb5d5",
+      "name": "Ajustar Fuso + 3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('When Executed by Another Workflow').item.json.sessionID }}",
+            "id_agendamento": "={{ $json.data.uid }}",
+            "dataConsulta": "={{ $('When Executed by Another Workflow').item.json.dataEscolhida }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_agendamento",
+              "displayName": "id_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "dataConsulta",
+              "displayName": "dataConsulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -380,
+        -320
+      ],
+      "id": "3a0cfd9d-6099-4f1f-941b-6c58cbeb2c3d",
+      "name": "Update Lead",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Fetch Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Lead": {
+      "main": [
+        [
+          {
+            "node": "Ajustar Fuso + 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create_Event": {
+      "main": [
+        [
+          {
+            "node": "Update Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajustar Fuso + 3": {
+      "main": [
+        [
+          {
+            "node": "Create_Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead": {
+      "main": [
+        [
+          {
+            "node": "End Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "dataEscolhida": "2025-03-05T14:00:00Z",
+          "sessionID": "5511985401987@s.whatsapp.net"
+        }
+      }
+    ]
+  },
+  "versionId": "6e1e3a98-71f9-4259-b136-67efa04bf3c4",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
