@@ -1,0 +1,616 @@
+{
+  "createdAt": "2025-02-26T00:16:35.699Z",
+  "updatedAt": "2025-03-04T16:56:40.623Z",
+  "id": "Ek8nZX3FtKVoBTst",
+  "name": "#4 | Gerencia Fila de Mensagens",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "queue": "msgTratada",
+        "options": {
+          "arguments": {
+            "argument": [
+              {
+                "key": "x-queue-type",
+                "value": "quorum"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishes",
+          "jsonParseBody": true,
+          "onlyContent": true
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1800,
+        140
+      ],
+      "id": "2e0317be-3e75-49a3-9851-bffa8046e620",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1520,
+        140
+      ],
+      "id": "e5148e08-553a-4ff4-a73d-2769a684c90a",
+      "name": "Wait",
+      "webhookId": "0df86426-2ec2-4232-a152-cbcab80059e3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('RabbitMQ Trigger').item.json.sessionID }}",
+        "messageData": "={{ $('RabbitMQ Trigger').item.json.user_message }}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        140
+      ],
+      "id": "4ae5973c-2b03-4c34-aeff-badd6d0c9bcb",
+      "name": "Push Messages",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ (() => { \n    const messages = $json.messages || []; // Array de mensagens\n\n    if (messages.length > 0) {\n        try {\n            // Retorna o tipo e o conteúdo inicial da mensagem para depuração\n            let firstMessageEscaped = messages[0];\n            let debugInfo = `Tipo de messages[0]: ${typeof firstMessageEscaped} | Valor: ${firstMessageEscaped}`;\n\n            // Se for string, fazer o parse\n            if (typeof firstMessageEscaped === 'string') {\n                firstMessageEscaped = JSON.parse(firstMessageEscaped);\n                debugInfo += ` | Após primeiro JSON.parse: ${JSON.stringify(firstMessageEscaped)}`;\n            }\n\n            // Se ainda for string, fazer outro parse (caso tenha dupla serialização)\n            let firstMessage = firstMessageEscaped;\n            if (typeof firstMessageEscaped === 'string') {\n                firstMessage = JSON.parse(firstMessageEscaped);\n                debugInfo += ` | Após segundo JSON.parse: ${JSON.stringify(firstMessage)}`;\n            }\n\n            // Retorna o messageId ou debugInfo\n            return firstMessage.messageId || `messageId não encontrado | ${debugInfo}`;\n        } catch (error) {\n            return `Erro no parsing: ${error.message}`;\n        }\n    }\n    \n    return \"Array vazio\";\n})()}}",
+                    "rightValue": "={{ $('RabbitMQ Trigger').item.json.messageID }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Nothing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ec3063b2-cc0d-468d-8af2-022500faec37",
+                    "leftValue": "={{ \n  (() => {\n    // 1. Acessar o campo `messages` no JSON\n    const messages = $json.messages;\n\n    // 2. Verificar se `messages` existe e é uma array\n    if (!messages || !Array.isArray(messages) || messages.length === 0) {\n      return 'Erro: Campo `messages` está vazio ou ausente.';\n    }\n\n    // 3. Pegar o último item da array\n    const lastItem = messages[messages.length - 1];\n\n    // 4. Verificar se `lastItem` é uma string válida\n    if (!lastItem || typeof lastItem !== 'string') {\n      return 'Erro: Último item não é uma string válida.';\n    }\n\n    // 5. Limpar os caracteres de escape e remover aspas externas\n    const cleanedItem = lastItem\n      .replace(/^\"|\"$/g, '') // Remove aspas externas\n      .replace(/\\\\\"/g, '\"')  // Substitui \\\" por \"\n      .replace(/\\\\\\\\/g, '\\\\'); // Substitui \\\\ por \\\n\n    // 6. Parsear o JSON\n    let parsedItem;\n    try {\n      parsedItem = JSON.parse(cleanedItem);\n    } catch (e) {\n      return `Erro: Não foi possível parsear o JSON do último item (${e.message}).`;\n    }\n\n    // 7. Extrair o campo `messageTimestamp`\n    const timestamp = parsedItem.messageTimestamp;\n    if (!timestamp) {\n      return 'Erro: Campo `messageTimestamp` não encontrado.';\n    }\n\n    // 8. Converter o timestamp para ISO 8601\n    try {\n      return new Date(Number(timestamp)).toISOString();\n    } catch (e) {\n      return 'Erro: Não foi possível converter o timestamp.';\n    }\n  })()\n}}",
+                    "rightValue": "={{ \n    (() => {\n        const now = new Date(); // Obtém a data e hora atual\n        now.setSeconds(now.getSeconds() - 30); // Subtrai 30 segundos\n        return `${now.toISOString()}`; // Retorna no formato ISO\n    })() \n}}",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "before"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Continue"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Wait"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1020,
+        140
+      ],
+      "id": "8762366a-5cb5-4661-bf54-bbc9889355dc",
+      "name": "Verify Buffer Status"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        300
+      ],
+      "id": "e7cc0372-9631-491f-a193-c0e380709aba",
+      "name": "Wait1",
+      "webhookId": "5435242a-499a-4872-aa86-82adbba18b15"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('RabbitMQ Trigger').item.json.sessionID }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        140
+      ],
+      "id": "e4d3b031-78ff-46ba-8234-dd5f954bd2e9",
+      "name": "Delete Buffer",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -20
+      ],
+      "id": "e789dbc0-1279-40b1-b89a-14e7f419d7fc",
+      "name": "Nothing"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $json.sessionID }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        -140
+      ],
+      "id": "26108f1b-da5f-47e2-a7be-f0468c773b4d",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f2a67fd-4d1c-4c43-beb6-523559941e3c",
+              "name": "messages",
+              "value": "={{\n  $node[\"Get_Messages\"].json[\"messages\"]\n    .map(item => {\n      let parsed;\n\n      try {\n        // Verifica se já é um objeto JSON\n        parsed = typeof item === \"string\" ? JSON.parse(item) : item;\n\n        // Se ainda for uma string JSON dentro de outra, faz mais um parsing\n        if (typeof parsed === \"string\") {\n          parsed = JSON.parse(parsed);\n        }\n      } catch (error) {\n        return `Erro no parsing: ${error.message}`;\n      }\n\n      // Sempre pegar \"userMessage\"\n      let text = parsed.userMessage || \"\";\n\n      // Se houver 'imageDescription', adicionar abaixo do 'userMessage'\n      if (parsed.imageDescription) {\n        text += `\\n${parsed.imageDescription}`;\n      }\n\n      return text;\n    })\n    .join(\"\\n\") // Junta tudo em uma única string, separando por nova linha\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -580,
+        140
+      ],
+      "id": "96fcd5fe-b873-409f-8fe3-821b6c9c4387",
+      "name": "Unify Messages"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "messages",
+        "key": "={{ $('RabbitMQ Trigger').item.json.sessionID }}",
+        "keyType": "list",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        140
+      ],
+      "id": "9a5c9370-6af2-4fa9-9bba-7fe88a2670d7",
+      "name": "Get_Messages",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1ec5d9e0-d72d-44a4-ad41-9731283996ce",
+              "leftValue": "={{ $json.id_agendamento }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        140
+      ],
+      "id": "fd0efb32-305a-4dbd-9f8a-3c60b8afb86e",
+      "name": "Scheduled?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f2a67fd-4d1c-4c43-beb6-523559941e3c",
+              "name": "messages",
+              "value": "={{\n  $node[\"Get_Messages\"].json[\"messages\"]\n    .map(item => {\n      let parsed;\n\n      try {\n        // Verifica se já é um objeto JSON\n        parsed = typeof item === \"string\" ? JSON.parse(item) : item;\n\n        // Se ainda for uma string JSON dentro de outra, faz mais um parsing\n        if (typeof parsed === \"string\") {\n          parsed = JSON.parse(parsed);\n        }\n      } catch (error) {\n        return `Erro no parsing: ${error.message}`;\n      }\n\n      // Sempre pegar \"userMessage\"\n      let text = parsed.userMessage || \"\";\n\n      // Se houver 'imageDescription', adicionar abaixo do 'userMessage'\n      if (parsed.imageDescription) {\n        text += `\\n${parsed.imageDescription}`;\n      }\n\n      return text;\n    })\n    .join(\"\\n\") // Junta tudo em uma única string, separando por nova linha\n}}",
+              "type": "string"
+            },
+            {
+              "id": "6fd889db-487e-4b1d-9efd-765651f19468",
+              "name": "session_id",
+              "value": "{{ $('RabbitMQ Trigger').item.json.sessionID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        60,
+        0
+      ],
+      "id": "5e745af0-c86b-46fc-8841-292eb43392b0",
+      "name": "Unify Messages1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f2a67fd-4d1c-4c43-beb6-523559941e3c",
+              "name": "messages",
+              "value": "={{\n  $node[\"Get_Messages\"].json[\"messages\"]\n    .map(item => {\n      let parsed;\n\n      try {\n        // Verifica se já é um objeto JSON\n        parsed = typeof item === \"string\" ? JSON.parse(item) : item;\n\n        // Se ainda for uma string JSON dentro de outra, faz mais um parsing\n        if (typeof parsed === \"string\") {\n          parsed = JSON.parse(parsed);\n        }\n      } catch (error) {\n        return `Erro no parsing: ${error.message}`;\n      }\n\n      // Sempre pegar \"userMessage\"\n      let text = parsed.userMessage || \"\";\n\n      // Se houver 'imageDescription', adicionar abaixo do 'userMessage'\n      if (parsed.imageDescription) {\n        text += `\\n${parsed.imageDescription}`;\n      }\n\n      return text;\n    })\n    .join(\"\\n\") // Junta tudo em uma única string, separando por nova linha\n}}",
+              "type": "string"
+            },
+            {
+              "id": "10b66166-7600-461b-942a-d11572e42551",
+              "name": "session_id",
+              "value": "={{ $('RabbitMQ Trigger').item.json.sessionID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        60,
+        300
+      ],
+      "id": "6964da07-9b75-4f03-9dc4-34a39bf508fe",
+      "name": "Unify Messages2"
+    },
+    {
+      "parameters": {
+        "queue": "agPosConversao",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        0
+      ],
+      "id": "c9c7337f-28ae-419e-a923-36c10a037d9c",
+      "name": "Fila Agente Pós Conversão",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "queue": "agAtendimento",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        300
+      ],
+      "id": "ae4139db-cbae-40fc-b19d-aa02b9aed592",
+      "name": "Fila Agente Atendimento",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('RabbitMQ Trigger').item.json.sessionID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -380,
+        140
+      ],
+      "id": "3eb195b6-560a-478b-8fe5-48508b914c6e",
+      "name": "Fetch Leads",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Push Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push Messages": {
+      "main": [
+        [
+          {
+            "node": "Get_Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Buffer Status": {
+      "main": [
+        [
+          {
+            "node": "Nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Buffer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get_Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Buffer": {
+      "main": [
+        [
+          {
+            "node": "Unify Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Messages": {
+      "main": [
+        [
+          {
+            "node": "Verify Buffer Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unify Messages": {
+      "main": [
+        [
+          {
+            "node": "Fetch Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduled?": {
+      "main": [
+        [
+          {
+            "node": "Unify Messages1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unify Messages2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unify Messages1": {
+      "main": [
+        [
+          {
+            "node": "Fila Agente Pós Conversão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unify Messages2": {
+      "main": [
+        [
+          {
+            "node": "Fila Agente Atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Leads": {
+      "main": [
+        [
+          {
+            "node": "Scheduled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "user_message": "{\"userMessage\":\"sabe bem o que vem pela frente\",\"messageTimestamp\":\"1740624507\",\"messageId\":\"3EB06E83EB6EEE60638188\"}\n",
+          "sessionID": "5511985401987@s.whatsapp.net",
+          "messageTimestamp": "1740624507",
+          "messageID": "3EB06E83EB6EEE60638188"
+        }
+      }
+    ]
+  },
+  "versionId": "f655b678-7e70-4e6f-87e7-5d8f1da2f572",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
