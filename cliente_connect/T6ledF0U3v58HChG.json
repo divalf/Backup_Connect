@@ -1,0 +1,302 @@
+{
+  "createdAt": "2025-03-01T13:14:18.969Z",
+  "updatedAt": "2025-03-03T20:55:21.693Z",
+  "id": "T6ledF0U3v58HChG",
+  "name": "#6 Tool | Check Avaliability",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1800,
+        -580
+      ],
+      "id": "d2de6bde-78d2-4c47-b75a-e7e2c704bf79",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "agent": "reActAgent",
+        "promptType": "define",
+        "text": "=Hoje é: {{(() => {\n    // Obtém a data/hora atual\n    const currentDate = new Date();\n\n    // Cria um formatador para extrair os componentes da data no fuso de São Paulo\n    const formatter = new Intl.DateTimeFormat(\"en-CA\", {\n        timeZone: \"America/Sao_Paulo\",\n        year: \"numeric\",\n        month: \"2-digit\",\n        day: \"2-digit\",\n        hour: \"2-digit\",\n        minute: \"2-digit\",\n        second: \"2-digit\",\n        hour12: false\n    });\n\n    // Utiliza formatToParts para separar cada componente (ano, mês, dia, etc.)\n    const parts = formatter.formatToParts(currentDate);\n    let year, month, day, hour, minute, second;\n    for (const part of parts) {\n        if (part.type === \"year\") year = part.value;\n        else if (part.type === \"month\") month = part.value;\n        else if (part.type === \"day\") day = part.value;\n        else if (part.type === \"hour\") hour = part.value;\n        else if (part.type === \"minute\") minute = part.value;\n        else if (part.type === \"second\") second = part.value;\n    }\n\n    // Obtém os milissegundos do currentDate.\n    // Como o Date guarda o instante e os milissegundos são o resto da divisão por 1000,\n    // esse valor é o mesmo para qualquer fuso.\n    const ms = currentDate.getMilliseconds();\n    const msString = ms.toString().padStart(3, \"0\");\n\n    // Monta a data no formato ISO 8601 com milissegundos e com \"Z\" no final\n    const formattedDate = `${year}-${month}-${day}T${hour}:${minute}:${second}.${msString}Z`;\n\n    // Define os nomes dos dias da semana\n    const diasDaSemana = [\n        \"domingo\", \"segunda-feira\", \"terça-feira\",\n        \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"\n    ];\n\n    // Para obter o dia da semana conforme o fuso de São Paulo,\n    // converte currentDate para uma string no fuso e recria um objeto Date.\n    const localDate = new Date(\n        currentDate.toLocaleString(\"en-US\", { timeZone: \"America/Sao_Paulo\" })\n    );\n    const nomeDoDia = diasDaSemana[localDate.getDay()];\n    \n    // Retorna o resultado completo\n    return `${nomeDoDia.charAt(0).toUpperCase() + nomeDoDia.slice(1)}, ${formattedDate}`;\n})()}}\n\nO usuário tem interesse em saber a disponibilidade para: {{ $json.query }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "prefix": "=Você é um assistente especializado em calcular datas e horários em relação à data/hora atual, seguindo rigorosamente as seguintes instruções:\n\nHoje é: {{(() => {\n    // Obtém a data/hora atual\n    const currentDate = new Date();\n\n    // Cria um formatador para extrair os componentes da data no fuso de São Paulo\n    const formatter = new Intl.DateTimeFormat(\"en-CA\", {\n        timeZone: \"America/Sao_Paulo\",\n        year: \"numeric\",\n        month: \"2-digit\",\n        day: \"2-digit\",\n        hour: \"2-digit\",\n        minute: \"2-digit\",\n        second: \"2-digit\",\n        hour12: false\n    });\n\n    // Utiliza formatToParts para separar cada componente (ano, mês, dia, etc.)\n    const parts = formatter.formatToParts(currentDate);\n    let year, month, day, hour, minute, second;\n    for (const part of parts) {\n        if (part.type === \"year\") year = part.value;\n        else if (part.type === \"month\") month = part.value;\n        else if (part.type === \"day\") day = part.value;\n        else if (part.type === \"hour\") hour = part.value;\n        else if (part.type === \"minute\") minute = part.value;\n        else if (part.type === \"second\") second = part.value;\n    }\n\n    // Obtém os milissegundos do currentDate.\n    // Como o Date guarda o instante e os milissegundos são o resto da divisão por 1000,\n    // esse valor é o mesmo para qualquer fuso.\n    const ms = currentDate.getMilliseconds();\n    const msString = ms.toString().padStart(3, \"0\");\n\n    // Monta a data no formato ISO 8601 com milissegundos e com \"Z\" no final\n    const formattedDate = `${year}-${month}-${day}T${hour}:${minute}:${second}.${msString}Z`;\n\n    // Define os nomes dos dias da semana\n    const diasDaSemana = [\n        \"domingo\", \"segunda-feira\", \"terça-feira\",\n        \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"\n    ];\n\n    // Para obter o dia da semana conforme o fuso de São Paulo,\n    // converte currentDate para uma string no fuso e recria um objeto Date.\n    const localDate = new Date(\n        currentDate.toLocaleString(\"en-US\", { timeZone: \"America/Sao_Paulo\" })\n    );\n    const nomeDoDia = diasDaSemana[localDate.getDay()];\n    \n    // Retorna o resultado completo\n    return `${nomeDoDia.charAt(0).toUpperCase() + nomeDoDia.slice(1)}, ${formattedDate}`;\n})()}}\n\n1. **Entrada**  \n   - Receber duas informações:\n     a) A data/hora atual no formato \"YYYY-MM-DDTHH:MM:SS.000Z\" (exemplo: \"2025-02-06T08:30:00.000Z\").  \n     b) A solicitação do usuário em linguagem natural (ex.: \"depois de amanhã\", \"dia 06\", \"próxima semana\", etc.).\n\n**Horário de funcionamento:**\nRespeite impreterivelmente em todas as vezes que for solicitado, o seguinte horário de funcionamento:\n\nSegunda-feira e terça-feira, das 14:00 (por exemplo, 2025-01-09T14:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\n\nQuarta-feira, quinta-feira e sexta-feira, das 09:00 (por exemplo, 2025-01-09T09:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\n\n2. **Regras de Cálculo**  \n   - Não realizar conversão de fuso horário. Mantenha o mesmo padrão de formatação \"YYYY-MM-DDTHH:MM:SS.000Z\".\n   - Exemplos de ajustes de data:\n     - “Depois de amanhã”: some 2 dias à data/hora atual.\n     - “Dia 10” (sem mês/ano):\n       - Se a data/hora atual já estiver após o dia 10 do mês corrente, usar o dia 10 do **próximo** mês.\n       - Caso contrário, usar o dia 10 do **mês atual**.\n     - “Próxima semana”: some 7 dias à data/hora atual ou identifique o intervalo entre segunda-feira e sexta-feira da próxima semana, conforme o contexto.\n   - Se a solicitação do usuário implicar um **intervalo** (por ex., “toda a próxima semana”), gere um valor para início e outro para fim (por exemplo, “2025-01-01T09:00:00.000Z” para o começo do período e “2025-01-05T18:00:00.000Z” para o final).\n   - Se for apenas um dia ou horário específico, a solicitação do usuário deve atuar como horário de início e deve ser adicionado 30 minutos para o horário final/encerramento.\n   - O período da manhã inicia às 09:00:00.000Z e encerra às 12:00:00.000Z. O período da tarde inicia às 14:00:00.000Z e encerra às 18:00:00.000Z.\n   - Se o usuário não informar nenhum período, assuma o dia inteiro de trabalho, iniciando às 09:00:00.000Z e encerrando às 18:00:00.000Z.\n\n3. **Saída**\n\n   - Utilize o Structured Output Parser.\n\n   - Retornar **somente**:\n\n     - `\"diaInteresseInicio\"`: string no formato \"YYYY-MM-DDTHH:MM:SS.000Z\" representando o começo do interesse do usuário.\n     - `\"diaInteresseFim\"`: string no mesmo formato representando o final do interesse do usuário.\n   - Caso não haja intervalo, use o valor em `diaInteresseInicio` e adicione 30 minutos para o `diaInteresseFim`.\n   - Não inclua texto adicional, explicações ou comentários fora do objeto JSON.\n\n4. **Exemplo**  \n   - Se a data atual for \"2024-12-22T07:30:00.000Z\" e o usuário solicitar \"depois de amanhã\", então some 2 dias: \"2024-12-24T07:30:00.000Z\".  \n     - Se for um horário único, retorne:\n         \"diaInteresseInicio\": \"2024-12-24T07:30:00.000Z\",\n         \"diaInteresseFim\": \"2024-12-24T08:00:00.000Z\"\n   - Se o usuário solicitar \"próxima semana\" como um intervalo (por ex., segunda a sexta), calcule o dia da próxima segunda-feira (07:30:00.000Z) e sexta-feira (18:30:00.000Z, por exemplo), mantendo sempre o mesmo padrão de formatação e sem conversão de fuso.\n\n**Observação**:  \n- Qualquer raciocínio interno de soma de datas deve ser feito sem mostrá-lo ao usuário.  \n- Se houver instruções ambíguas, aplique as regras acima da melhor forma possível.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1600,
+        -580
+      ],
+      "id": "76defecf-977f-4cc0-8ebb-1a31554d3964",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1640,
+        -420
+      ],
+      "id": "2545754b-3cad-47cd-aac5-9eee263f5a98",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"diaInteresseInicio\": {\n      \"type\": \"string\",\n      \"description\": \"A data e hora de início do interesse do usuário no formato '2024-12-22T07:30:00Z'.\"\n    },\n    \"diaInteresseFim\": {\n      \"type\": \"string\",\n      \"description\": \"A data e hora de término do interesse do usuário no formato '2024-12-22T07:30:00Z'.\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -1360,
+        -420
+      ],
+      "id": "e0636cb9-25df-4a91-af0f-7245ebfc01c6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "url": "https://api.cal.com/v2/slots/available",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "startTime",
+              "value": "={{ $('AI Agent').item.json.output.diaInteresseInicio }}"
+            },
+            {
+              "name": "endTime",
+              "value": "={{ $('AI Agent').item.json.output.diaInteresseFim }}"
+            },
+            {
+              "name": "eventTypeId",
+              "value": "1959664"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "cal_live_2a396f0db1fb509037cc253820d8d25b"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -820,
+        -440
+      ],
+      "id": "9d3a18b1-60d7-4d61-a691-a97cae0147f3",
+      "name": "Check Cal API"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verifica se os dados de entrada possuem a estrutura esperada\nif (\n    !items ||\n    items.length === 0 ||\n    !items[0].json.data ||\n    !items[0].json.data.slots\n) {\n    return [{ json: { message: \"Nenhum horário disponível.\" } }];\n}\n\n// Extrai os slots disponíveis (no exemplo, os slots vêm como o valor do primeiro item do objeto)\nconst slotsObj = Object.values(items[0].json.data.slots)[0];\nconst slots = Array.isArray(slotsObj) ? slotsObj : [];\n\n// Se não houver nenhum slot, retorna a mensagem padrão\nif (slots.length === 0) {\n    return [{ json: { message: \"Nenhum horário disponível.\" } }];\n}\n\n// Seleciona aleatoriamente até 3 slots\nconst totalToChoose = Math.min(3, slots.length);\nconst indices = new Set();\nwhile (indices.size < totalToChoose) {\n    const randomIndex = Math.floor(Math.random() * slots.length);\n    indices.add(randomIndex);\n}\n\n// Extrai os horários dos slots escolhidos\nlet chosenSlots = Array.from(indices).map(i => slots[i].time);\n\n// Ordena os horários em ordem crescente\nchosenSlots.sort((a, b) => a.localeCompare(b));\n\n// Atribui os 3 slots ordenados (ou vazio, se não houver)\nconst primeiro = chosenSlots[0] || \"\";\nconst segundo = chosenSlots[1] || \"\";\nconst terceiro = chosenSlots[2] || \"\";\n\n// Coleta os demais horários, excluindo os que já foram usados\nlet demais = [];\nfor (let i = 0; i < slots.length; i++) {\n    if (!indices.has(i) && slots[i]?.time) {\n        demais.push(slots[i].time);\n    }\n}\n\n// Monta a mensagem que será enviada para o lead\nlet leadMessage = \"Envie para o lead esses horários:\\n\";\nleadMessage += `Primeiro: ${primeiro}\\n`;\nleadMessage += `Segundo: ${segundo}\\n`;\nleadMessage += `Terceiro: ${terceiro}\\n`;\n\n// Monta a mensagem com os demais horários, se houver\nlet outrosHorarios = \"\";\nif (demais.length > 0) {\n    outrosHorarios = \"Esses horários também estão disponíveis:\\n\" + demais.join(\"\\n\");\n}\n\n// Retorna o resultado com duas strings separadas, substituindo leadMessage por horariosParaEnviar\nreturn [{ json: { horariosParaEnviar: leadMessage, outrosHorarios } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -620,
+        -440
+      ],
+      "id": "0a98ea0f-ad58-455d-bdd6-4b220be15962",
+      "name": "Enviar Horário(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      diaInteresseInicio: $input.first().json.output.diaInteresseInicio, // Exibe a variável recebida\n      hora_escolhida: (() => {\n        // Definição dos horários de funcionamento\n        const horariosFuncionamento = {\n          \"segunda-feira\": { \"start\": \"14:00:00\", \"end\": \"18:00:00\" },\n          \"terça-feira\": { \"start\": \"14:00:00\", \"end\": \"18:00:00\" },\n          \"quarta-feira\": { \"start\": \"09:00:00\", \"end\": \"18:00:00\" },\n          \"quinta-feira\": { \"start\": \"09:00:00\", \"end\": \"18:00:00\" },\n          \"sexta-feira\": { \"start\": \"09:00:00\", \"end\": \"18:00:00\" }\n        };\n\n        // Obtém a variável diaInteresseInicio do nó anterior\n        const diaInteresseInicio = $input.first().json.output.diaInteresseInicio;\n        if (!diaInteresseInicio) return \"O horário desejado está fora do horário de Atendimento.\"; \n\n        // Converte a string para um objeto Date\n        const data = new Date(diaInteresseInicio);\n\n        // Obtém o dia da semana\n        const diasSemana = [\"domingo\", \"segunda-feira\", \"terça-feira\", \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"];\n        const diaSemana = diasSemana[data.getUTCDay()];\n\n        // Extrai apenas o horário da variável diaInteresseInicio (HH:MM:SS)\n        const horario = diaInteresseInicio.split(\"T\")[1].split(\".\")[0];\n\n        // Verifica se há horário de funcionamento para esse dia\n        const horarioDia = horariosFuncionamento[diaSemana];\n\n        // Determina se está dentro ou fora do horário permitido\n        let hora_escolhida = \"O horário desejado está fora do horário de Atendimento.\";\n        if (horarioDia && horario >= horarioDia.start && horario <= horarioDia.end) {\n          hora_escolhida = \"dentro\";\n        }\n\n        return hora_escolhida;\n      })()\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1240,
+        -580
+      ],
+      "id": "98bf2a78-5733-459a-a73e-94116676eddf",
+      "name": "Verifica Horário de Atendimento"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "80b7a02c-be84-4535-9c17-35379c109a39",
+              "leftValue": "={{ $json.hora_escolhida }}",
+              "rightValue": "O horário desejado está fora do horário de Atendimento.",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        -580
+      ],
+      "id": "5c6fb0d4-09ac-4ca9-8ecc-bb1cd55bba6b",
+      "name": "Dentro ou Fora?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        -720
+      ],
+      "id": "6a12866d-3d98-499a-bc6f-829114aed399",
+      "name": "Fora Horário Atendimento"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Verifica Horário de Atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Cal API": {
+      "main": [
+        [
+          {
+            "node": "Enviar Horário(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Horário de Atendimento": {
+      "main": [
+        [
+          {
+            "node": "Dentro ou Fora?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dentro ou Fora?": {
+      "main": [
+        [
+          {
+            "node": "Fora Horário Atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Cal API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "dia 11 de manhã"
+        }
+      }
+    ]
+  },
+  "versionId": "1ea98197-f407-4a1b-b14c-d3873ce4e098",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
