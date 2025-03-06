@@ -1,0 +1,1032 @@
+{
+  "createdAt": "2025-03-04T23:10:16.998Z",
+  "updatedAt": "2025-03-05T13:56:59.689Z",
+  "id": "qbJKIMEeNngzV4tm",
+  "name": "#15 | Lembretes",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1780,
+        -660
+      ],
+      "id": "ca8574c9-88c9-4276-920b-ca6ff7a31eaa",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * \nFROM public.\"users\"\nWHERE TRIM(\"id_agendamento\") IS NOT NULL \nAND TRIM(\"id_agendamento\") <> '';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1600,
+        -660
+      ],
+      "id": "34874c6d-31f2-4efa-b94d-bc6c60893567",
+      "name": "Fetch Scheduled Leads",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2eaf5c5b-7d9a-4a96-8ada-e390c29a47e5",
+              "leftValue": "={{ $json.dataConsulta }}",
+              "rightValue": "={{ new Date(new Date(new Date().toLocaleString(\"en-US\", {timeZone: \"America/Sao_Paulo\"})).getTime() - (3 * 60 * 60 * 1000)).toISOString().replace(/\\.\\d{3}Z$/, 'Z') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "afterOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1420,
+        -660
+      ],
+      "id": "7126e9c3-a9cb-49fc-a318-e8ccf44e3bde",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1020,
+        -780
+      ],
+      "id": "d88c1b69-45f3-4917-ad1c-044e259488dd",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        -920
+      ],
+      "id": "6447568f-d31d-4241-9e87-30c4c53a6ebd",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_chat_histories",
+          "mode": "list",
+          "cachedResultName": "n8n_chat_histories"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.message }}",
+            "session_id": "={{ $('Get Lead Data').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -300,
+        -640
+      ],
+      "id": "91acfdc0-ea26-4026-806a-e421b811f2e9",
+      "name": "UpdateChatHistory",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message: {\n        type: \"ai\",\n        content: $input.first().json.data.message.conversation, // Pegando o campo 'message' vindo do nó SetJSON\n        tool_calls: [],\n        additional_kwargs: {},\n        response_metadata: {},\n        invalid_tool_calls: []\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -640
+      ],
+      "id": "3aed5c7e-a7c8-4eb7-b199-5d79fd4c2266",
+      "name": "setObject"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Fetch Scheduled Leads').item.json.session_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -800,
+        -640
+      ],
+      "id": "0e527039-066c-44ed-a93b-c874b276b3e7",
+      "name": "Get Lead Data",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Deebs",
+        "remoteJid": "5511985401987@s.whatsapp.net",
+        "messageText": "=Olá, {{ $json.userName }}! Passando para lembrar que sua consulta com o Dr. Marcelino é depois de amanhã. ✅\n\nAguardamos você 👋\n",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -640
+      ],
+      "id": "dea6f237-203c-4cb1-8497-a82233a7e87b",
+      "name": "Evolution API",
+      "credentials": {
+        "evolutionApi": {
+          "id": "qzq5I7qAhGMHXc00",
+          "name": "Evolution - Deebs"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1000,
+        -320
+      ],
+      "id": "a415f95b-a5f5-43dd-bc80-0fc682b88dc5",
+      "name": "Loop Over Items1",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -420
+      ],
+      "id": "066ebc0b-aa6c-40fa-b573-6ff57dba5b27",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_chat_histories",
+          "mode": "list",
+          "cachedResultName": "n8n_chat_histories"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.message }}",
+            "session_id": "={{ $('Get Lead Data1').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -280,
+        -180
+      ],
+      "id": "e2055800-bc4b-42af-8d74-ea2097331525",
+      "name": "UpdateChatHistory1",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message: {\n        type: \"ai\",\n        content: $input.first().json.data.message.conversation, // Pegando o campo 'message' vindo do nó SetJSON\n        tool_calls: [],\n        additional_kwargs: {},\n        response_metadata: {},\n        invalid_tool_calls: []\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        -180
+      ],
+      "id": "6642d228-c8f0-4d69-bef5-0b9cccab3759",
+      "name": "setObject1"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Fetch Scheduled Leads').item.json.session_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -780,
+        -180
+      ],
+      "id": "e63b77b0-eaea-4779-ba52-df1d98cb329d",
+      "name": "Get Lead Data1",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Deebs",
+        "remoteJid": "5511985401987@s.whatsapp.net",
+        "messageText": "=Olá, {{ $json.userName }}! Passando mais uma vez para lembrar que sua consulta com o Dr. Marcelino é amanhã. ✅\n\nAguardamos você 👋\n",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        -180
+      ],
+      "id": "eb982fa7-1309-4c8e-8b31-a385c682d7ea",
+      "name": "Evolution API1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "qzq5I7qAhGMHXc00",
+          "name": "Evolution - Deebs"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -980,
+        160
+      ],
+      "id": "0f4a937a-acd8-4e70-b59f-9cd09281a4da",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        20
+      ],
+      "id": "796fa17d-3431-4b8d-b9b3-b15e448ecc68",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_chat_histories",
+          "mode": "list",
+          "cachedResultName": "n8n_chat_histories"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.message }}",
+            "session_id": "={{ $('Get Lead Data2').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -280,
+        300
+      ],
+      "id": "75bc6e65-d9f0-46b1-a2a9-cf8d16fc8d7d",
+      "name": "UpdateChatHistory2",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message: {\n        type: \"ai\",\n        content: $input.first().json.data.message.conversation, // Pegando o campo 'message' vindo do nó SetJSON\n        tool_calls: [],\n        additional_kwargs: {},\n        response_metadata: {},\n        invalid_tool_calls: []\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        300
+      ],
+      "id": "b5a7a7b8-68b0-43f0-91eb-61e070e9b96f",
+      "name": "setObject2"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Fetch Scheduled Leads').item.json.session_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -780,
+        300
+      ],
+      "id": "fe742f07-2a15-4d0e-8d00-97749a51465a",
+      "name": "Get Lead Data2",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Deebs",
+        "remoteJid": "5511985401987@s.whatsapp.net",
+        "messageText": "=Olá, {{ $json.userName }}! A sua consulta com o Dr. Marcelino é hoje. ✅\n\nNos vemos lá. 👋\n",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        300
+      ],
+      "id": "62a8c130-2926-45e4-8272-f8612796de9f",
+      "name": "Evolution API2",
+      "credentials": {
+        "evolutionApi": {
+          "id": "qzq5I7qAhGMHXc00",
+          "name": "Evolution - Deebs"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -120,
+        -640
+      ],
+      "id": "6c530116-9c48-489a-98c1-533b0954be02",
+      "name": "4s",
+      "webhookId": "b2850f20-efd5-47ef-8a7b-0932bfc10340"
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -120,
+        -180
+      ],
+      "id": "3ac318ef-1097-464f-bcac-da26060ef030",
+      "name": "4s1",
+      "webhookId": "ce89c545-69bf-42cd-8610-9f1df27d2137"
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        300
+      ],
+      "id": "c7158c86-3431-40ae-8f0f-f7148c0ce6cf",
+      "name": "4s2",
+      "webhookId": "e12b84eb-cbaf-4195-90a0-dbeb39b773c6"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ new Date(new Date($json.dataConsulta).getTime() - (2 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0] }}",
+                    "rightValue": "={{ new Date(new Date(new Date().toLocaleString(\"en-US\", {timeZone: \"America/Sao_Paulo\"})).getTime() - (3 * 60 * 60 * 1000)).toISOString().replace(/\\.\\d{3}Z$/, 'Z').split('T')[0] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c09772ff-eae6-422f-9c68-a2fe267bacae"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Faltam 2 dias"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1d44cf5d-29c7-4649-a505-6f2d2aa73c1b",
+                    "leftValue": "={{ new Date(new Date($json.dataConsulta).getTime() - (24 * 60 * 60 * 1000)).toISOString().split('T')[0] }}",
+                    "rightValue": "={{ new Date(new Date(new Date().toLocaleString(\"en-US\", {timeZone: \"America/Sao_Paulo\"})).getTime() - (3 * 60 * 60 * 1000)).toISOString().replace(/\\.\\d{3}Z$/, 'Z').split('T')[0] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "É amanhã"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "52814282-1313-45af-a7c1-58271e57f501",
+                    "leftValue": "={{ new Date(new Date($json.dataConsulta).getTime()).toISOString().split('T')[0] }}",
+                    "rightValue": "={{ new Date(new Date(new Date().toLocaleString(\"en-US\", {timeZone: \"America/Sao_Paulo\"})).getTime() - (3 * 60 * 60 * 1000)).toISOString().replace(/\\.\\d{3}Z$/, 'Z').split('T')[0] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "É hoje"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1240,
+        -660
+      ],
+      "id": "14e47770-805f-48d2-8710-1a5e0494e549",
+      "name": "Qual Lembrete?"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Scheduled Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Scheduled Leads": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Qual Lembrete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setObject": {
+      "main": [
+        [
+          {
+            "node": "UpdateChatHistory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Evolution API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API": {
+      "main": [
+        [
+          {
+            "node": "setObject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Lead Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setObject1": {
+      "main": [
+        [
+          {
+            "node": "UpdateChatHistory1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead Data1": {
+      "main": [
+        [
+          {
+            "node": "Evolution API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API1": {
+      "main": [
+        [
+          {
+            "node": "setObject1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Lead Data2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setObject2": {
+      "main": [
+        [
+          {
+            "node": "UpdateChatHistory2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead Data2": {
+      "main": [
+        [
+          {
+            "node": "Evolution API2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API2": {
+      "main": [
+        [
+          {
+            "node": "setObject2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateChatHistory": {
+      "main": [
+        [
+          {
+            "node": "4s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateChatHistory1": {
+      "main": [
+        [
+          {
+            "node": "4s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateChatHistory2": {
+      "main": [
+        [
+          {
+            "node": "4s2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4s": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4s1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4s2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qual Lembrete?": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "95ee2155-bd53-478b-9e2b-24829f5684bb",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
