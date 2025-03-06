@@ -1,0 +1,671 @@
+{
+  "createdAt": "2025-02-23T15:03:20.526Z",
+  "updatedAt": "2025-03-04T16:58:47.587Z",
+  "id": "jyh5KPexTNLqsCKu",
+  "name": "#03 | Formatação da mensagem",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "queue": "mensagens",
+        "options": {
+          "arguments": {
+            "argument": [
+              {
+                "key": "x-queue-type",
+                "value": "quorum"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishesSuccessfully",
+          "jsonParseBody": true,
+          "onlyContent": true
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3000,
+        -800
+      ],
+      "id": "fc01e1b8-73e8-472b-85b8-e8139b7e2cc6",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0293efc9-2d9a-4a59-8af6-c485b65e63f0",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9363ed8e-35ff-4e96-b9ce-96d108743433",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -2780,
+        -800
+      ],
+      "id": "42b330ae-77f6-42e6-8d57-b120238ba9f9",
+      "name": "Message Type",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $('RabbitMQ Trigger').item.json.message, messageTimestamp: $('RabbitMQ Trigger').item.json.messageTimestamp, messageId: $('RabbitMQ Trigger').item.json.messageID }) }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2480,
+        -1020
+      ],
+      "id": "7ac6f7f1-647d-4a57-95fa-da26821b101c",
+      "name": "Text Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/chat/getBase64FromMediaMessage/{{ $('RabbitMQ Trigger').item.json.body.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('RabbitMQ Trigger').item.json.messageID }}\"\n    }\n  },\n  \"convertToMp4\": false\n} ",
+        "options": {}
+      },
+      "id": "a3d93372-7e27-43dc-9c35-c971bb7701e4",
+      "name": "Download Áudio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2480,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Decodificar Base64 OGG file\nconst base64Ogg = $json[\"base64\"];\nconst oggFilePath = '/tmp/audio.ogg';\n\n// Salvar o arquivo OGG\nreturn [\n  {\n    json: {\n      oggFilePath,\n    },\n    binary: {\n      data: {\n        data: Buffer.from(base64Ogg, 'base64'),\n        mimeType: 'audio/ogg',\n        fileName: 'audio.ogg',\n      }\n    }\n  }\n];\n"
+      },
+      "id": "c63c369f-8096-4f21-b85a-7a86b37dff00",
+      "name": "Decodificar Base64 - ogg",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2300,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $json.text,\nmessageTimestamp: $('RabbitMQ Trigger').item.json.messageTimestamp, messageId: $('RabbitMQ Trigger').item.json.messageID })}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1940,
+        -800
+      ],
+      "id": "6c797e78-6d5a-4bc2-9bd0-c773e182ec63",
+      "name": "Audio Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/chat/getBase64FromMediaMessage/{{ $('RabbitMQ Trigger').item.json.body.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('RabbitMQ Trigger').item.json.messageID }}\"\n    }\n  },\n  \"convertToMp4\": false\n} ",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "266a9a7e-68ce-4ab4-86d5-a629990546f5",
+      "name": "getbaseImagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2480,
+        -600
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {}
+      },
+      "id": "ebab11c3-71d3-4243-a5ca-30ef0d5f55dd",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2300,
+        -600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $json.content,\nmessageTimestamp: $('RabbitMQ Trigger').item.json.messageTimestamp, messageId: $('RabbitMQ Trigger').item.json.messageID })}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1620,
+        -700
+      ],
+      "id": "d1c10cf2-0167-4d5b-bd22-30df6b20bdba",
+      "name": "Image Data"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "49532485-4083-4815-a906-516d3b38fe15",
+      "name": "Audio Transcript",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -2120,
+        -800
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "Analise a imagem e retorne com o máximo de detalhes possíveis descrevendo-os.",
+        "inputType": "base64",
+        "options": {}
+      },
+      "id": "defc8886-35be-4085-9c13-4bbfd0bcbb62",
+      "name": "Image Analize",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -2120,
+        -600
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ffb4e15-1bdf-4a51-b223-584c772f4b9e",
+              "leftValue": "={{ $('RabbitMQ Trigger').item.json.imageCaption }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1940,
+        -600
+      ],
+      "id": "ec6da0e7-02ec-464f-a499-e14909de9d8a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $('RabbitMQ Trigger').item.json.imageCaption,\nimageDescription: $json.content,\nmessageTimestamp: $('RabbitMQ Trigger').item.json.messageTimestamp, messageId: $('RabbitMQ Trigger').item.json.messageID })}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1620,
+        -480
+      ],
+      "id": "0543a0c6-8aeb-47bc-ad1a-5cda83429d51",
+      "name": "Image - Caption Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b0585d3-3348-4d9a-a8a5-39a2d712b0c1",
+              "name": "user_message",
+              "value": "={{ $json.payload }}",
+              "type": "string"
+            },
+            {
+              "id": "9d5a23bb-17af-48bc-86d8-fc42e3c45b64",
+              "name": "sessionID",
+              "value": "={{ $('RabbitMQ Trigger').item.json.Session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "88f1746e-bf2b-4881-a5bf-4cd0a41c58ab",
+              "name": "messageTimestamp",
+              "value": "={{ $('RabbitMQ Trigger').item.json.messageTimestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "234f28dd-d0cd-46dc-86bb-a57e5c933af6",
+              "name": "messageID",
+              "value": "={{ $('RabbitMQ Trigger').item.json.messageID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1240,
+        -800
+      ],
+      "id": "af944199-f2f6-4f93-9564-4775a0aaef02",
+      "name": "Consolidate Data"
+    },
+    {
+      "parameters": {
+        "queue": "msgTratada",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        -1020,
+        -800
+      ],
+      "id": "7ccdaf70-f1bb-4b39-a966-20e0b47298b8",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Type": {
+      "main": [
+        [
+          {
+            "node": "Text Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Áudio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "getbaseImagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Áudio": {
+      "main": [
+        [
+          {
+            "node": "Decodificar Base64 - ogg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decodificar Base64 - ogg": {
+      "main": [
+        [
+          {
+            "node": "Audio Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getbaseImagem": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Image Analize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Transcript": {
+      "main": [
+        [
+          {
+            "node": "Audio Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Analize": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Data": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Image Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image - Caption Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Data": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Data": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image - Caption Data": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidate Data": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "Session_id": "5511985401987@s.whatsapp.net",
+          "messageTimestamp": "1740533748",
+          "messageType": "conversation",
+          "message": "Boa Noite!",
+          "audioURL": null,
+          "audiokey": null,
+          "imageURL": null,
+          "imageCaption": null,
+          "imageKey": null,
+          "messageID": "3EB0AB67148F7D759BC61B",
+          "body": {
+            "instance": "Deebs",
+            "apikey": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "178c1920-9ea9-4f6d-a293-e7f1d3bece49",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
