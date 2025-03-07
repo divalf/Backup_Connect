@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-02-26T00:16:35.699Z",
-  "updatedAt": "2025-03-04T16:56:40.623Z",
+  "updatedAt": "2025-03-06T01:14:11.269Z",
   "id": "Ek8nZX3FtKVoBTst",
   "name": "#4 | Gerencia Fila de Mensagens",
-  "active": true,
+  "active": false,
   "nodes": [
     {
       "parameters": {
@@ -49,8 +49,7 @@
       ],
       "id": "e5148e08-553a-4ff4-a73d-2769a684c90a",
       "name": "Wait",
-      "webhookId": "0df86426-2ec2-4232-a152-cbcab80059e3",
-      "disabled": true
+      "webhookId": "0df86426-2ec2-4232-a152-cbcab80059e3"
     },
     {
       "parameters": {
@@ -603,7 +602,7 @@
       }
     ]
   },
-  "versionId": "f655b678-7e70-4e6f-87e7-5d8f1da2f572",
+  "versionId": "7ffd53ee-c6a8-4287-9f73-b748bffd970b",
   "triggerCount": 1,
   "tags": [
     {
