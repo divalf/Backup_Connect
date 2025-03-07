@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-03T16:16:08.855Z",
-  "updatedAt": "2025-03-04T00:48:16.534Z",
+  "updatedAt": "2025-03-06T00:42:32.711Z",
   "id": "rJ7ypQUAig3LWM0L",
   "name": "#9| Agente de Atualização - Pós Conversão",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
