@@ -1,0 +1,740 @@
+{
+  "createdAt": "2025-03-06T00:58:55.861Z",
+  "updatedAt": "2025-03-06T01:10:21.847Z",
+  "id": "LBs7AGMWDh4N1Gkp",
+  "name": "#02 | Validação Ordem Mensagens - Naka",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "limit": 200,
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $json.body.data.key.remoteJid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -540,
+        -120
+      ],
+      "id": "69b4ffbf-54df-4e1d-b85d-c12fb6d0a0f5",
+      "name": "Fetch Lead",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d631f28d-5112-4ccf-a256-eacd614b2099",
+              "leftValue": "={{ $json.session_id }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -360,
+        -120
+      ],
+      "id": "55371cff-c8d8-46dd-86da-cdc3dda5a2fa",
+      "name": "Lead Exist?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4a05f854-a726-4359-bef8-7eb610bff835",
+              "leftValue": "={{ $json.body.data.key.fromMe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -740,
+        -260
+      ],
+      "id": "ffe10323-05d5-488f-8a8e-bd8be1113e20",
+      "name": "FromMe"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f09138f-e2a5-46de-802f-2f6b55e9f6a1",
+              "name": "last_message",
+              "value": "={{ (() => {\n    // Lê o timestamp do nó \"RabbitMQ Trigger\"\n    const ts = $('RabbitMQ Trigger').item.json.body.data.messageTimestamp;\n\n    // Interpreta como segundos e converte para milissegundos\n    const date = new Date(ts * 1000);\n\n    // Subtrai 3 horas para ajustar o fuso -03:00\n    const adjusted = new Date(date.getTime() - 3 * 60 * 60 * 1000);\n\n    // Função auxiliar para preencher com zeros à esquerda\n    const pad = (n, width = 2) => String(n).padStart(width, '0');\n\n    // Obtém os componentes da data/hora\n    const year = adjusted.getUTCFullYear();\n    const month = pad(adjusted.getUTCMonth() + 1);\n    const day = pad(adjusted.getUTCDate());\n    const hours = pad(adjusted.getUTCHours());\n    const minutes = pad(adjusted.getUTCMinutes());\n    const seconds = pad(adjusted.getUTCSeconds());\n    const milliseconds = pad(adjusted.getUTCMilliseconds(), 3);\n\n    // Retorna no formato ISO 8601 com offset -03:00\n    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}-03:00`;\n})() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -260
+      ],
+      "id": "ea1d72a8-deb4-4fee-855d-327d384ef615",
+      "name": "Set Time"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('RabbitMQ Trigger').item.json.body.data.key.remoteJid }}",
+            "last_message": "={{ $json.last_message }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        20,
+        -260
+      ],
+      "id": "7dde9108-e9d7-4403-be2d-9cb1ffffbe82",
+      "name": "Update Last Message",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f36b2ef5-8ce6-44dd-b8ed-96f9158d452d",
+              "leftValue": "={{ $json.blocked_user }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        -120
+      ],
+      "id": "e3f171c3-12cd-4b5d-833a-a582abd15d3d",
+      "name": "Ckeck Blocked"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('RabbitMQ Trigger').item.json.body.data.key.remoteJid }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -60,
+        0
+      ],
+      "id": "a75a58b1-d429-4ecd-9522-1fc790a1eacd",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca23a902-ed69-49d9-acee-704d25972a7b",
+              "name": "Session_id",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "03556825-4b0e-49d1-bee9-c5120fcb7c72",
+              "name": "messageTimestamp",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.messageTimestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "e437d293-2949-4201-856c-83cb82f9aca0",
+              "name": "messageType",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "c2a4d65b-af0e-4ed5-a349-b2c50449660e",
+              "name": "message",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "e5d29f13-19b2-44ee-865e-c5f83eb3eea7",
+              "name": "audioURL",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.message.audioMessage.url }}",
+              "type": "string"
+            },
+            {
+              "id": "8a1d619c-67ce-4353-a626-c030160f3dca",
+              "name": "audiokey",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.message.audioMessage.mediaKey }}",
+              "type": "string"
+            },
+            {
+              "id": "b223ccd8-9a43-499a-b3b4-063e119e001b",
+              "name": "imageURL",
+              "value": "={{ $('FromMe').item.json.body.data.message.imageMessage.url }}",
+              "type": "string"
+            },
+            {
+              "id": "a7a07561-fa92-4818-a323-e44be3967271",
+              "name": "imageCaption",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.message.imageMessage.caption }}",
+              "type": "string"
+            },
+            {
+              "id": "1973ae39-3d30-4b70-963d-dfe69789e08b",
+              "name": "imageKey",
+              "value": "={{ $('FromMe').item.json.body.data.message.imageMessage.mediaKey }}",
+              "type": "string"
+            },
+            {
+              "id": "135d7ce0-04ff-4d07-a466-14216d2ca9dc",
+              "name": "messageID",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0281a96d-552b-4b7f-9ecb-40c7b92f2c8c",
+              "name": "body.instance",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "1aa49b76-bb5c-4d47-bb41-b8b1dea43d4b",
+              "name": "body.apikey",
+              "value": "={{ $('RabbitMQ Trigger').item.json.body.apikey }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        0
+      ],
+      "id": "5559480b-c9cf-48fe-a63c-8be2ea69e551",
+      "name": "LeadMsg Data"
+    },
+    {
+      "parameters": {
+        "queue": "mensagens",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rabbitmq",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        0
+      ],
+      "id": "b67c8d70-14dd-4e4c-8195-6a031dfa430c",
+      "name": "RabbitMQ",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "1wph3DlDSc9ytyAL",
+          "mode": "list",
+          "cachedResultName": "#12 | Block Lead and Update Memory"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -540,
+        -420
+      ],
+      "id": "8e3c6a04-272a-4996-8fbb-7845c9cb3358",
+      "name": "Block Lead and Update Memory"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "2yjpW6dgYNmlGPJL",
+          "mode": "list",
+          "cachedResultName": "#13 | Update Memory"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        -260
+      ],
+      "id": "547f3d32-cac1-4b75-8431-fd0009e85056",
+      "name": "Update Memory"
+    },
+    {
+      "parameters": {
+        "queue": "fila_entrada_dados",
+        "options": {
+          "arguments": {
+            "argument": [
+              {
+                "key": "x-queue-type",
+                "value": "quorum"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishes",
+          "jsonParseBody": true,
+          "onlyContent": true
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        -260
+      ],
+      "id": "17666991-c769-402f-8c87-ab3df7119ef8",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Fetch Lead": {
+      "main": [
+        [
+          {
+            "node": "Lead Exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FromMe": {
+      "main": [
+        [
+          {
+            "node": "Block Lead and Update Memory",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Exist?": {
+      "main": [
+        [
+          {
+            "node": "Set Time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Time": {
+      "main": [
+        [
+          {
+            "node": "Update Last Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Last Message": {
+      "main": [
+        [
+          {
+            "node": "Ckeck Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ckeck Blocked": {
+      "main": [
+        [
+          {
+            "node": "Update Memory",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LeadMsg Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Ckeck Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LeadMsg Data": {
+      "main": [
+        [
+          {
+            "node": "RabbitMQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "FromMe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "primary-production-1821.up.railway.app",
+            "user-agent": "axios/1.7.9",
+            "content-length": "986",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "146.190.59.46",
+            "x-forwarded-host": "primary-production-1821.up.railway.app",
+            "x-forwarded-proto": "https",
+            "x-railway-request-id": "IznKAIs7QqOXPkEmMK2kPw_1861343781",
+            "x-real-ip": "146.190.59.46",
+            "x-request-start": "1740533748803"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "Deebs",
+            "data": {
+              "key": {
+                "remoteJid": "5511985401987@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB0AB67148F7D759BC61B"
+              },
+              "pushName": "Dival S Filho 😎",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Boa Noite!",
+                "messageContextInfo": {
+                  "deviceListMetadata": {
+                    "senderKeyHash": "hQTfCmaNdhO9+Q==",
+                    "senderTimestamp": "1740058144",
+                    "senderAccountType": "E2EE",
+                    "receiverAccountType": "E2EE",
+                    "recipientKeyHash": "15/v3OmibNlJmw==",
+                    "recipientTimestamp": "1740342046"
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": "YZWJWB+kL+oeTkbqrkuNOay9kBJMFu87kId7sPlRSOk="
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1740533748,
+              "instanceId": "8e60633a-43c9-4c90-9032-3bd6b9713741",
+              "source": "web"
+            },
+            "destination": "https://primary-production-1821.up.railway.app/webhook-test/entrada-dados",
+            "date_time": "2025-02-25T22:35:48.634Z",
+            "sender": "5511932081209@s.whatsapp.net",
+            "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
+            "apikey": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+          },
+          "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/entrada-dados",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "5fbff380-aacb-4c43-a10c-f6d62d14a1cc",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-03-06T00:52:17.373Z",
+      "updatedAt": "2025-03-06T00:52:17.373Z",
+      "id": "X7hlUl8YHULQ0Kpl",
+      "name": "Naka"
+    }
+  ]
+}
