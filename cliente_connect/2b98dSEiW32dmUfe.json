@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-06T00:21:22.052Z",
-  "updatedAt": "2025-03-06T00:36:40.648Z",
+  "updatedAt": "2025-03-06T03:44:58.566Z",
   "id": "2b98dSEiW32dmUfe",
   "name": "#17 | Backup Github",
   "active": false,
@@ -299,7 +299,8 @@
         "rule": {
           "interval": [
             {
-              "triggerAtHour": 23,
+              "field": "hours",
+              "hoursInterval": 23,
               "triggerAtMinute": 59
             }
           ]
@@ -313,6 +314,39 @@
       ],
       "id": "2677713f-0ad2-445a-8072-9ae8af6ab19b",
       "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').first().json.owner }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').first().json.repository }}",
+          "mode": "name"
+        },
+        "filePath": "=cliente_dinastia/{{ $('Workflow').item.json.id }}.json",
+        "binaryData": true,
+        "commitMessage": "={{ $('Workflow').item.json.name }}{{ $now.toString() }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        500
+      ],
+      "id": "159d5c1c-0ff2-4e56-bcf6-117eb2d6e99e",
+      "name": "GitHub - Create File1",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "Ftcyf3tcSMGlCxye",
+          "name": "GitHub - Backup_Connect"
+        }
+      }
     }
   ],
   "connections": {
@@ -467,13 +501,17 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8679096b-42ec-43fe-be72-55fae465f6ad",
-  "triggerCount": 0,
+  "versionId": "8d90e48c-3f3e-4238-b93a-585e123e05bc",
+  "triggerCount": 1,
   "tags": [
     {
       "createdAt": "2025-03-06T00:21:48.761Z",
