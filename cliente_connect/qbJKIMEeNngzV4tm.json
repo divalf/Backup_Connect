@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-04T23:10:16.998Z",
-  "updatedAt": "2025-03-05T13:56:59.689Z",
+  "updatedAt": "2025-03-06T00:41:53.318Z",
   "id": "qbJKIMEeNngzV4tm",
   "name": "#15 | Lembretes",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -1012,7 +1012,9 @@
   },
   "staticData": {
     "node:Schedule Trigger": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        8
+      ]
     }
   },
   "meta": {
