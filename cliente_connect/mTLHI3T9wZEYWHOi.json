@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-02-23T03:43:23.721Z",
-  "updatedAt": "2025-03-04T23:07:44.496Z",
+  "updatedAt": "2025-03-06T00:58:41.732Z",
   "id": "mTLHI3T9wZEYWHOi",
   "name": "#02 | Validação Ordem Mensagens",
-  "active": true,
+  "active": false,
   "nodes": [
     {
       "parameters": {
