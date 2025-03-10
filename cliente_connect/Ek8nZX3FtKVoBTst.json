@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-02-26T00:16:35.699Z",
-  "updatedAt": "2025-03-06T01:14:11.269Z",
+  "updatedAt": "2025-03-10T01:23:28.596Z",
   "id": "Ek8nZX3FtKVoBTst",
   "name": "#4 | Gerencia Fila de Mensagens",
   "active": false,
@@ -590,19 +590,8 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "RabbitMQ Trigger": [
-      {
-        "json": {
-          "user_message": "{\"userMessage\":\"sabe bem o que vem pela frente\",\"messageTimestamp\":\"1740624507\",\"messageId\":\"3EB06E83EB6EEE60638188\"}\n",
-          "sessionID": "5511985401987@s.whatsapp.net",
-          "messageTimestamp": "1740624507",
-          "messageID": "3EB06E83EB6EEE60638188"
-        }
-      }
-    ]
-  },
-  "versionId": "7ffd53ee-c6a8-4287-9f73-b748bffd970b",
+  "pinData": {},
+  "versionId": "a19aaa6f-0ff2-4c70-b660-a3a9ece5677e",
   "triggerCount": 1,
   "tags": [
     {
