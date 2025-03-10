@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-04T02:23:05.674Z",
-  "updatedAt": "2025-03-06T00:41:39.406Z",
+  "updatedAt": "2025-03-10T01:28:58.950Z",
   "id": "1wph3DlDSc9ytyAL",
   "name": "#12 | Block Lead and Update Memory",
   "active": false,
@@ -562,7 +562,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -1600,
+        -1620,
         40
       ],
       "id": "15c1f8ef-a6ba-41d2-9eda-0cea2be48df3",
@@ -1005,7 +1005,7 @@
       }
     ]
   },
-  "versionId": "c10c001f-62a8-4131-a1e6-6d65b77b0915",
+  "versionId": "c502d52c-39fc-4b37-bac1-d51322ef4d49",
   "triggerCount": 0,
   "tags": [
     {
