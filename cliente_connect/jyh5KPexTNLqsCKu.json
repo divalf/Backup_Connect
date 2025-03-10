@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-02-23T15:03:20.526Z",
-  "updatedAt": "2025-03-06T01:11:04.968Z",
+  "updatedAt": "2025-03-10T01:22:22.487Z",
   "id": "jyh5KPexTNLqsCKu",
   "name": "#03 | Formatação da mensagem",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -636,29 +636,8 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "RabbitMQ Trigger": [
-      {
-        "json": {
-          "Session_id": "5511985401987@s.whatsapp.net",
-          "messageTimestamp": "1740533748",
-          "messageType": "conversation",
-          "message": "Boa Noite!",
-          "audioURL": null,
-          "audiokey": null,
-          "imageURL": null,
-          "imageCaption": null,
-          "imageKey": null,
-          "messageID": "3EB0AB67148F7D759BC61B",
-          "body": {
-            "instance": "Deebs",
-            "apikey": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
-          }
-        }
-      }
-    ]
-  },
-  "versionId": "178c1920-9ea9-4f6d-a293-e7f1d3bece49",
+  "pinData": {},
+  "versionId": "3e978488-4423-48c1-94dc-0594542b9884",
   "triggerCount": 1,
   "tags": [
     {
