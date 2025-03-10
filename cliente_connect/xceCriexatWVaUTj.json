@@ -1,0 +1,454 @@
+{
+  "createdAt": "2025-03-10T16:43:11.499Z",
+  "updatedAt": "2025-03-10T16:47:01.289Z",
+  "id": "xceCriexatWVaUTj",
+  "name": "BackUP - Google Drive - CD",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "fe204fc0-4e14-4c78-a2a6-555ac9f22303",
+      "name": "Agendar - BackUp",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1800,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c491fed3-2aed-4b5a-8b25-2b11b75d06a6",
+              "name": "IdPastaDrive",
+              "value": "1k5ZGRFudIRPhHjI6YaXOy3u0jLh4_cVN",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "914b0cb5-a136-4a1e-9e0d-331323a110cc",
+      "name": "Parametro de Entrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1980,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "10yhb04O95mCKS4ebSV508vZqj21hS_XS",
+          "mode": "list",
+          "cachedResultName": "N8N Backups",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/10yhb04O95mCKS4ebSV508vZqj21hS_XS"
+        },
+        "options": {
+          "folderColorRgb": "#FFAA00"
+        }
+      },
+      "id": "25ff516f-19ee-44d3-9759-1634eee3f0b8",
+      "name": "Criar SubPasta",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2160,
+        760
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=ATIVO {{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "40a1255b-ee2f-4726-9e96-1d0b4a9031ae",
+      "name": "Criar Pasta Ativo",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2340,
+        760
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "b3eff554-1c1c-45f4-a57e-fb5794699472",
+      "name": "Pegar Todos Fluxo",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        2700,
+        760
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "SW7HLIE98rlUySyN",
+          "name": "n8n api - backup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "345c40a9-2a46-442c-9db1-181c9085ddd4",
+              "leftValue": "={{ $json.active }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e38f0221-5ce3-456b-81c8-f612694ce5d9",
+      "name": "Separar Fluxo Ativo - Desativado",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2880,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "bfc5d3ba-335e-4685-af7e-4027229a6bc2",
+      "name": "Converte Arquivo Ativo",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3140,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "1b871e30-a608-4fdf-9fc3-974464e43f67",
+      "name": "Converte Arquivo Desativado",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3140,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Pegar Todos Fluxo').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Criar Pasta Ativo').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "4997ff53-c7ef-404a-b5dc-0f92b82d30cb",
+      "name": "Upload Arquivos - ON",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3380,
+        660
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Pegar Todos Fluxo').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Criar Pasta Desativado').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "685e8378-d709-4439-9d7b-f264ab9933c0",
+      "name": "Upload Arquivos - OFF",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3400,
+        880
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=DESATIVADO {{ $now.format('yyyy-MM-dd HH:mm:ss') }} ",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Criar SubPasta').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "folderColorRgb": "#C30A0A"
+        }
+      },
+      "id": "884f67e9-ad62-4990-be5e-54e48c41a3ca",
+      "name": "Criar Pasta Desativado",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2520,
+        760
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Descrição do Fluxo de Backup no n8n\n\nEste fluxo no **n8n** realiza o **backup automatizado** de arquivos para o **Google Drive**, organizando-os em pastas específicas para arquivos ativos e desativados. A seguir está a descrição detalhada de cada etapa do fluxo:\n\n## 1. Agendar - Backup\n- Define o agendamento para a execução do backup. Pode ser configurado para intervalos regulares (diariamente, semanalmente, etc.).\n\n## 2. Parâmetro de Entrada (manual)\n- Recebe parâmetros manuais para configurar o backup de forma personalizada. Pode ser utilizado para definir quais arquivos ou pastas devem ser incluídos no backup.\n\n## 3. Criar SubPasta\n- Cria uma subpasta no **Google Drive** onde os arquivos serão armazenados.\n\n## 4. Criar Pasta Ativo\n- Cria uma pasta no **Google Drive** destinada a armazenar os arquivos **ativos** (em uso).\n\n## 5. Criar Pasta Desativado\n- Cria uma pasta no **Google Drive** para armazenar os arquivos **desativados** ou arquivados.\n\n## 6. Pegar Todos Fluxo (getAll: workflow)\n- Busca todos os fluxos de trabalho existentes no sistema para identificar quais precisam ser incluídos no backup.\n\n## 7. Separar Fluxo Ativo/Desativado\n- Realiza a separação dos fluxos de trabalho entre **ativos** e **desativados**. Dependendo da categoria, os fluxos seguem diferentes caminhos no backup.\n\n## 8. Converte Arquivo Ativo (Convert to JSON)\n- Converte os arquivos **ativos** para o formato **JSON** antes de realizar o upload para o Google Drive.\n\n## 9. Upload Arquivos - ON\n- Faz o **upload** dos arquivos **ativos** (em formato JSON) para a pasta designada no Google Drive.\n\n## 10. Converte Arquivo Desativado (Convert to JSON)\n- Converte os arquivos **desativados** para o formato **JSON** antes do upload.\n\n## 11. Upload Arquivos - OFF\n- Faz o **upload** dos arquivos **desativados** (em formato JSON) para a pasta designada no Google Drive.\n\n---\n\n## Finalidade do Fluxo\n\nEste fluxo automatiza o processo de **backup** de arquivos no **n8n**, garantindo que os arquivos sejam organizados em pastas separadas (ativos e desativados) no Google Drive, com os devidos formatos e organização para armazenamento seguro.\n\n",
+        "height": 1311.806085760995,
+        "width": 780.8952583967696
+      },
+      "id": "9ea3b744-0b43-44ba-916c-27766d960c2d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Requisitos para o Fluxo de Backup no n8n\n\nEste documento lista os principais requisitos necessários para implementar o fluxo de backup no **n8n**, que faz upload de arquivos ativos e desativados para o **Google Drive**.\n\n## 1. Requisitos do Ambiente\n- **Servidor ou Ambiente de Execução do n8n**: O **n8n** deve estar instalado e funcionando em um servidor local, VPS ou em um ambiente na nuvem.\n- **Acesso ao Google Drive API**: O acesso à **Google Drive API** deve estar configurado para permitir a criação de pastas e upload de arquivos.\n- **Configuração do Google OAuth**: Será necessário configurar o OAuth para autenticar e autorizar o **n8n** a acessar o Google Drive.\n\n## 2. Requisitos de Autenticação\n- **Credenciais de API do Google Drive**:\n  - Criar um projeto no **Google Cloud Console**.\n  - Habilitar a **Google Drive API**.\n  - Configurar as credenciais de OAuth2 no n8n.\n  - Em \"Tela de Permição\" acessar \"Público Alvo\" e **Ativar** o app.\n  \n## 3. Requisitos de n8n\n- **Nodes necessários**:\n  - **Google Drive Node**: Para criação de pastas e upload de arquivos.\n  - **Node de Agendamento (Cron)**: Para agendar a execução regular do backup.\n  - **Node de Parâmetros Manuais**: Para receber parâmetros de entrada personalizados.\n  - **Node de Workflow (getAll: workflow)**: Para buscar e categorizar os workflows entre ativos e desativados.\n  - **Credencial N8N base URL**: https://[SUA-URL-N8N]/api/v1\n  - **Obter chave de API** N8N em \"Settings\"\n\n## 4. Requisitos de Formatação de Dados\n- **Conversão para JSON**:\n  - **Node de Conversão para JSON**: Para garantir que os dados (fluxos e arquivos) sejam convertidos para o formato JSON antes do upload.\n\n## 5. Organização e Estrutura de Backup\n- **Estrutura de Pastas no Google Drive**:\n  - O fluxo deve criar subpastas específicas para armazenar arquivos **ativos** e **desativados** no Google Drive.\n  - A organização lógica e a nomenclatura das pastas é fundamental para o backup.\n\n## 6. Requisitos de Gestão de Workflows\n- **Workflows no n8n**: Os fluxos de trabalho (workflows) precisam estar configurados no **n8n** para serem incluídos no processo de backup.\n\n## 7. Permissões e Acessos\n- **Permissões no Google Drive**:\n  - O n8n deve ter as permissões adequadas para:\n    - Criar pastas.\n    - Fazer upload de arquivos.\n    - Gerenciar arquivos já existentes.\n\n## 8. Monitoramento e Logs\n- **Monitoramento do Fluxo**: Configurar o monitoramento e gerar logs no n8n para acompanhar a execução do backup e garantir que ele esteja funcionando conforme o esperado.\n\n---\n\nEsses requisitos são fundamentais para garantir que o fluxo de backup funcione corretamente, com integrações adequadas e com a segurança necessária no armazenamento dos arquivos no **Google Drive**.\n",
+        "height": 1312.1241022371837,
+        "width": 931.568234293739
+      },
+      "id": "b63c3749-6c36-4347-98cb-5116d4b9dd00",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        820,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Agendar - BackUp": {
+      "main": [
+        [
+          {
+            "node": "Parametro de Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametro de Entrada": {
+      "main": [
+        [
+          {
+            "node": "Criar SubPasta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar SubPasta": {
+      "main": [
+        [
+          {
+            "node": "Criar Pasta Ativo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Pasta Ativo": {
+      "main": [
+        [
+          {
+            "node": "Criar Pasta Desativado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pegar Todos Fluxo": {
+      "main": [
+        [
+          {
+            "node": "Separar Fluxo Ativo - Desativado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar Fluxo Ativo - Desativado": {
+      "main": [
+        [
+          {
+            "node": "Converte Arquivo Ativo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Converte Arquivo Desativado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte Arquivo Ativo": {
+      "main": [
+        [
+          {
+            "node": "Upload Arquivos - ON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte Arquivo Desativado": {
+      "main": [
+        [
+          {
+            "node": "Upload Arquivos - OFF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Pasta Desativado": {
+      "main": [
+        [
+          {
+            "node": "Pegar Todos Fluxo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0a2da6b8-2255-488f-9774-2113c9921f74",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-10T16:43:32.633Z",
+      "updatedAt": "2025-03-10T16:43:32.633Z",
+      "id": "L307GdwEDRROFLG5",
+      "name": "Criador Digital"
+    }
+  ]
+}
