@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-02T19:33:45.228Z",
-  "updatedAt": "2025-03-03T16:13:54.837Z",
+  "updatedAt": "2025-03-10T01:27:29.757Z",
   "id": "te4mg9jKvApJeL7l",
   "name": "#8| RAG",
-  "active": true,
+  "active": false,
   "nodes": [
     {
       "parameters": {
@@ -28,8 +28,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -720,
-        -140
+        -1600,
+        -360
       ],
       "id": "f61fd43f-a3ba-4329-a648-caace229c87a",
       "name": "Set File ID"
@@ -44,8 +44,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -520,
-        -140
+        -1400,
+        -360
       ],
       "id": "a90c7d7b-69ae-4d75-85bd-3ece75b89a91",
       "name": "Delete Docs",
@@ -71,8 +71,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        -340,
-        -140
+        -1220,
+        -360
       ],
       "id": "2c7716b1-18c8-45fd-9d93-d7423106a17e",
       "name": "Download File",
@@ -99,8 +99,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1,
       "position": [
-        720,
-        -140
+        -200,
+        -360
       ],
       "id": "061f6850-3436-476b-bf96-0477a89261f0",
       "name": "Supabase Vector Store",
@@ -118,8 +118,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        660,
-        40
+        -260,
+        -180
       ],
       "id": "6a316049-a8bb-484c-a75f-ff957a30c41e",
       "name": "Embeddings OpenAI",
@@ -148,15 +148,15 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        860,
-        40
+        -60,
+        -180
       ],
       "id": "d9d1be53-da83-43b4-bf98-923b7af12e31",
       "name": "Default Data Loader"
     },
     {
       "parameters": {
-        "chunkSize": 300,
+        "chunkSize": 350,
         "chunkOverlap": 150,
         "options": {
           "splitCode": "markdown"
@@ -165,8 +165,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        800,
-        200
+        -120,
+        -20
       ],
       "id": "082528c3-7c2d-4a62-a66e-d0297b026560",
       "name": "Recursive Character Text Splitter"
@@ -233,8 +233,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -160,
-        -140
+        -1020,
+        -360
       ]
     },
     {
@@ -245,8 +245,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        140,
-        -320
+        -740,
+        -540
       ],
       "id": "1367b9ef-3155-4757-bfc8-1b8da5ed6797",
       "name": "Extract from PDF"
@@ -260,8 +260,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        140,
-        40
+        -740,
+        -180
       ],
       "id": "7d6cdef7-f9a5-4e12-a792-0e7a9f7f43dd",
       "name": "Extract from Text"
@@ -285,8 +285,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        440,
-        -140
+        -440,
+        -360
       ]
     },
     {
@@ -295,7 +295,7 @@
           "item": [
             {
               "hour": 23,
-              "minute": 28
+              "minute": 30
             }
           ]
         },
@@ -311,8 +311,8 @@
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
-        -940,
-        0
+        -1820,
+        -220
       ],
       "id": "ac90250d-3739-4f79-8fd4-659d9a849aff",
       "name": "Arquivo Atualizado",
@@ -329,7 +329,7 @@
           "item": [
             {
               "hour": 23,
-              "minute": 28
+              "minute": 30
             }
           ]
         },
@@ -345,8 +345,8 @@
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
-        -940,
-        -300
+        -1820,
+        -520
       ],
       "id": "d54e1fda-53a6-4ae6-b6f5-7346ea39c05d",
       "name": "Arquivo Criado",
@@ -368,8 +368,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        -920,
-        -580
+        -1800,
+        -800
       ],
       "credentials": {
         "postgres": {
@@ -388,8 +388,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1040,
-        -640
+        -1920,
+        -860
       ],
       "id": "ec55eb4a-80db-452a-854d-66671e60b232",
       "name": "Sticky Note"
@@ -541,17 +541,17 @@
   },
   "staticData": {
     "node:Arquivo Atualizado": {
-      "lastTimeChecked": "2025-03-06T15:49:04Z"
+      "lastTimeChecked": "2025-03-10T01:18:50Z"
     },
     "node:Arquivo Criado": {
-      "lastTimeChecked": "2025-03-06T15:49:05Z"
+      "lastTimeChecked": "2025-03-10T01:18:50Z"
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7edec72e-4046-41fc-8a27-adf79de521d1",
+  "versionId": "91446696-3207-4c67-9e23-42416c7f4289",
   "triggerCount": 2,
   "tags": [
     {
