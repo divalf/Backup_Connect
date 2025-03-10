@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-06T00:51:35.937Z",
-  "updatedAt": "2025-03-06T00:52:24.628Z",
+  "updatedAt": "2025-03-07T00:01:56.822Z",
   "id": "RSpZBH9C7peTERPp",
   "name": "#01 | Recebe Dados e Insere na Fila  - Naka",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
