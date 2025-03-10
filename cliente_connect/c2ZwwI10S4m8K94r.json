@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-06T01:14:26.344Z",
-  "updatedAt": "2025-03-06T01:14:26.344Z",
+  "updatedAt": "2025-03-10T01:24:48.645Z",
   "id": "c2ZwwI10S4m8K94r",
   "name": "#4 | Gerencia Fila de Mensagens - Naka",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -39,8 +39,7 @@
     },
     {
       "parameters": {
-        "amount": 2,
-        "path": "178f389c-a56e-47f7-b247-f704946c9259"
+        "amount": 2
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
@@ -143,9 +142,7 @@
       "name": "Verify Buffer Status"
     },
     {
-      "parameters": {
-        "path": "d27a4e6f-bd30-476f-b99f-5b0132bdce2b"
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
@@ -593,19 +590,8 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "RabbitMQ Trigger": [
-      {
-        "json": {
-          "user_message": "{\"userMessage\":\"sabe bem o que vem pela frente\",\"messageTimestamp\":\"1740624507\",\"messageId\":\"3EB06E83EB6EEE60638188\"}\n",
-          "sessionID": "5511985401987@s.whatsapp.net",
-          "messageTimestamp": "1740624507",
-          "messageID": "3EB06E83EB6EEE60638188"
-        }
-      }
-    ]
-  },
-  "versionId": "2e32f4a6-874e-4c67-987f-90cd74d92cb3",
+  "pinData": {},
+  "versionId": "53dd0f26-a854-43f5-9cc9-5014c922b13f",
   "triggerCount": 1,
   "tags": [
     {
