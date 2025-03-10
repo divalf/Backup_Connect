@@ -1,0 +1,564 @@
+{
+  "createdAt": "2025-03-10T01:26:55.857Z",
+  "updatedAt": "2025-03-10T01:27:33.538Z",
+  "id": "jmwQUM352d4NjGNB",
+  "name": "#8| RAG - Naka",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2756712b-6ed8-4596-a7d4-0d4c5e91b584",
+              "name": "file_ID",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2ff77f90-bf41-457a-898a-ca1156b3503d",
+              "name": "mimeType",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1600,
+        -360
+      ],
+      "id": "d8b584a9-8f08-4f79-973c-7eb5c6a95eb9",
+      "name": "Set File ID"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>file_id=like.*{{ $json.file_ID }}*"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1400,
+        -360
+      ],
+      "id": "9fe6651c-9b2c-4569-9765-778d828cd15a",
+      "name": "Delete Docs",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "YDa81ISgD7aO0PpH",
+          "name": "Supabase - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID').item.json.file_ID }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1220,
+        -360
+      ],
+      "id": "c167ef1b-7a2c-44fd-b4c2-253661a8523b",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -360
+      ],
+      "id": "6fad418d-6a33-4998-9745-b968fb6ad45d",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YDa81ISgD7aO0PpH",
+          "name": "Supabase - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -260,
+        -180
+      ],
+      "id": "9c22a0e1-1e2d-42eb-8305-afcb166b1610",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.texto }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_id",
+                "value": "={{ $('Set File ID').item.json.file_ID }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -180
+      ],
+      "id": "e1bb82d8-9c27-473a-b206-ed58485ddcf1",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 350,
+        "chunkOverlap": 150,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -20
+      ],
+      "id": "c56b06ca-19f3-4813-a720-a31a29d88811",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Set File ID').item.json.mimeType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e0a2aef7-6f4f-44c0-9e85-6e0cccaaa9db"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d67dd12c-f3be-40aa-bc38-e37b75e7d768",
+                    "leftValue": "={{ $('Set File ID').item.json.mimeType }}",
+                    "rightValue": "text/plain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "02b16918-dc74-4f20-86d3-63e6dcfcb0e7",
+      "name": "tipo_arquivo",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1020,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        -540
+      ],
+      "id": "fcbc3211-1fa2-4f0a-90b9-606d2823871a",
+      "name": "Extract from PDF"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        -180
+      ],
+      "id": "28ff75d2-9d4c-4ec2-ad95-5117f05ee0a4",
+      "name": "Extract from Text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aecaf0bd-b800-40b7-b348-c1a8ff636ef1",
+              "name": "texto",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0a064743-0e64-44ca-b341-b9f4f11dd2b3",
+      "name": "exportar_texto",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -440,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 23,
+              "minute": 30
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1Nsm05q4UmFPeL6DbvcO8aL46hUTXSRtE",
+          "mode": "id"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1820,
+        -220
+      ],
+      "id": "91b4bba9-5899-401b-9e13-abd26fa4ab03",
+      "name": "Arquivo Atualizado",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 23,
+              "minute": 30
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1Nsm05q4UmFPeL6DbvcO8aL46hUTXSRtE",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1820,
+        -520
+      ],
+      "id": "42d39e90-bdea-4d17-880b-6684383df71e",
+      "name": "Arquivo Criado",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM documents;",
+        "options": {}
+      },
+      "id": "3dd09532-ebe4-44b6-a70e-a5b5f2587fb8",
+      "name": "Deletar_todas_as_mensagens",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1800,
+        -800
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Deletar conteúdo Vector Store",
+        "height": 240,
+        "width": 360,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        -860
+      ],
+      "id": "ecab2633-5fa5-4094-9dad-f0e9af53d585",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Delete Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Docs": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "tipo_arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tipo_arquivo": {
+      "main": [
+        [
+          {
+            "node": "Extract from PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from Text": {
+      "main": [
+        [
+          {
+            "node": "exportar_texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from PDF": {
+      "main": [
+        [
+          {
+            "node": "exportar_texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "exportar_texto": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Arquivo Atualizado": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Arquivo Criado": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Arquivo Atualizado": {
+      "lastTimeChecked": "2025-03-10T16:40:48Z"
+    },
+    "node:Arquivo Criado": {
+      "lastTimeChecked": "2025-03-10T16:40:49Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "91446696-3207-4c67-9e23-42416c7f4289",
+  "triggerCount": 2,
+  "tags": [
+    {
+      "createdAt": "2025-03-06T00:52:17.373Z",
+      "updatedAt": "2025-03-06T00:52:17.373Z",
+      "id": "X7hlUl8YHULQ0Kpl",
+      "name": "Naka"
+    }
+  ]
+}
