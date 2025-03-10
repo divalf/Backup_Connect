@@ -1,0 +1,1189 @@
+{
+  "createdAt": "2025-03-07T01:12:15.469Z",
+  "updatedAt": "2025-03-07T02:03:18.021Z",
+  "id": "12jAgfbW5h8DSufH",
+  "name": "#14 | Follow Up - Naka",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2340,
+        -760
+      ],
+      "id": "19b21a3c-b95c-4d8a-976d-c4f4fb03171b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e3ee2cdc-f4d2-409b-b15f-d8b89dc23dc8",
+              "leftValue": "={{ new Date().toLocaleString('en-CA', {      timeZone: 'America/Sao_Paulo',      hour12: false,      year: 'numeric',      month: '2-digit',      day: '2-digit',      hour: '2-digit',      minute: '2-digit',      second: '2-digit'  }).replace(',', '').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00' }}",
+              "rightValue": "={{ new Date().toLocaleString('en-CA', {\n  timeZone: 'America/Sao_Paulo',\n  hour12: false,\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit',\n  second: '2-digit'\n})\n.replace(',', '') // remove a vírgula entre data e hora\n.replace(/(\\d{4}-\\d{2}-\\d{2}) \\d{2}:\\d{2}:\\d{2}/, '$1 09:00:00') // fixa o horário inicial em 09:00:00\n+ '.' + String(new Date().getMilliseconds()).padStart(3, '0') // adiciona milisegundos\n+ '+00' }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "afterOrEquals"
+              }
+            },
+            {
+              "id": "72534fca-f3c7-47b1-9ff9-942a17948b5b",
+              "leftValue": "={{ new Date().toLocaleString('en-CA', {      timeZone: 'America/Sao_Paulo',      hour12: false,      year: 'numeric',      month: '2-digit',      day: '2-digit',      hour: '2-digit',      minute: '2-digit',      second: '2-digit'  }).replace(',', '').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00' }}",
+              "rightValue": "={{ new Date().toLocaleString('en-CA', {\n  timeZone: 'America/Sao_Paulo',\n  hour12: false,\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit',\n  second: '2-digit'\n})\n.replace(',', '') // remove a vírgula entre data e hora\n.replace(/(\\d{4}-\\d{2}-\\d{2}) \\d{2}:\\d{2}:\\d{2}/, '$1 21:00:00') // fixa o horário final em 21:00:00\n+ '.' + String(new Date().getMilliseconds()).padStart(3, '0') // adiciona milisegundos\n+ '+00' }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2160,
+        -760
+      ],
+      "id": "0bac2a62-4211-4f24-9f85-4d373bfcff19",
+      "name": "Check Hours",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1940,
+        -640
+      ],
+      "id": "6206e591-06e9-493f-adda-ba4653cab6be",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DISTINCT *\nFROM \"users\"\nWHERE \"created_at\" >= NOW() - INTERVAL '5 days';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1940,
+        -860
+      ],
+      "id": "2ebdeb01-15db-43a3-932f-eb107521251b",
+      "name": "Fetch Leads From 5 days",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8cc007c0-bc5d-4168-9ce2-6c65c33aa1b0",
+              "leftValue": "={{ $json.id_agendamento }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1740,
+        -860
+      ],
+      "id": "c876a1d5-ed25-4c1c-9637-44a2bc517dd8",
+      "name": "Remove Scheduled Leads"
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=Este é o nome do Lead:{{ $json.userName }}",
+        "options": {
+          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de Suporte e atendimento ultra qualificada na área bariátrica. Você é simpática, divertida e muito educada com os clientes. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n<Contexto>\nVocê já está em meio a uma conversa com o lead, quem está guiando essa conversa é um outro agente. Sua função é simplesmente realizar o primeiro follow up após 30 minutos que o usuário parar de responder.\n<Contexto>\n**Objetivo:**\nSeu objetivo é realizar a primeira mensagem de follow up com o usuário.\nSão exemplos de mensagem de primeiro follow-up:\nApenas confirmando! Vc recebeu minha mensagem? 👍🏼\nConseguiu dar uma olhadinha na minha última mensagem? 😄\n[nome], vamos continuar o seu atendimento?\nSeja criativa e elabore outras idéias e formatos de realizar esse primeiro follow up.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1160,
+        -980
+      ],
+      "id": "e15aca55-f390-4017-ae04-1611868bf42c",
+      "name": "AI Agent - Follow UP 01"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1220,
+        -820
+      ],
+      "id": "0a43e7f8-0772-48dc-98b5-c0356bd13659",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 35
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1060,
+        -820
+      ],
+      "id": "5c0dcdb1-c405-4cd1-ab7d-3a75262c5601",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1220,
+        -440
+      ],
+      "id": "7ea428aa-d953-43b8-ac05-3cfa71b1d92f",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 35
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1060,
+        -440
+      ],
+      "id": "de34307d-8124-400e-884d-f539686e3030",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1220,
+        -100
+      ],
+      "id": "c6319495-66eb-4977-bec9-e583411b77c5",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 35
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1060,
+        -100
+      ],
+      "id": "e15bb98a-a07f-42f9-8691-73dc12c69a3e",
+      "name": "Postgres Chat Memory2",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=Este é o nome do Lead:{{ $json.userName }}",
+        "options": {
+          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de Suporte e atendimento ultra qualificada na área bariátrica. Você é simpática, divertida e muito educada com os clientes. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n<Contexto>\nVocê já está em meio a uma conversa com o lead, quem está guiando essa conversa é um outro agente. Sua função é simplesmente realizar o segundo follow up após duas horas sem resposta do lead.\n<Contexto>\n**Objetivo:**\nSeu objetivo é realizar a segunda mensagem de follow up com o usuário. Utilize a sua memória para buscar informações para realizar esse segundo follow-up.\nA sua única responsabilidade é realizar o segundo follow-up. São exemplos de mensagem de segundo follow-up para você:\nAguardo um retorno para retomar o seu atendimento 😇\nVi que você ainda não conseguiu responder. Se precisar de mais informações ou tiver alguma dúvida sobre nossos serviços, estou à disposição para ajudar 😊\n[nome], percebi que você pode estar ocupado agora. Se precisar de ajuda para agendar uma consulta ou esclarecer qualquer dúvida sobre nossos serviços, me avise! Estou aqui para ajudar ✅\nSeja criativa e elabore outras idéias e formatos de realizar esse primeiro follow up.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1160,
+        -600
+      ],
+      "id": "c6d2b294-8002-4fd0-86d8-6675765ee0d9",
+      "name": "AI Agent - Follow UP  02"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c605e4c0-5485-4e3a-bbdf-583496b082a2",
+              "leftValue": "={{ $json.round_follow }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "7d53b62a-ef73-4ac0-bd50-52947626458c",
+              "leftValue": "={{    new Date(new Date($json.last_message).getTime() + 30 * 60 * 1000)     .toLocaleString('en-CA', {        timeZone: 'America/Sao_Paulo',        hour12: false,        year: 'numeric',        month: '2-digit',        day: '2-digit',        hour: '2-digit',        minute: '2-digit',        second: '2-digit'      })     .replace(',', '')     .replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6')    + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00'  }}",
+              "rightValue": "={{ new Date().toLocaleString('en-CA', {      timeZone: 'America/Sao_Paulo',      hour12: false,      year: 'numeric',      month: '2-digit',      day: '2-digit',      hour: '2-digit',      minute: '2-digit',      second: '2-digit'  }).replace(',', '').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00' }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1520,
+        -860
+      ],
+      "id": "fe65c456-037c-4e7a-83ac-5fe228578cd7",
+      "name": "First_Follow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c605e4c0-5485-4e3a-bbdf-583496b082a2",
+              "leftValue": "={{ $json.round_follow }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "7d53b62a-ef73-4ac0-bd50-52947626458c",
+              "leftValue": "={{ new Date(new Date($json.last_message).getTime() + (2 * 60 * 60 * 1000)).toLocaleString('en-CA', {timeZone: 'America/Sao_Paulo',hour12: false,year: 'numeric',month: '2-digit',day: '2-digit',hour: '2-digit',minute: '2-digit',second: '2-digit'}).replace(',','').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00'  }}",
+              "rightValue": "={{ new Date().toLocaleString('en-CA', {      timeZone: 'America/Sao_Paulo',      hour12: false,      year: 'numeric',      month: '2-digit',      day: '2-digit',      hour: '2-digit',      minute: '2-digit',      second: '2-digit'  }).replace(',', '').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00' }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1520,
+        -600
+      ],
+      "id": "a0c837fe-75bd-4d7e-bb44-c4ea25f36650",
+      "name": "Second_Follow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c605e4c0-5485-4e3a-bbdf-583496b082a2",
+              "leftValue": "={{ $json.round_follow }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "7d53b62a-ef73-4ac0-bd50-52947626458c",
+              "leftValue": "={{ new Date(new Date($json.last_message).getTime() + (24 * 60 * 60 * 1000)).toLocaleString('en-CA', {timeZone: 'America/Sao_Paulo',hour12: false,year: 'numeric',month: '2-digit',day: '2-digit',hour: '2-digit',minute: '2-digit',second: '2-digit'}).replace(',','').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00'  }}",
+              "rightValue": "={{ new Date().toLocaleString('en-CA', {      timeZone: 'America/Sao_Paulo',      hour12: false,      year: 'numeric',      month: '2-digit',      day: '2-digit',      hour: '2-digit',      minute: '2-digit',      second: '2-digit'  }).replace(',', '').replace(/(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})/, '$1-$2-$3 $4:$5:$6') + '.' + String(new Date().getMilliseconds()).padStart(3, '0') + '+00' }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1520,
+        -260
+      ],
+      "id": "0e605892-feb1-40a3-b009-3a024ae9570c",
+      "name": "Third_Follow"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "round_follow": 1,
+            "session_id": "={{ $('First_Follow').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_agendamento",
+              "displayName": "id_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "dataConsulta",
+              "displayName": "dataConsulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "round_follow",
+              "displayName": "round_follow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -800,
+        -980
+      ],
+      "id": "8777532c-3675-469e-843e-82576b5104e8",
+      "name": "Update Round_Follow_1",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "round_follow": 2,
+            "session_id": "={{ $('Second_Follow').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_agendamento",
+              "displayName": "id_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "dataConsulta",
+              "displayName": "dataConsulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "round_follow",
+              "displayName": "round_follow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -800,
+        -600
+      ],
+      "id": "25776525-4772-4ac7-a086-5814c4f04847",
+      "name": "Update Round_Follow_2",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "round_follow": "=3",
+            "session_id": "={{ $('Third_Follow').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "blocked_user",
+              "displayName": "blocked_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_agendamento",
+              "displayName": "id_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "dataConsulta",
+              "displayName": "dataConsulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "round_follow",
+              "displayName": "round_follow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -800,
+        -260
+      ],
+      "id": "54fe0971-b13f-4bb8-94b9-2ac79066656c",
+      "name": "Update Round_Follow_3",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=Este é o nome do Lead:{{ $json.userName }}",
+        "options": {
+          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de Suporte e atendimento ultra qualificada na área bariátrica. Você é simpática, divertida e muito educada com os clientes. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n<Contexto>\nVocê já está em meio a uma conversa com o lead, quem está guiando essa conversa é um outro agente. Sua função é simplesmente realizar o primeiro follow up após 24 horas que o usuário parar de responder.\n<Contexto>\n**Objetivo:**\nSeu objetivo é realizar a terceira e última mensagem de follow up com o usuário.\nSão exemplos de mensagem de terceiro follow-up:\nOi, [nome]! Tudo bem por aí? 👍🏼\nPercebi que ainda não tivemos a oportunidade de finalizar o seu atendimento. Se você precisar de qualquer informação sobre nossos tratamentos ou quiser agendar uma consulta, me avise, tá bom? Vou adorar ajudar! 🙂\nOlá, [nome]! Passando para saber se posso te ajudar em algo mais sobre nossos serviços odontológicos. Estou aqui para tirar dúvidas, marcar uma avaliação ou simplesmente bater um papo rápido sobre seu sorriso. Fique à vontade para responder quando puder! 🙂\nOi, [nome]! Sei que a correria do dia a dia é grande, mas queria lembrar que estou aqui para o que precisar. Se tiver qualquer dúvida sobre procedimentos, valores ou quiser só conversar sobre o próximo passo do seu tratamento, me mande uma mensagem. Vou adorar continuar seu atendimento! 🙂\nSeja criativa e elabore outras idéias e formatos de realizar esse primeiro follow up."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1160,
+        -260
+      ],
+      "id": "60abd591-96e5-426e-be77-a08ff8d6b4cc",
+      "name": "AI Agent - Follow UP 03"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/message/sendText/Deebs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('AI Agent - Follow UP 01').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f038d2b3-caa4-4657-937a-3c4e3288ef8e",
+      "name": "respondeWhatsapp_1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -580,
+        -980
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/message/sendText/Deebs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('AI Agent - Follow UP  02').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e0c14a14-68f6-44b6-bbf7-a48e56e387fc",
+      "name": "respondeWhatsapp_2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -580,
+        -600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/message/sendText/Deebs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('AI Agent - Follow UP 03').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a6530886-2d38-48aa-928e-7ed5d433168d",
+      "name": "respondeWhatsapp_3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -580,
+        -260
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Hours": {
+      "main": [
+        [
+          {
+            "node": "Fetch Leads From 5 days",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Leads From 5 days": {
+      "main": [
+        [
+          {
+            "node": "Remove Scheduled Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Scheduled Leads": {
+      "main": [
+        [
+          {
+            "node": "First_Follow",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Second_Follow",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Third_Follow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Follow UP 01",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Follow UP 01",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Follow UP 01": {
+      "main": [
+        [
+          {
+            "node": "Update Round_Follow_1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Follow UP  02",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Follow UP  02",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Follow UP 03",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Follow UP 03",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Follow UP  02": {
+      "main": [
+        [
+          {
+            "node": "Update Round_Follow_2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First_Follow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Follow UP 01",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Second_Follow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Follow UP  02",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Third_Follow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Follow UP 03",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Round_Follow_1": {
+      "main": [
+        [
+          {
+            "node": "respondeWhatsapp_1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Round_Follow_2": {
+      "main": [
+        [
+          {
+            "node": "respondeWhatsapp_2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Round_Follow_3": {
+      "main": [
+        [
+          {
+            "node": "respondeWhatsapp_3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Follow UP 03": {
+      "main": [
+        [
+          {
+            "node": "Update Round_Follow_3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f7b49419-1db2-4440-9991-153ca46b59d3",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-03-06T00:52:17.373Z",
+      "updatedAt": "2025-03-06T00:52:17.373Z",
+      "id": "X7hlUl8YHULQ0Kpl",
+      "name": "Naka"
+    }
+  ]
+}
