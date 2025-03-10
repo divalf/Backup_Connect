@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-06T00:21:22.052Z",
-  "updatedAt": "2025-03-06T03:44:58.566Z",
+  "updatedAt": "2025-03-07T00:01:24.644Z",
   "id": "2b98dSEiW32dmUfe",
   "name": "#17 | Backup Github",
   "active": false,
@@ -20,7 +20,7 @@
           "value": "={{ $('Edit Fields').first().json.repository }}",
           "mode": "name"
         },
-        "filePath": "=cliente_dinastia/{{ $json.id }}.json",
+        "filePath": "=cliente_connect/{{ $json.id }}.json",
         "additionalParameters": {}
       },
       "type": "n8n-nodes-base.github",
@@ -184,7 +184,7 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1,
       "position": [
-        1340,
+        1300,
         280
       ],
       "id": "283d2c14-7bf7-4cee-8ba0-ef639e4ddd9c",
@@ -262,7 +262,7 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1,
       "position": [
-        1340,
+        1300,
         80
       ],
       "id": "eaac3d76-905e-4413-960f-009adc1a1e4e",
@@ -314,39 +314,6 @@
       ],
       "id": "2677713f-0ad2-445a-8072-9ae8af6ab19b",
       "name": "Schedule Trigger"
-    },
-    {
-      "parameters": {
-        "authentication": "oAuth2",
-        "resource": "file",
-        "owner": {
-          "__rl": true,
-          "value": "={{ $('Edit Fields').first().json.owner }}",
-          "mode": "name"
-        },
-        "repository": {
-          "__rl": true,
-          "value": "={{ $('Edit Fields').first().json.repository }}",
-          "mode": "name"
-        },
-        "filePath": "=cliente_dinastia/{{ $('Workflow').item.json.id }}.json",
-        "binaryData": true,
-        "commitMessage": "={{ $('Workflow').item.json.name }}{{ $now.toString() }}"
-      },
-      "type": "n8n-nodes-base.github",
-      "typeVersion": 1,
-      "position": [
-        1340,
-        500
-      ],
-      "id": "159d5c1c-0ff2-4e56-bcf6-117eb2d6e99e",
-      "name": "GitHub - Create File1",
-      "credentials": {
-        "githubOAuth2Api": {
-          "id": "Ftcyf3tcSMGlCxye",
-          "name": "GitHub - Backup_Connect"
-        }
-      }
     }
   ],
   "connections": {
@@ -510,7 +477,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8d90e48c-3f3e-4238-b93a-585e123e05bc",
+  "versionId": "89e7bc09-0e7c-40ff-b6b7-acab1dc59dae",
   "triggerCount": 1,
   "tags": [
     {
