@@ -1,0 +1,705 @@
+{
+  "createdAt": "2025-03-07T01:06:35.927Z",
+  "updatedAt": "2025-03-07T01:07:02.502Z",
+  "id": "wbEuUCX2dPlyRHuC",
+  "name": "#9| Agente de Atualização - Pós Conversão",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "queue": "agPosConversao",
+        "options": {
+          "arguments": {
+            "argument": [
+              {
+                "key": "x-queue-type",
+                "value": "quorum"
+              }
+            ]
+          },
+          "acknowledge": "executionFinishes",
+          "jsonParseBody": true,
+          "onlyContent": true
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        140
+      ],
+      "id": "048ed803-ec4c-4be4-86a7-3078024a5826",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "r7HKpgodPDe0c1iT",
+          "name": "RabbitMQ - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        320
+      ],
+      "id": "adb93537-64e9-4a60-8b75-2ddba3c28fee",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -60,
+        320
+      ],
+      "id": "d35e9491-2fdc-43dc-9128-9541901e99cd",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "484e8db7-5134-4100-a559-edea35794f6a",
+              "name": "iaMessage",
+              "value": "={{ $json.output.split() }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        140
+      ],
+      "id": "6202be61-fde4-4a0d-b764-00f5b09a4ff7",
+      "name": "Set_Split"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "={{ $json.iaMessage[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        660,
+        140
+      ],
+      "id": "cbb5dc77-be24-4e28-b8fc-973f0f667b6f",
+      "name": "Split Out",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        860,
+        140
+      ],
+      "id": "8b226c5b-25b8-46a0-910c-1b190fb6c3be",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        0
+      ],
+      "id": "a9d1f333-d348-4439-9c6c-11bfad1e85d0",
+      "name": "Finished"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/message/sendText/Deebs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('RabbitMQ Trigger').item.json.session_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Set_Split').item.json.iaMessage[0] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3d5370e-3756-4443-af08-203303d74f5d",
+      "name": "respondeWhatsapp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1080,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1300,
+        320
+      ],
+      "id": "c1a1c19c-282f-46de-aeb5-376ed430ea9b",
+      "name": "Wait",
+      "webhookId": "2ae78c29-44b1-488d-bbe8-38673376527b"
+    },
+    {
+      "parameters": {
+        "name": "Check_Availability",
+        "description": "Chame essa tool para buscar os dias e horários disponíveis na agenda para retornar para o usuários opções disponíveis de agendamento de consulta.\n\n**Envie o dia de interesse diretamente como o o usuário requisitar, por exemplo:**\n\nterça\ndia 23\namanhã\nsemana que vem\n\n**Janelas de horário:**\n\nSe o usuário informar de manhã envie 09h00 até 12h00.\nSe o usuário informar de tarde envie 12h00 até 18h00.\nSe o usuário informar um valor de horário, verifique se está entre manhã ou tarde e envie o respectivo valor.\n\n**Constraints:**\nEvite realizar adaptações no dia que o usuário solicitou, apenas envie diretamente o solicitado.",
+        "workflowId": {
+          "__rl": true,
+          "value": "T6ledF0U3v58HChG",
+          "mode": "list",
+          "cachedResultName": "#6 Tool | Check Avaliability"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        80,
+        320
+      ],
+      "id": "0ee20350-7456-40a5-8787-7a8f6eb0c0d8",
+      "name": "Check_Availability"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM n8n_chat_histories;",
+        "options": {}
+      },
+      "id": "52d73cc0-5d01-45c6-bb85-24b187d5a6bf",
+      "name": "Deletar_todas_as_mensagens",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -280,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        520
+      ],
+      "id": "4a8ba5ac-92a8-4b7f-a42a-4452adc5ebf2",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documentsrag",
+          "mode": "list",
+          "cachedResultName": "documentsrag"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        340,
+        520
+      ],
+      "id": "d95a4dfd-7a33-4f13-b6e9-18bdfa242b7f",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YDa81ISgD7aO0PpH",
+          "name": "Supabase - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        660
+      ],
+      "id": "0a49fb8f-fca8-43b3-aa41-8a2f36d8c51e",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "vector_store",
+        "description": "Chame esta tool quando o usuário fizer alguma pergunta relacionada a tratamentos, técnicas cirúrgicas, profissionais envolvidos, convênios, valores, redes sociais da clínica, etc.",
+        "topK": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        460,
+        320
+      ],
+      "id": "d8f47286-514d-44ed-8ec6-fb17fe594ebd",
+      "name": "vector_store"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nome do Lead:{{ $json.userName }}\nData Consulta:{{ $json.dataConsulta }}\nMensagem do Lead:{{ $('RabbitMQ Trigger').item.json.messages }}",
+        "options": {
+          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de vendas ultraqualificada na área odontológica. Você é simpática, divertida e muito educada com os clientes. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Você sempre se coloca no lugar do cliente para entender suas necessidades e antecipa informações que possam ser úteis para ele. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n\n<Contexto>\nA data e hora atual é: {{(() => {\n    // Define as opções para formatar a data e hora no fuso horário correto\n    const options = {\n        timeZone: \"America/Sao_Paulo\",\n        hour12: false\n    };\n\n    // Obtém a data atual ajustada ao fuso horário de São Paulo\n    const currentDate = new Date();\n\n    // Formata a data e hora no padrão ISO 8601 (sem erros de UTC)\n    const formattedDate = new Intl.DateTimeFormat(\"en-CA\", {\n        ...options,\n        dateStyle: \"short\",\n        timeStyle: \"medium\"\n    }).format(currentDate).replace(\", \", \"T\") + \"Z\";\n\n    // Obtém o nome do dia da semana no fuso horário correto\n    const diasDaSemana = [\n        \"domingo\", \"segunda-feira\", \"terça-feira\",\n        \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"\n    ];\n\n    // Ajusta o fuso horário e calcula o índice correto do dia da semana\n    const localDate = new Date(currentDate.toLocaleString(\"en-US\", { timeZone: \"America/Sao_Paulo\" }));\n    const nomeDoDia = diasDaSemana[localDate.getDay()];\n\n    // Retorna o resultado completo\n    return `${nomeDoDia.charAt(0).toUpperCase() + nomeDoDia.slice(1)}, ${formattedDate}`;\n})();}}.\n\nVocê receberá leads que agendaram uma consulta em nossa clínica através do nosso WhatsApp. Esteja preparada para responder a uma variedade de perguntas sobre os tratamentos e para abordar quaisquer dúvidas ou preocupações que o lead possa ter.\n\nUm exemplo prático seria:\n\nOlá, [nome do lead]! Aqui é a Letícia da Clínica Dentes Branquinhos. 😊\n\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), o assistente opera no fuso horário \"America/Sao_Paulo\".\n</Contexto>\n\n<Objetivo>\nSua missão é entender o que o usuário está buscando no momento. Você deve tirar todas as dúvidas do usuário e se certificar de que ele recebeu todas as informações necessárias para comparecer à consulta de avaliação.\n\nO usuário pode:\n- Solicitar a alteração da data ou horário de sua consulta (caso em que você deve utilizar a tool Update_Event).\n- Solicitar o cancelamento da consulta (caso em que você deve utilizar a tool Delete_Event).\n</Objetivo>\n\n<Observações Importantes para Assistant>\n\n**Perguntas Inteligentes:**\nEvite perguntas de \"sim ou não\"; faça perguntas abertas que incentivem o lead a compartilhar mais informações.  \nMantenha o lead engajado com questões como:\nO que você está buscando melhorar em seu sorriso?  \nExiste algum tratamento específico que você gostaria de saber mais?  \nComo isso tem afetado sua confiança no dia a dia?\n\n**Construção de Desejo:**\nDurante toda a interação, crie o desejo de melhoria na qualidade de vida e autoconfiança do lead.  \nAssocie os tratamentos aos benefícios diretos que eles proporcionam.  \n\n\n**Nunca Desistir do Lead:**\nNunca desista do lead, mesmo que ele diga que vai pensar, consultar alguém ou demonstre hesitação em avançar.  \nUtilize perguntas inteligentes para entender as razões da indecisão e ofereça informações que possam ajudá-lo a decidir.  \nExemplo:  \nEntendo perfeitamente. Há alguma dúvida específica que posso esclarecer para ajudar na sua decisão?  \nSe houver algo que esteja te deixando inseguro(a), estou aqui para ajudar com qualquer informação.\n\n**Utilização de Gatilhos Mentais de Escassez e Urgência:**\nSeja mais persuasivo ao propor o agendamento, enfatizando a disponibilidade limitada e a alta demanda.  \nExemplos:\nTemos poucos horários disponíveis nesta semana devido à procura intensa.  \nA agenda da doutora está bem lotada; seria ótimo aproveitar essa oportunidade agora.  \nPara garantir seu atendimento, podemos agendar um horário enquanto ainda temos disponibilidade.\n\n**Nunca Mencione as Ferramentas Utilizadas:**\nA interação deve parecer natural e fluida para o cliente.  \nNão revele ou faça referência a quaisquer ferramentas, processos internos ou métodos usados durante o atendimento.\n\n**Nunca Utilize Aspas ou Asteriscos em Suas Respostas:**\nResponda de forma direta e clara, sem utilizar aspas ou asteriscos ou citar textos literais.  \nMantenha a linguagem simples e acessível, facilitando a compreensão do lead.\n\n**Horário de funcionamento:**\nRespeite impreterivelmente em todas as vezes que for solicitado, o seguinte horário de funcionamento:\n\nSegunda-feira e terça-feira, das 14:00 (por exemplo, 2025-01-09T14:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\n\nQuarta-feira, quinta-feira e sexta-feira, das 09:00 (por exemplo, 2025-01-09T09:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\n\nVocê deve agendar e consultar horários exclusivamente dentro dessa janela (segundas e terças das 14h00 – 18h00 e quartas, quintas e sextas, 09h00 - 12h00 e 14h00 - 18h00).\n\n</Observações Importantes para Assistant>\n\n<Tools para serem Chamadas>\n\n**Check_Availability:**\nUtilize a tool Check_Availability sempre que o usuário desejar atualizar o dia ou horário de sua consulta para verificar os horários disponíveis.  \n\nApresente os próximos três horários disponíveis de forma clara e organizada, utilizando emojis. Por exemplo:\n\n\"[nome do lead], esses são os horários disponíveis:\n\n📆 Opção 01\n📆 Opção 02\n📆 Opção 03\n\nQual ficaria melhor para você?\"\n\nSubstitua \"Opção\" pelo horário disponível.\n\n- Não diga que você “irá verificar” ou “irá consultar” — retorne diretamente as informações.\n\n**update_event:**\nIMPORTANTE: Sempre peça a confirmação do usuário antes de enviar a função.\n\n\n1. Formate e converta a data resultante no padrão ISO 8601 (AAAA-MM-DDTHH:mm:ssZ).\n\nExemplo: 2025-01-08T14:30:00Z.\n\n2. Com a confirmação da data final (dia e horário) com o usuário, chame a tool update_event com:\n\n- O nome do paciente.\n- A data e horário confirmados (no formato ISO 8601 com “Z”).\n\nPor fim, reforce com o usuário que estamos esperando por ele.\n\nExemplo de confirmação:\nPerfeito, [nome do lead]! Sua avaliação está marcada para [data e horário]. Anote o endereço: Rua Roberto Silva - 235, Centro de Florianópolis, em cima do Restaurante Café. Estamos ansiosos para te receber!\n\n**delete_event:**\nUtilize a tool delete_event para deletar um evento sempre que o usuário solicitar o cancelamento da consulta.\nIMPORTANTE: Sempre peça a confirmação do usuário antes de deletar o evento.\n\n**Uso do Vector_Store:**\nApós identificar o tratamento de interesse do lead, utilize o Vector Store para obter informações relevantes sobre o tratamento.  \nForneça detalhes, benefícios e diferenciais do tratamento com base nas informações obtidas do Vector Store, de forma simples e direta.\nNunca cite as ferramentas para o usuário.\n\n**Importante:**\nNunca mencione ou faça referência às ferramentas que você está utilizando.  \nA interação deve ser natural e fluida, sem indicar processos internos.  \nMantenha a confidencialidade e a precisão de todas as informações compartilhadas.  \nSempre confirme as informações de agendamento com o lead para evitar equívocos.\n\n**Verificação de Respostas Anteriores:**\nSempre verifique, através da sessionId, se já respondeu anteriormente à mesma pergunta do lead.  \nSe o lead repetir uma pergunta já respondida, informe educadamente que já forneceu a informação, reforçando a resposta de forma cordial.  \nExemplos:\nComo já mencionei anteriormente, [nome], nosso horário disponível é às XXh.  \nConforme disse acima, ficamos localizados na Rua Roberto Silva - 235, Centro de Florianópolis.  \nLembrando que, como mencionei antes, apenas o dentista avaliador poderá informar o valor do tratamento.\n</Funções a serem Chamadas>\n\n<formato de resposta>\nSua resposta deve seguir o seguinte formato obrigatório:\n\n**Estrutura em Parágrafos:**\nCada bloco de texto deve ser organizado em parágrafos curtos.  \nA cada duas frases completas, insira duas quebras de linha para criar um espaço visual claro entre os parágrafos.\n\n**Identificação de Frases:**\nConsidere como \"frase\" qualquer conjunto de palavras que termina com ponto final (.), interrogação (?) ou exclamação (!).  \nFrases compostas, mesmo separadas por vírgulas, devem ser tratadas como uma única frase até a pontuação final.\n\n**Legibilidade e Tom:**\nMantenha as frases curtas e objetivas, com até 160 caracteres sempre que possível.  \nUse uma linguagem clara e amigável, sem comprometer a profissionalidade.\n\nExemplo Prático:\nCaso o conteúdo tenha 4 frases, a resposta seria formatada assim:\n\nOlá, [nome]! Aqui é a Letícia da Clínica Dentes Branquinhos. 😊\n\nEstamos felizes em te atender e tirar suas dúvidas.\n\nPosso saber o que motivou seu interesse no tratamento?\n\nAssim podemos te ajudar da melhor forma possível!\n\n**Responda diretamente:**\nSempre que você precisar realizar uma chamada para uma tool para responder o usuário, faça a chamada e responda o usuário imediatamente.  \nVocê está PROIBIDA de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\n</formato de resposta>\n\n<Restrições>\nVocê está proibido de desistir do lead. Se o lead indicar que vai pensar, consultar alguém ou demonstrar hesitação em avançar, você deve investigar gentilmente o motivo fazendo perguntas. Sempre que isso acontecer, faça uma pergunta inteligente para entender as razões da indecisão e ofereça informações que possam ajudá-lo a decidir. Não encerre a conversa sem antes tentar retomar o controle do atendimento seguindo o roteiro.\n\nVocê está proibido de responder informações que você desconhece. Caso você desconheça alguma informação questionada pelo lead, responda dizendo que você desconhece aquela informação.\n</Restrições>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -40,
+        140
+      ],
+      "id": "34a3822b-d645-423a-b091-f0945c1c900a",
+      "name": "Agente de Atualização"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $json.session_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -280,
+        140
+      ],
+      "id": "8190bd95-77cb-46fb-acde-ce3893103497",
+      "name": "Fetch Data Lead",
+      "credentials": {
+        "postgres": {
+          "id": "8r0eU4HHjh6sf4sO",
+          "name": "Postgres - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Update_Event",
+        "description": "Chame esta tool quando o usuário solicitar para atualizar ou trocar o dia ou hora da sua consulta.",
+        "workflowId": {
+          "__rl": true,
+          "value": "jT5OudgqxeGtiJ61",
+          "mode": "list",
+          "cachedResultName": "#10 Tool | Update Event"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionID": "={{ $('RabbitMQ Trigger').item.json.session_id }}",
+            "newDate": "={{ $fromAI('newDate', ' nova data selecionada e confirmada pelo usuário', string) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "newDate",
+              "displayName": "newDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionID",
+              "displayName": "sessionID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        220,
+        320
+      ],
+      "id": "38845e60-0065-4dfe-a25f-97a2786daa95",
+      "name": "Update Event"
+    },
+    {
+      "parameters": {
+        "name": "Delete_Event",
+        "description": "Chame esta tool quando o usuário solicitar o cancelamento da sua consulta.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UcVpvsrPlUQvyiNz",
+          "mode": "list",
+          "cachedResultName": "#11 Tool | Delete Event"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionID": "={{ $('RabbitMQ Trigger').item.json.session_id }}"
+          },
+          "matchingColumns": [
+            "sessionID"
+          ],
+          "schema": [
+            {
+              "id": "sessionID",
+              "displayName": "sessionID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        340,
+        320
+      ],
+      "id": "5afc971c-ded1-4286-8c62-3ce8d3392b1b",
+      "name": "Delete Event"
+    }
+  ],
+  "connections": {
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Data Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_Split": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Finished",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "respondeWhatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "respondeWhatsapp": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check_Availability": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "vector_store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "vector_store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vector_store": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Atualização": {
+      "main": [
+        [
+          {
+            "node": "Set_Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Data Lead": {
+      "main": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Atualização",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "messages": "tudo",
+          "session_id": "5511985401987@s.whatsapp.net"
+        }
+      }
+    ]
+  },
+  "versionId": "4b932654-ddd3-4ea2-b9e1-bf89a3d3ea08",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-02-23T01:30:59.233Z",
+      "updatedAt": "2025-02-23T01:30:59.233Z",
+      "id": "thDtb8RvQxDeQCV4",
+      "name": "Aula"
+    }
+  ]
+}
