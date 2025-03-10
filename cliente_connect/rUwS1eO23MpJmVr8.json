@@ -1,0 +1,278 @@
+{
+  "createdAt": "2025-03-07T03:12:03.948Z",
+  "updatedAt": "2025-03-08T21:14:43.765Z",
+  "id": "rUwS1eO23MpJmVr8",
+  "name": "Youtube Sumarize",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "image",
+        "formTitle": "Video Summary Generator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "url",
+              "placeholder": "video url",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "67be719a-b7ba-4406-8e58-15153954aecf",
+      "name": "n8n Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -180,
+        -40
+      ],
+      "webhookId": "a35eb005-f795-4c85-9d00-0fe9797cb509",
+      "typeVersion": 2.1,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ec9bc76e-d6bc-4462-867e-1f9b31202d68",
+              "name": "youtubeUrl",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        -40
+      ],
+      "id": "59513d05-ec95-40a0-b3b5-5bda8585f783",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const extractYoutubeId = (url) => {\n  // Regex pattern that matches both youtu.be and youtube.com URLs\n  const pattern = /(?:youtube\\.com\\/(?:[^\\/]+\\/.+\\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\\.be\\/)([^\"&?\\/\\s]{11})/;\n  const match = url.match(pattern);\n  return match ? match[1] : null;\n};\n\n// Input URL from previous node\nconst youtubeUrl = items[0].json.youtubeUrl; // Adjust this based on your workflow\n\n// Process the URL and return the video ID\nreturn [{\n  json: {\n    videoId: extractYoutubeId(youtubeUrl)\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        -40
+      ],
+      "id": "73086cb0-722d-4ee9-b8e3-8afe81ab8a9e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "transcript",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        580,
+        -40
+      ],
+      "id": "22029798-260d-41f6-a8c8-4e9968e10227",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "=text",
+              "separateBy": " "
+            }
+          ]
+        },
+        "fieldsToSplitBy": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        760,
+        -40
+      ],
+      "id": "6a17f975-f6ef-4414-a759-70238d83ae3e",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analise a transcrição do vídeo fornecida e gere um conteúdo com até 8000 palavras, organizando-os por tópicos. Retorne o resultado em um formato HTML bem estruturado, projetado com um layout limpo e visualmente atraente.\n {{ $json.concatenated_text }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        960,
+        -40
+      ],
+      "id": "c17ce73e-dde8-4656-a218-e68f5815203b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        920,
+        140
+      ],
+      "id": "0086cc06-12eb-403c-92ba-d2b4472d78be",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        -40
+      ],
+      "id": "7c4b8d07-87b1-442f-8861-e061901d6a84",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "videoId": "={{ $json.videoId }}"
+      },
+      "type": "n8n-nodes-youtube-transcription-kasha.youtubeTranscripter",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -40
+      ],
+      "id": "52008e00-a5bb-4b9a-a949-6d32749c26a7",
+      "name": "YouTube Transcript"
+    }
+  ],
+  "connections": {
+    "n8n Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "YouTube Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Transcript": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "709f6563-0ba5-43fe-981a-455a2faaea20",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-07T03:12:25.340Z",
+      "updatedAt": "2025-03-07T03:12:25.340Z",
+      "id": "AZLxdXHYdk1cQ5l8",
+      "name": "LabNoCode"
+    }
+  ]
+}
