@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-06T00:21:22.052Z",
-  "updatedAt": "2025-03-07T00:01:24.644Z",
+  "updatedAt": "2025-03-10T18:16:44.557Z",
   "id": "2b98dSEiW32dmUfe",
   "name": "#17 | Backup Github",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -298,11 +298,7 @@
       "parameters": {
         "rule": {
           "interval": [
-            {
-              "field": "hours",
-              "hoursInterval": 23,
-              "triggerAtMinute": 59
-            }
+            {}
           ]
         }
       },
@@ -477,7 +473,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "89e7bc09-0e7c-40ff-b6b7-acab1dc59dae",
+  "versionId": "71f3b3b9-6122-4793-b798-1fafa2e226e6",
   "triggerCount": 1,
   "tags": [
     {
