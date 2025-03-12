@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-02-23T03:43:23.721Z",
-  "updatedAt": "2025-03-06T00:58:41.732Z",
+  "updatedAt": "2025-03-11T20:07:57.963Z",
   "id": "mTLHI3T9wZEYWHOi",
   "name": "#02 | Validação Ordem Mensagens",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -495,7 +495,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        480,
+        500,
         -260
       ],
       "id": "3ef36b82-02a7-4a08-af63-0de4ae8dc17e",
@@ -665,69 +665,8 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "RabbitMQ Trigger": [
-      {
-        "json": {
-          "headers": {
-            "host": "primary-production-1821.up.railway.app",
-            "user-agent": "axios/1.7.9",
-            "content-length": "986",
-            "accept-encoding": "gzip, compress, deflate, br",
-            "content-type": "application/json",
-            "x-forwarded-for": "146.190.59.46",
-            "x-forwarded-host": "primary-production-1821.up.railway.app",
-            "x-forwarded-proto": "https",
-            "x-railway-request-id": "IznKAIs7QqOXPkEmMK2kPw_1861343781",
-            "x-real-ip": "146.190.59.46",
-            "x-request-start": "1740533748803"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "event": "messages.upsert",
-            "instance": "Deebs",
-            "data": {
-              "key": {
-                "remoteJid": "5511985401987@s.whatsapp.net",
-                "fromMe": false,
-                "id": "3EB0AB67148F7D759BC61B"
-              },
-              "pushName": "Dival S Filho 😎",
-              "status": "DELIVERY_ACK",
-              "message": {
-                "conversation": "Boa Noite!",
-                "messageContextInfo": {
-                  "deviceListMetadata": {
-                    "senderKeyHash": "hQTfCmaNdhO9+Q==",
-                    "senderTimestamp": "1740058144",
-                    "senderAccountType": "E2EE",
-                    "receiverAccountType": "E2EE",
-                    "recipientKeyHash": "15/v3OmibNlJmw==",
-                    "recipientTimestamp": "1740342046"
-                  },
-                  "deviceListMetadataVersion": 2,
-                  "messageSecret": "YZWJWB+kL+oeTkbqrkuNOay9kBJMFu87kId7sPlRSOk="
-                }
-              },
-              "messageType": "conversation",
-              "messageTimestamp": 1740533748,
-              "instanceId": "8e60633a-43c9-4c90-9032-3bd6b9713741",
-              "source": "web"
-            },
-            "destination": "https://primary-production-1821.up.railway.app/webhook-test/entrada-dados",
-            "date_time": "2025-02-25T22:35:48.634Z",
-            "sender": "5511932081209@s.whatsapp.net",
-            "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
-            "apikey": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
-          },
-          "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/entrada-dados",
-          "executionMode": "test"
-        }
-      }
-    ]
-  },
-  "versionId": "ecd6e6d8-149f-4ac7-b03b-a0e64f451b4a",
+  "pinData": {},
+  "versionId": "d283c021-3219-48c9-aefd-fce0259c47b3",
   "triggerCount": 1,
   "tags": [
     {
