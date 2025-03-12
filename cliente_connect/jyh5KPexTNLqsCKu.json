@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-02-23T15:03:20.526Z",
-  "updatedAt": "2025-03-10T01:22:22.487Z",
+  "updatedAt": "2025-03-12T01:22:39.902Z",
   "id": "jyh5KPexTNLqsCKu",
   "name": "#03 | Formatação da mensagem",
   "active": true,
@@ -17,7 +17,7 @@
               }
             ]
           },
-          "acknowledge": "executionFinishesSuccessfully",
+          "acknowledge": "executionFinishes",
           "jsonParseBody": true,
           "onlyContent": true
         }
@@ -637,7 +637,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "3e978488-4423-48c1-94dc-0594542b9884",
+  "versionId": "1d8a7290-7aec-4462-8a23-f7944d520dfa",
   "triggerCount": 1,
   "tags": [
     {
