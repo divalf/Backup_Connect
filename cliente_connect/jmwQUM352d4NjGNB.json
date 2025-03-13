@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-10T01:26:55.857Z",
-  "updatedAt": "2025-03-10T01:27:33.538Z",
+  "updatedAt": "2025-03-12T20:41:11.661Z",
   "id": "jmwQUM352d4NjGNB",
   "name": "#8| RAG - Naka",
   "active": true,
@@ -393,6 +393,82 @@
       ],
       "id": "ecab2633-5fa5-4094-9dad-f0e9af53d585",
       "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "documentsNaka",
+          "mode": "list",
+          "cachedResultName": "documentsNaka"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        -1420,
+        -100
+      ],
+      "id": "3190a392-0a46-4e18-b100-fe2fe3567ee3",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "bkUVkstMDXr1Ld5w",
+          "name": "QdrantApi - Naka"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1520,
+        100
+      ],
+      "id": "46a54a3a-8933-4ff4-bad7-cea217b143b3",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "loader": "textLoader",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        100
+      ],
+      "id": "a1ea29ad-fc22-431b-bac8-ea40bfa99df2",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "separator": ",",
+        "chunkSize": 500,
+        "chunkOverlap": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -1340,
+        220
+      ],
+      "id": "de6e43fd-dacb-4f2d-8a5e-41014d0fb46e",
+      "name": "Character Text Splitter"
     }
   ],
   "connections": {
@@ -534,6 +610,39 @@
           }
         ]
       ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -541,17 +650,17 @@
   },
   "staticData": {
     "node:Arquivo Atualizado": {
-      "lastTimeChecked": "2025-03-10T16:40:48Z"
+      "lastTimeChecked": "2025-03-12T20:41:11Z"
     },
     "node:Arquivo Criado": {
-      "lastTimeChecked": "2025-03-10T16:40:49Z"
+      "lastTimeChecked": "2025-03-12T20:41:12Z"
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "91446696-3207-4c67-9e23-42416c7f4289",
+  "versionId": "16fe0a56-789f-4249-9ee6-cb7361286f2d",
   "triggerCount": 2,
   "tags": [
     {
