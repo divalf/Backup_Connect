@@ -1,0 +1,417 @@
+{
+  "createdAt": "2025-03-13T16:14:52.097Z",
+  "updatedAt": "2025-03-13T19:20:35.583Z",
+  "id": "RrNYdrIAMYaSQFNa",
+  "name": "RAG_NAKA_SRT",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2756712b-6ed8-4596-a7d4-0d4c5e91b584",
+              "name": "file_ID",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2ff77f90-bf41-457a-898a-ca1156b3503d",
+              "name": "mimeType",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -600,
+        -100
+      ],
+      "id": "e069e48c-7a32-4e0a-93aa-0531eac345a3",
+      "name": "Set File ID"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>file_id=like.*{{ $json.file_ID }}*"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        -100
+      ],
+      "id": "2d8feaa6-d65e-4042-9644-9a97dd71eb72",
+      "name": "Delete Docs",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "YDa81ISgD7aO0PpH",
+          "name": "Supabase - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID').item.json.file_ID }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -260,
+        -100
+      ],
+      "id": "417a44af-eaf9-4253-9a96-c3c2b635ba32",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 23,
+              "minute": 30
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1Nsm05q4UmFPeL6DbvcO8aL46hUTXSRtE",
+          "mode": "id"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        40
+      ],
+      "id": "0c0fd59a-ac44-47d3-8126-fa6aa6875264",
+      "name": "Arquivo Atualizado",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 23,
+              "minute": 30
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1yaafiEdmsspl6PI8nR6l_MVnX6nHPylc",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        -260
+      ],
+      "id": "08b4798e-893a-454e-a78c-334c7d0c22fa",
+      "name": "Arquivo Criado",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "WZAmcJvNgUWCF851",
+          "name": "Google Drive - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -100
+      ],
+      "id": "963da19b-f003-40f5-a91a-a4e260db3b47",
+      "name": "Extract from Text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aecaf0bd-b800-40b7-b348-c1a8ff636ef1",
+              "name": "texto",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dffec68a-349e-4cdb-8584-f37ed4b34000",
+      "name": "exportar_texto",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<SRT>\n{{ $json.text }}\n</SRT>\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Você é um analista de texto experiente e sua função é aprimorar uma transcrição de vídeo que está em <SRT>. Você deve aproveitar somente os aspetos relacionados diretamente ao contexto associado ao Universo da cirurgia bariátrica contidos na transcrição. Isto envolve diversas dúvidas, comentários, questões técnicas, orientações, esclarecimentos, etc. Você deve destacar os principais tópicos abordados. Este conteúdo deve ser direcionado a pessoas que por quaisquer motivos: Auto Estima, Sobrepeso, Comorbidades, etc, estão interessadas em cirurgia bariátrica, Sleeve ou Bypass. Escreva no formato Markdown. Seja objetivo, o texto final deve identificar de forma fidedigna o conteúdo em si. Do not start with \"```markdown\"."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        160,
+        220
+      ],
+      "id": "29d9ab7a-dd2e-434f-8084-d8e6e8424072",
+      "name": "resumo"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        360
+      ],
+      "id": "96231f6b-b121-4f63-81bc-3e902abd9a4b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function parseSRT(srtText) {\n    const regex = /(\\d+)\\s+(\\d{2}):(\\d{2}):(\\d{2}),(\\d{3}) --> (\\d{2}):(\\d{2}):(\\d{2}),(\\d{3})\\s+([\\s\\S]*?)(?=\\s+\\d+\\s+\\d{2}:\\d{2}:\\d{2},\\d{3}|\\s*$)/g;\n    let groupedByMinute = {};\n\n    let match;\n    while ((match = regex.exec(srtText)) !== null) {\n        let index = match[1]; // Subtitle index\n        let startHour = parseInt(match[2], 10);\n        let startMinute = parseInt(match[3], 10);\n        let startSecond = parseInt(match[4], 10);\n        let startMs = parseInt(match[5], 10);\n        let endTime = `${match[6]}:${match[7]}:${match[8]},${match[9]}`;\n        let text = match[10].replace(/\\s+/g, ' ').trim(); // Normalize text spacing\n\n        let totalMinutes = startHour * 60 + startMinute; // Convert HH:MM to integer minute\n\n        if (!groupedByMinute[totalMinutes]) {\n            groupedByMinute[totalMinutes] = [];\n        }\n\n        groupedByMinute[totalMinutes].push({\n            time: `${match[2]}:${match[3]}:${match[4]},${match[5]} --> ${endTime}`,\n            text: text\n        });\n    }\n\n    return groupedByMinute;\n}\n\nconst srtContent = $('video').all()[0].json.captions;\nconst parsedSrt = parseSRT(srtContent);\n\nreturn { parsedSrt };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        340
+      ],
+      "id": "604b53fc-1014-45e7-9c6d-4dd77cba79ad",
+      "name": "parsedSrt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<SRT>\n{{ $json.text }}\n</SRT>",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=<RESUMO_VIDEO>\n\n</RESUMO_VIDEO>\n# Dr. Marcelino Nakamura\nO Dr. Marcelino Nakamura Gastroenterologista, é um dos principais e mais respeitados Cirurgiões Bariátricos de Brasil, Especializado na técnica Sleeve ou gastrectomia vertical, com mais de 20 anos de experiência\n# O aluno\nO paciente que chega ao consultório do Dr. Marcelino, está interessado em se submeter a uma cirurgia bariátrica, quer por motivos de auto estima baixa devido ao sobrepeso agravado ou não por comorbidades como hipertensão, diabetes, refluxo entre outras.\nPor esta razão que o Dr. Marcelino, conhecido e admirado pelo seu comportamento extremamente ético, preza por só aconselhar o procedimento após severa avaliação, complementada inclusive por equipe multidisciplinar composta por nutricionistas e psicólogos.\nCaso não seja possível em virtude dos critérios pré-estabelecidos e da realidade do paciente, simplesmente, não se recomenda.\n# Sua personalidade\nVocê é um analista de texto experiente, especializado no seguimento de cirurgias bariátricas.\n# Sua função\nSua função é analisar o texto em <SRT> e criar várias perguntas e respectivas respostas baseado em como que o paciente ou participante da transcrição iria perguntar. \nSão perguntas relacionadas ao Universo da cirurgia bariátrica, envolvendo diversas dúvidas, comentários, questões técnicas, orientações, esclarecimentos, etc.\nSão perguntas feitas por pessoas que por quaisquer motivos: Auto Estima, Sobrepeso, Comorbidades, etc, estão interessadas em cirurgia bariátrica, Sleeve ou Bypass.\nJuntamente com a pergunta, indique a respectiva resposta.\n# Objetivo\nSeu objetivo é analisar com precisão o texto e contexto e criar perguntas e respectivas respostas varrendo minuto a minuto, cuja a resposta está indicada neste tempo. Apenas crie perguntas que sejam relevantes para este tempo. Tenha também como referência o <RESUMO_VIDEO> para analisar perguntas que tenham relação a eles também.\n# Variações\nCrie variações de perguntas baseado no <RESUMO_VIDEO> caso faça sentido. Caso não fizer sentido, não crie as variações.\n\n# Evite\nNão crie perguntas cuja a resposta não esteja presente em <SRT>.\nNão comece a resposta com \"```json\". Responda apenas usando o formato em JSON.\n# Formato\nResponda apenas utilizando o formato JSON, sem aspas, sem \"```json\" no começo e sem \"```\" no final. Utilize a Schema abaixo:\n[\n    {\n        \"pergunta\": string,\n        \"tempo\": string\n    }\n]\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        660,
+        -100
+      ],
+      "id": "28b99faf-e13b-40a1-b80c-239367e61076",
+      "name": "perguntas"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        80
+      ],
+      "id": "52d782dd-3a32-45ba-9fd8-419313ac19b7",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Delete Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Docs": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Arquivo Atualizado": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Arquivo Criado": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Extract from Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from Text": {
+      "main": [
+        [
+          {
+            "node": "perguntas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "exportar_texto": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "resumo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resumo": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "perguntas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f24f7e6f-c9e5-40b7-b636-5a0780ec6123",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-06T00:52:17.373Z",
+      "updatedAt": "2025-03-06T00:52:17.373Z",
+      "id": "X7hlUl8YHULQ0Kpl",
+      "name": "Naka"
+    }
+  ]
+}
