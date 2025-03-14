@@ -1,0 +1,229 @@
+{
+  "createdAt": "2025-03-14T00:12:35.624Z",
+  "updatedAt": "2025-03-14T03:10:57.589Z",
+  "id": "C30GAH42HxTblLRR",
+  "name": "Fluxo Base de Whatsapp - D21D",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d21d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -160
+      ],
+      "id": "aba187c4-c8d1-4b67-a262-43cd4234a74e",
+      "name": "Webhook",
+      "webhookId": "5d2747ac-7cd2-431f-a3a8-99d9ca1d1baa"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e78ef7e8-a0c9-4350-9060-93e503e6e16c",
+              "name": "userNumber",
+              "value": "={{ $('PARSE').item.json.event.Info.Sender.split('@')[0] }}\n",
+              "type": "string"
+            },
+            {
+              "id": "197d384d-c4c1-40d0-8ee2-b62e5af3c05c",
+              "name": "userName",
+              "value": "={{ $('PARSE').item.json.event.Info.PushName }}",
+              "type": "string"
+            },
+            {
+              "id": "11c94d0a-7238-4e75-b0d4-ce004f01a53b",
+              "name": "fromMe",
+              "value": "={{ $('PARSE').item.json.event.Info.IsFromMe ? 'outcoming' : 'incoming'}}",
+              "type": "string"
+            },
+            {
+              "id": "180a4fb3-d59d-4b72-8201-2a37450219c8",
+              "name": "isGroup",
+              "value": "={{ $('PARSE').item.json.event.Info.IsGroup }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9fa17f5a-6ea4-47b4-b2ba-f419fa32bd1d",
+              "name": "messageContent",
+              "value": "={{ $('PARSE').item.json.event.Message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "05a34ef6-b52f-47be-a05c-a43422685f91",
+              "name": "messageType",
+              "value": "={{ $('PARSE').item.json.event.Info.MediaType }}",
+              "type": "string"
+            },
+            {
+              "id": "729b66e5-b9c6-4e33-a24f-206f7d46f3f4",
+              "name": "messageID",
+              "value": "={{ $('PARSE').item.json.event.Info.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "03ccb2c8-2b94-4bd4-90f0-de118a00706f",
+              "name": "messageTimestamp",
+              "value": "={{ $('PARSE').item.json.event.Message.messageContextInfo.deviceListMetadata.senderTimestamp }}",
+              "type": "number"
+            },
+            {
+              "id": "54ca0173-3d29-40a9-83e5-91ffe2f68580",
+              "name": "messageMimetype",
+              "value": "={{ $('PARSE').item.json.event.Message.audioMessage.mimetype }}",
+              "type": "string"
+            },
+            {
+              "id": "a10a52fe-1469-4c41-a789-29ddeafdebf0",
+              "name": "messageTimeOut",
+              "value": "10",
+              "type": "string"
+            },
+            {
+              "id": "1ae0bf16-ba78-402d-bfe1-91315cc3cf1f",
+              "name": "messageAtendimentoHumano",
+              "value": "720",
+              "type": "string"
+            },
+            {
+              "id": "ec98d971-219d-47be-80af-d1c8d389d3cc",
+              "name": "apiToken",
+              "value": "={{ $('Webhook').item.json.body.token }}",
+              "type": "string"
+            },
+            {
+              "id": "8bee3b72-d27c-4427-883e-823de5e9bd86",
+              "name": "apiBaseURL",
+              "value": "https://www.avisaapi.com.br/api",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -20,
+        -160
+      ],
+      "id": "42f8555a-1166-447f-a375-6774c55b2e2e",
+      "name": "SET_VARIAVEIS"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.body.jsonData }}",
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "={{ $json.body.token }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -160
+      ],
+      "id": "3b4907fe-4f78-44cb-b902-1c03b829256a",
+      "name": "PARSE"
+    },
+    {
+      "parameters": {
+        "content": "SETAR VARÍÁVEIS\n",
+        "height": 240,
+        "width": 740,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -220
+      ],
+      "id": "aaf6de75-0b31-4f9f-a6d9-7c3327177f32",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "PARSE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PARSE": {
+      "main": [
+        [
+          {
+            "node": "SET_VARIAVEIS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "primary-production-1821.up.railway.app",
+            "user-agent": "go-resty/2.16.2 (https://github.com/go-resty/resty)",
+            "content-length": "2231",
+            "accept-encoding": "gzip",
+            "content-type": "application/x-www-form-urlencoded",
+            "x-forwarded-for": "138.197.95.114",
+            "x-forwarded-host": "primary-production-1821.up.railway.app",
+            "x-forwarded-proto": "https",
+            "x-railway-edge": "railway/us-east4",
+            "x-railway-request-id": "9Ex0zNNtRrSM7AhR51Y4mQ_3118653284",
+            "x-real-ip": "138.197.95.114",
+            "x-request-start": "1741921317108"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "jsonData": "{\"event\":{\"Info\":{\"Chat\":\"5511985401987@s.whatsapp.net\",\"Sender\":\"5511985401987:77@s.whatsapp.net\",\"IsFromMe\":false,\"IsGroup\":false,\"BroadcastListOwner\":\"\",\"ID\":\"3EB0D521BF5F0120676407\",\"ServerID\":0,\"Type\":\"text\",\"PushName\":\"Dival S Filho 😎\",\"Timestamp\":\"2025-03-14T03:01:57Z\",\"Category\":\"\",\"Multicast\":false,\"MediaType\":\"\",\"Edit\":\"\",\"MsgBotInfo\":{\"EditType\":\"\",\"EditTargetID\":\"\",\"EditSenderTimestampMS\":\"0001-01-01T00:00:00Z\"},\"MsgMetaInfo\":{\"TargetID\":\"\",\"TargetSender\":\"\"},\"VerifiedName\":null,\"DeviceSentMeta\":null},\"Message\":{\"conversation\":\"oie...\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"7h91T+RtaUt+0Q==\",\"recipientTimestamp\":1741137156},\"deviceListMetadataVersion\":2,\"messageSecret\":\"IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184=\"}},\"IsEphemeral\":false,\"IsViewOnce\":false,\"IsViewOnceV2\":false,\"IsViewOnceV2Extension\":false,\"IsDocumentWithCaption\":false,\"IsLottieSticker\":false,\"IsEdit\":false,\"SourceWebMsg\":null,\"UnavailableRequestID\":\"\",\"RetryCount\":0,\"NewsletterMeta\":null,\"RawMessage\":{\"conversation\":\"oie...\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"7h91T+RtaUt+0Q==\",\"recipientTimestamp\":1741137156},\"deviceListMetadataVersion\":2,\"messageSecret\":\"IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184=\"}}},\"type\":\"Message\"}",
+            "token": "zyMDajkbmOlCm29MVBxxZHsC9c4w5pTDO1VZh9IwbCUi55FC3Ieu1YwEdeHD"
+          },
+          "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "89cc1949-a0a8-41dc-a42a-38d35da65000",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-10T16:43:32.633Z",
+      "updatedAt": "2025-03-10T16:43:32.633Z",
+      "id": "L307GdwEDRROFLG5",
+      "name": "Criador Digital"
+    },
+    {
+      "createdAt": "2025-03-14T00:12:56.248Z",
+      "updatedAt": "2025-03-14T00:12:56.248Z",
+      "id": "4eNvKdFMUSJAYyOR",
+      "name": "Teste"
+    }
+  ]
+}
