@@ -1,36 +1,14 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-14T03:10:57.589Z",
+  "updatedAt": "2025-03-15T03:59:53.000Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
   "active": false,
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "d21d",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -460,
-        -160
-      ],
-      "id": "aba187c4-c8d1-4b67-a262-43cd4234a74e",
-      "name": "Webhook",
-      "webhookId": "5d2747ac-7cd2-431f-a3a8-99d9ca1d1baa"
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
-            {
-              "id": "e78ef7e8-a0c9-4350-9060-93e503e6e16c",
-              "name": "userNumber",
-              "value": "={{ $('PARSE').item.json.event.Info.Sender.split('@')[0] }}\n",
-              "type": "string"
-            },
             {
               "id": "197d384d-c4c1-40d0-8ee2-b62e5af3c05c",
               "name": "userName",
@@ -38,9 +16,21 @@
               "type": "string"
             },
             {
+              "id": "57233cf4-2452-4455-bccb-ea83e9fca64e",
+              "name": "userNumber",
+              "value": "={{ $('PARSE').item.json.event.Info.Chat }}",
+              "type": "string"
+            },
+            {
+              "id": "e78ef7e8-a0c9-4350-9060-93e503e6e16c",
+              "name": "messageSender",
+              "value": "={{ \n  ($json.mySender || \"\")\n    .replace(/\\\\n/g, \"\")    // Remove as sequências literais \"\\n\"\n    .replace(/[\\r\\n]+/g, \"\") // Remove quebras de linha reais\n    .trim() \n}}\n\n\n\n\n\n\n",
+              "type": "string"
+            },
+            {
               "id": "11c94d0a-7238-4e75-b0d4-ce004f01a53b",
               "name": "fromMe",
-              "value": "={{ $('PARSE').item.json.event.Info.IsFromMe ? 'outcoming' : 'incoming'}}",
+              "value": "={{ $('PARSE').item.json.event.Info.IsFromMe ? 'outgoing' : 'incoming'}}",
               "type": "string"
             },
             {
@@ -110,8 +100,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -20,
-        -160
+        -140,
+        -200
       ],
       "id": "42f8555a-1166-447f-a375-6774c55b2e2e",
       "name": "SET_VARIAVEIS"
@@ -128,8 +118,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -240,
-        -160
+        -920,
+        -200
       ],
       "id": "3b4907fe-4f78-44cb-b902-1c03b829256a",
       "name": "PARSE"
@@ -137,21 +127,330 @@
     {
       "parameters": {
         "content": "SETAR VARÍÁVEIS\n",
-        "height": 240,
-        "width": 740,
+        "height": 420,
+        "width": 1180,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -540,
-        -220
+        -1160,
+        -320
       ],
       "id": "aaf6de75-0b31-4f9f-a6d9-7c3327177f32",
       "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "FILTROS\n",
+        "height": 420,
+        "width": 1160,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        -320
+      ],
+      "id": "a6484a53-0a14-4ff5-80fc-d74b17342893",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -300
+      ],
+      "id": "7dca9299-c8fd-49f8-9da2-64d38c07f068",
+      "name": "OUTGOING"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e543a6db-34dd-4dc7-bfe2-bac2b5d0a614",
+              "leftValue": "={{ $('SET_VARIAVEIS').item.json.fromMe }}",
+              "rightValue": "outgoing",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        -80
+      ],
+      "id": "833f4533-20b8-42b9-98de-526439bd09f2",
+      "name": "INCOMING?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de39cd6f-e424-4c2f-934c-cf7dc3aef584",
+              "leftValue": "={{ $('SET_VARIAVEIS').item.json.isGroup }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        100,
+        -200
+      ],
+      "id": "96755ff4-9de9-4b10-891f-c48939d8330f",
+      "name": "IS_GROUP?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -300
+      ],
+      "id": "4742f555-5d4a-416d-8ce5-8c0c9cb7d8fe",
+      "name": "IS_GROUP"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "39dd8c0c-09a5-45f3-9b36-e87acc7dea20",
+              "leftValue": "={{ $('PARSE').item.json.event.Info.MediaType }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -760,
+        -200
+      ],
+      "id": "9b386819-6203-4243-88e8-5d4cc29bc7b6",
+      "name": "TEST_SENDER"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d21d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        -200
+      ],
+      "id": "b24609b2-dfa2-49b4-9a30-c836d8009f98",
+      "name": "Webhook",
+      "webhookId": "43605103-f50c-4293-86a4-8a12ce130726"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e338c5fb-002b-4dc4-9a2c-116d2ae30d11",
+              "name": "mySender",
+              "value": "={{$('PARSE').item.json.event.Info.Sender.split(':')[0]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -540,
+        -300
+      ],
+      "id": "5a2833d9-f2a2-434b-b395-222943579c7c",
+      "name": "MYSENDER01"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da6fbd0d-80a3-46e9-9da5-0273e4a8c61b",
+              "name": "mySender",
+              "value": "={{\n$('PARSE').item.json.event.Info.Sender.split('@')[0]\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -540,
+        -100
+      ],
+      "id": "7fd358dd-6219-41c3-984f-f6c4e7b4ea84",
+      "name": "MYSENDER02"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -340,
+        -200
+      ],
+      "id": "b6bcb509-ca8b-4b71-909f-9a3c65f5e656",
+      "name": "MYSENDER"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=atendimento. {{ $json.userNumber }}",
+        "value": "true"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        540,
+        20
+      ],
+      "id": "b64040ba-a9da-48fe-b15c-90592dd22891",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
     }
   ],
   "connections": {
+    "PARSE": {
+      "main": [
+        [
+          {
+            "node": "TEST_SENDER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SET_VARIAVEIS": {
+      "main": [
+        [
+          {
+            "node": "IS_GROUP?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INCOMING?": {
+      "main": [
+        [
+          {
+            "node": "OUTGOING",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IS_GROUP?": {
+      "main": [
+        [
+          {
+            "node": "IS_GROUP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "INCOMING?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TEST_SENDER": {
+      "main": [
+        [
+          {
+            "node": "MYSENDER01",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MYSENDER02",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Webhook": {
       "main": [
         [
@@ -163,7 +462,29 @@
         ]
       ]
     },
-    "PARSE": {
+    "MYSENDER01": {
+      "main": [
+        [
+          {
+            "node": "MYSENDER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MYSENDER02": {
+      "main": [
+        [
+          {
+            "node": "MYSENDER",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MYSENDER": {
       "main": [
         [
           {
@@ -179,29 +500,108 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {
+    "PARSE": [
+      {
+        "json": {
+          "event": {
+            "Info": {
+              "Chat": "5511985401987@s.whatsapp.net",
+              "Sender": "5511985401987:77@s.whatsapp.net",
+              "IsFromMe": true,
+              "IsGroup": false,
+              "BroadcastListOwner": "",
+              "ID": "3EB0D521BF5F0120676407",
+              "ServerID": 0,
+              "Type": "text",
+              "PushName": "Dival S Filho 😎",
+              "Timestamp": "2025-03-14T03:01:57Z",
+              "Category": "",
+              "Multicast": false,
+              "MediaType": "",
+              "Edit": "",
+              "MsgBotInfo": {
+                "EditType": "",
+                "EditTargetID": "",
+                "EditSenderTimestampMS": "0001-01-01T00:00:00Z"
+              },
+              "MsgMetaInfo": {
+                "TargetID": "",
+                "TargetSender": ""
+              },
+              "VerifiedName": null,
+              "DeviceSentMeta": null
+            },
+            "Message": {
+              "conversation": "oie...",
+              "messageContextInfo": {
+                "deviceListMetadata": {
+                  "senderKeyHash": "1Ap1zzec0Ceisg==",
+                  "senderTimestamp": 1741317792,
+                  "senderAccountType": 0,
+                  "receiverAccountType": 0,
+                  "recipientKeyHash": "7h91T+RtaUt+0Q==",
+                  "recipientTimestamp": 1741137156
+                },
+                "deviceListMetadataVersion": 2,
+                "messageSecret": "IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184="
+              }
+            },
+            "IsEphemeral": false,
+            "IsViewOnce": false,
+            "IsViewOnceV2": false,
+            "IsViewOnceV2Extension": false,
+            "IsDocumentWithCaption": false,
+            "IsLottieSticker": false,
+            "IsEdit": false,
+            "SourceWebMsg": null,
+            "UnavailableRequestID": "",
+            "RetryCount": 0,
+            "NewsletterMeta": null,
+            "RawMessage": {
+              "conversation": "oie...",
+              "messageContextInfo": {
+                "deviceListMetadata": {
+                  "senderKeyHash": "1Ap1zzec0Ceisg==",
+                  "senderTimestamp": 1741317792,
+                  "senderAccountType": 0,
+                  "receiverAccountType": 0,
+                  "recipientKeyHash": "7h91T+RtaUt+0Q==",
+                  "recipientTimestamp": 1741137156
+                },
+                "deviceListMetadataVersion": 2,
+                "messageSecret": "IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184="
+              }
+            }
+          },
+          "type": "Message"
+        }
+      }
+    ],
     "Webhook": [
       {
         "json": {
           "headers": {
             "host": "primary-production-1821.up.railway.app",
             "user-agent": "go-resty/2.16.2 (https://github.com/go-resty/resty)",
-            "content-length": "2231",
+            "content-length": "2251",
             "accept-encoding": "gzip",
             "content-type": "application/x-www-form-urlencoded",
             "x-forwarded-for": "138.197.95.114",
             "x-forwarded-host": "primary-production-1821.up.railway.app",
             "x-forwarded-proto": "https",
             "x-railway-edge": "railway/us-east4",
-            "x-railway-request-id": "9Ex0zNNtRrSM7AhR51Y4mQ_3118653284",
+            "x-railway-request-id": "J_pqj5qvQ7GPlyb6cdzXmg_882434190",
             "x-real-ip": "138.197.95.114",
-            "x-request-start": "1741921317108"
+            "x-request-start": "1742009167272"
           },
           "params": {},
           "query": {},
           "body": {
-            "jsonData": "{\"event\":{\"Info\":{\"Chat\":\"5511985401987@s.whatsapp.net\",\"Sender\":\"5511985401987:77@s.whatsapp.net\",\"IsFromMe\":false,\"IsGroup\":false,\"BroadcastListOwner\":\"\",\"ID\":\"3EB0D521BF5F0120676407\",\"ServerID\":0,\"Type\":\"text\",\"PushName\":\"Dival S Filho 😎\",\"Timestamp\":\"2025-03-14T03:01:57Z\",\"Category\":\"\",\"Multicast\":false,\"MediaType\":\"\",\"Edit\":\"\",\"MsgBotInfo\":{\"EditType\":\"\",\"EditTargetID\":\"\",\"EditSenderTimestampMS\":\"0001-01-01T00:00:00Z\"},\"MsgMetaInfo\":{\"TargetID\":\"\",\"TargetSender\":\"\"},\"VerifiedName\":null,\"DeviceSentMeta\":null},\"Message\":{\"conversation\":\"oie...\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"7h91T+RtaUt+0Q==\",\"recipientTimestamp\":1741137156},\"deviceListMetadataVersion\":2,\"messageSecret\":\"IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184=\"}},\"IsEphemeral\":false,\"IsViewOnce\":false,\"IsViewOnceV2\":false,\"IsViewOnceV2Extension\":false,\"IsDocumentWithCaption\":false,\"IsLottieSticker\":false,\"IsEdit\":false,\"SourceWebMsg\":null,\"UnavailableRequestID\":\"\",\"RetryCount\":0,\"NewsletterMeta\":null,\"RawMessage\":{\"conversation\":\"oie...\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"7h91T+RtaUt+0Q==\",\"recipientTimestamp\":1741137156},\"deviceListMetadataVersion\":2,\"messageSecret\":\"IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184=\"}}},\"type\":\"Message\"}",
+            "jsonData": "{\"event\":{\"Info\":{\"Chat\":\"5511985401987@s.whatsapp.net\",\"Sender\":\"5511985401987:77@s.whatsapp.net\",\"IsFromMe\":false,\"IsGroup\":false,\"BroadcastListOwner\":\"\",\"ID\":\"3EB04BF2B0998DABF933CB\",\"ServerID\":0,\"Type\":\"text\",\"PushName\":\"Dival S Filho 😎\",\"Timestamp\":\"2025-03-15T03:26:07Z\",\"Category\":\"\",\"Multicast\":false,\"MediaType\":\"\",\"Edit\":\"\",\"MsgBotInfo\":{\"EditType\":\"\",\"EditTargetID\":\"\",\"EditSenderTimestampMS\":\"0001-01-01T00:00:00Z\"},\"MsgMetaInfo\":{\"TargetID\":\"\",\"TargetSender\":\"\"},\"VerifiedName\":null,\"DeviceSentMeta\":null},\"Message\":{\"conversation\":\"Boa Noite!!!\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"uW1XRMx6LXFzNw==\",\"recipientTimestamp\":1741916289},\"deviceListMetadataVersion\":2,\"messageSecret\":\"RdmuJ7JPv4mOubtX7XHH2MzQ+FBw9c1aiJkblx5aSOk=\"}},\"IsEphemeral\":false,\"IsViewOnce\":false,\"IsViewOnceV2\":false,\"IsViewOnceV2Extension\":false,\"IsDocumentWithCaption\":false,\"IsLottieSticker\":false,\"IsEdit\":false,\"SourceWebMsg\":null,\"UnavailableRequestID\":\"\",\"RetryCount\":0,\"NewsletterMeta\":null,\"RawMessage\":{\"conversation\":\"Boa Noite!!!\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"uW1XRMx6LXFzNw==\",\"recipientTimestamp\":1741916289},\"deviceListMetadataVersion\":2,\"messageSecret\":\"RdmuJ7JPv4mOubtX7XHH2MzQ+FBw9c1aiJkblx5aSOk=\"}}},\"type\":\"Message\"}",
             "token": "zyMDajkbmOlCm29MVBxxZHsC9c4w5pTDO1VZh9IwbCUi55FC3Ieu1YwEdeHD"
           },
           "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
@@ -210,7 +610,7 @@
       }
     ]
   },
-  "versionId": "89cc1949-a0a8-41dc-a42a-38d35da65000",
+  "versionId": "4b0706ad-e4bf-407b-9f7d-2c600fd3f25f",
   "triggerCount": 0,
   "tags": [
     {
