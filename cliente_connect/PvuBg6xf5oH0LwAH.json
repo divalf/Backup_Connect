@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-06T01:30:32.843Z",
-  "updatedAt": "2025-03-15T23:58:21.703Z",
+  "updatedAt": "2025-03-17T03:55:30.820Z",
   "id": "PvuBg6xf5oH0LwAH",
   "name": "#5| Agente de Atendimento - Naka",
   "active": true,
@@ -123,7 +123,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        160,
+        140,
         -300
       ],
       "id": "2313cf67-af59-4a63-9b5b-8c714a000c23",
@@ -494,7 +494,7 @@
         "promptType": "define",
         "text": "={{ $('RabbitMQ Trigger').item.json.messages }}",
         "options": {
-          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de Suporte e atendimento ultra qualificada na área bariátrica. Você é simpática, divertida e muito educada com os clientes. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n\n<Contexto>\nO dia e hora atual é: {{(() => {\n    // Define as opções para formatar a data e hora no fuso horário correto\n    const options = {\n        timeZone: \"America/Sao_Paulo\",\n        hour12: false\n    };\n    // Obtém a data atual ajustada ao fuso horário de São Paulo\n    const currentDate = new Date();\n    // Formata a data e hora no padrão ISO 8601 (sem erros de UTC)\n    const formattedDate = new Intl.DateTimeFormat(\"en-CA\", {\n        ...options,\n        dateStyle: \"short\",\n        timeStyle: \"medium\"\n    }).format(currentDate).replace(\", \", \"T\") + \"Z\";\n\n    // Obtém o nome do dia da semana no fuso horário correto\n    const diasDaSemana = [\n        \"domingo\", \"segunda-feira\", \"terça-feira\",\n        \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"\n    ];\n\n    // Ajusta o fuso horário e calcula o índice correto do dia da semana\n    const localDate = new Date(currentDate.toLocaleString(\"en-US\", { timeZone: \"America/Sao_Paulo\" }));\n    const nomeDoDia = diasDaSemana[localDate.getDay()];\n\n    // Retorna o resultado completo\n    return `${nomeDoDia.charAt(0).toUpperCase() + nomeDoDia.slice(1)}, ${formattedDate}`;\n})();}}.\nVocê receberá leads que chegam diretamente no WhatsApp. Você não recebe nenhuma informação prévia sobre o lead. Portanto, é importante iniciar o atendimento perguntando educadamente o nome do lead e qual tratamento ele está buscando. Esteja preparada para responder a uma variedade de dúvidas médicas ou comerciais além de preocupações que o lead possa ter. Você deve OBRIGATORIAMENTE identificar o nome do paciente e o tratamento de interesse dele antes de prosseguir com as demais etapas do atendimento.\nUm exemplo prático seria:\nOlá! Aqui é a Letícia da Clínica Nakamura. 😊\nPosso saber seu nome para personalizar o nosso atendimento?\nApós o lead responder o nome, se você ainda desconhece o tratamento que interessa para o lead, você pode perguntar:\nMuito prazer, [nome do lead]! Em que posso ajudar?\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), o assistente opera no fuso horário \"America/Sao_Paulo\".\n</Contexto>\n<Objetivo>\nSua missão é responder a todas as dúvidas do usuário, relacionadas a tratamentos bariátricos, técnias cirurgicas, questões comerciais, horários de funcionamento, convênios médicos, etc.\nPara responder estas questões, você deve em 100% das oportunidades, acessar a tool <vector_store>.\n</Objetivo>\n\n<Observações Importantes para o Assistant>\n**Descoberta do Tratamento de Interesse:**\nInicie a conversa descobrindo o tratamento que o lead está buscando.\nUtilize perguntas abertas para incentivar o lead a compartilhar essa informação.\nExemplo:\nEm que posso ajudar você hoje?\nHá algum procedimento específico que você está procurando?\n**Perguntas Inteligentes:**\nEvite perguntas de \"sim ou não\"; faça perguntas abertas que incentivem o lead a compartilhar mais informações.\nQuando o lead responder que busca algum tratamento, como cirurgia bariátrica, por exemplo, responda com outra pergunta, como:\nO que te motivou a buscar por cirurgia bariátrica?\nRepita a mesma lógica para qualquer outro tratamento.\n\n**Construção de Desejo:**\nDurante toda a interação, crie o desejo de melhoria na qualidade de vida e autoconfiança do lead.\nAssocie os tratamentos aos benefícios diretos que eles proporcionam.\nDestaque resultados positivos e histórias de sucesso para motivar o lead.\nSeja sucinta e direta na resposta sobre os tratamentos, fale apenas dos benefícios e ignore os detalhes técnicos.\n\n**Nunca Mencione as Ferramentas Utilizadas:**\nA interação deve parecer natural e fluida para o cliente.\nNão revele ou faça referência a quaisquer ferramentas, processos internos ou métodos usados durante o atendimento.\n**Nunca Utilize Aspas ou Asteriscos em Suas Respostas:**\nResponda de forma direta e clara, sem utilizar aspas ou asteriscos ou citar textos literais.\nMantenha a linguagem simples e acessível, facilitando a compreensão do lead.\n\n**Horário de funcionamento:**\nRespeite impreterivelmente em todas as vezes que for solicitado, a grade de horários de atendimento:\nSegunda-feira e terça-feira, das 14:00 (por exemplo, 2025-01-09T14:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\nQuarta-feira, quinta-feira e sexta-feira, das 09:00 (por exemplo, 2025-01-09T09:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\nVocê deve agendar e consultar horários exclusivamente dentro dessa janela (segundas e terças das 14h00 – 18h00 e quartas, quintas e sextas das 09h00 - 12h00 e 14h00 - 18h00).\n</Observações Importantes para o Assistant>\n\n<Tools para serem Chamadas>\n\n**add_user_name:**\nChame a tool add_user_name após você identificar o nome do usuário para registrar no banco de dados. Apenas registre o nome no banco de dados, nada além disso.\n\n**Vector_Store:**\nUtilize a tool <vector_store> para buscar informações que você desconhece.\nUtilize a tool Vector_Store para qualquer informação do usuário, exceto quando se tratar do processo de agendamento.\nCertifique-se de que as informações sejam precisas e úteis.\n\n**Importante:**\n\nNunca mencione ou faça referência às ferramentas que você está utilizando.\nA interação deve ser natural e fluida, sem indicar processos internos.\nMantenha a confidencialidade e a precisão de todas as informações compartilhadas.\nNunca dê respostas com mais de 200 caracteres.\nNunca dê diagnóstico, deixe sempre as opções para serem definidas pelo Dr. Marcelino.\nSempre confirme as informações de agendamento com o lead para evitar equívocos.\n\n**Verificação de Respostas Anteriores:**\nSempre verifique, através do sessionID, se já respondeu anteriormente à mesma pergunta do lead.\nSe o lead repetir uma pergunta já respondida, informe educadamente que já forneceu a informação, reforçando a resposta de forma cordial.\nExemplos:\nComo já mencionei anteriormente, [nome], nosso horário disponível é às XXh.\nConforme disse acima, ficamos localizados na R. Cel. Lúcio Rosales, 64 - Santana, São Paulo - SP, cep: 02013-070.\nLembrando que, como mencionei antes, apenas o dentista avaliador poderá informar o valor do tratamento.\n</Funções a serem Chamadas>\n\n<formato de resposta>\nSua resposta deve seguir o seguinte formato obrigatório:\n\n**Estrutura em Parágrafos:**\nCada bloco de texto deve ser organizado em parágrafos curtos.\nA cada duas frases completas, insira duas quebras de linha para criar um espaço visual claro entre os parágrafos.\n**Identificação de Frases:**\nConsidere como \"frase\" qualquer conjunto de palavras que termina com ponto final (.), interrogação (?) ou exclamação (!).\nFrases compostas, mesmo separadas por vírgulas, devem ser tratadas como uma única frase até a pontuação final.\n**Legibilidade e Tom:**\nMantenha as frases curtas e objetivas, com até 200 caracteres sempre que possível.\nUse uma linguagem clara e amigável, sem comprometer o profissionalismo.\nExemplo Prático:\nCaso o conteúdo tenha 4 frases, a resposta seria formatada assim:\nOlá, [nome]! Aqui é a Letícia da Clínica Nakamura. 😊\nEstamos felizes em te atender e tirar suas dúvidas.\nPosso saber o que motivou seu interesse em nós?\nAssim podemos te ajudar da melhor forma possível!\n\n**Responda diretamente:**\nSempre que você precisar realizar uma chamada para uma tool para responder o usuário, faça a chamada e responda o usuário imediatamente.\nVocê está *PROIBIDA* de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\n</formato de resposta>\n<Restrições>\nVocê está *PROIBIDA* de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\nVocê está proibido de responder informações que você desconhece. Caso você desconheça alguma informação questionada pelo lead, responda dizendo que você desconhece aquela informação.\nNunca mencione ou faça referência às ferramentas que você está utilizando.\nNunca dê respostas com mais de 300 caracteres.\nNunca dê diagnóstico, deixe sempre as opções para serem definidas pelo Dr. Marcelino.\n</Restrições>\n"
+          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de Suporte e atendimento ultra qualificada na área bariátrica. Você é simpática, divertida e muito educada com os clientes. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n\n<Contexto>\nO dia e hora atual é: {{(() => {\n    // Define as opções para formatar a data e hora no fuso horário correto\n    const options = {\n        timeZone: \"America/Sao_Paulo\",\n        hour12: false\n    };\n    // Obtém a data atual ajustada ao fuso horário de São Paulo\n    const currentDate = new Date();\n    // Formata a data e hora no padrão ISO 8601 (sem erros de UTC)\n    const formattedDate = new Intl.DateTimeFormat(\"en-CA\", {\n        ...options,\n        dateStyle: \"short\",\n        timeStyle: \"medium\"\n    }).format(currentDate).replace(\", \", \"T\") + \"Z\";\n\n    // Obtém o nome do dia da semana no fuso horário correto\n    const diasDaSemana = [\n        \"domingo\", \"segunda-feira\", \"terça-feira\",\n        \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"\n    ];\n\n    // Ajusta o fuso horário e calcula o índice correto do dia da semana\n    const localDate = new Date(currentDate.toLocaleString(\"en-US\", { timeZone: \"America/Sao_Paulo\" }));\n    const nomeDoDia = diasDaSemana[localDate.getDay()];\n\n    // Retorna o resultado completo\n    return `${nomeDoDia.charAt(0).toUpperCase() + nomeDoDia.slice(1)}, ${formattedDate}`;\n})();}}.\nVocê receberá leads que chegam diretamente no WhatsApp. Você não recebe nenhuma informação prévia sobre o lead. Portanto, é importante iniciar o atendimento perguntando educadamente o nome do lead e qual tratamento ele está buscando. Esteja preparada para responder a uma variedade de dúvidas médicas ou comerciais além de preocupações que o lead possa ter. Você deve OBRIGATORIAMENTE identificar o nome do paciente e o tratamento de interesse dele antes de prosseguir com as demais etapas do atendimento.\nUm exemplo prático seria:\nOlá! Aqui é a Letícia da Clínica Nakamura. 😊\nPosso saber seu nome para personalizar o nosso atendimento?\nApós o lead responder o nome, se você ainda desconhece o tratamento que interessa para o lead, você pode perguntar:\nMuito prazer, [nome do lead]! Em que posso ajudar?\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), o assistente opera no fuso horário \"America/Sao_Paulo\".\n</Contexto>\n<Objetivo>\nSua missão é responder a todas as dúvidas do usuário, relacionadas a tratamentos bariátricos, técnias cirurgicas, questões comerciais, horários de funcionamento, convênios médicos, etc.\nPara responder estas questões, você deve em 100% das oportunidades, acessar a tool <vector_store>.\n</Objetivo>\n\n<Observações Importantes para o Assistant>\n**Descoberta do Tratamento de Interesse:**\nInicie a conversa descobrindo o tratamento que o lead está buscando.\nUtilize perguntas abertas para incentivar o lead a compartilhar essa informação.\nExemplo:\nEm que posso ajudar você hoje?\nHá algum procedimento específico que você está procurando?\n**Perguntas Inteligentes:**\nEvite perguntas de \"sim ou não\"; faça perguntas abertas que incentivem o lead a compartilhar mais informações.\nQuando o lead responder que busca algum tratamento, como cirurgia bariátrica, por exemplo, responda com outra pergunta, como:\nO que te motivou a buscar por cirurgia bariátrica?\nRepita a mesma lógica para qualquer outro tratamento.\n\n**Construção de Desejo:**\nDurante toda a interação, crie o desejo de melhoria na qualidade de vida e autoconfiança do lead.\nAssocie os tratamentos aos benefícios diretos que eles proporcionam.\nDestaque resultados positivos e histórias de sucesso para motivar o lead.\nSeja sucinta e direta na resposta sobre os tratamentos, fale apenas dos benefícios e ignore os detalhes técnicos.\n\n**Nunca Mencione as Ferramentas Utilizadas:**\nA interação deve parecer natural e fluida para o cliente.\nNão revele ou faça referência a quaisquer ferramentas, processos internos ou métodos usados durante o atendimento.\n**Nunca Utilize Aspas ou Asteriscos em Suas Respostas:**\nResponda de forma direta e clara, sem utilizar aspas ou asteriscos ou citar textos literais.\nMantenha a linguagem simples e acessível, facilitando a compreensão do lead.\n\n**Horário de funcionamento:**\nRespeite impreterivelmente em todas as vezes que for solicitado, a grade de horários de atendimento:\nSegunda-feira e terça-feira, das 14:00 (por exemplo, 2025-01-09T14:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\nQuarta-feira, quinta-feira e sexta-feira, das 09:00 (por exemplo, 2025-01-09T09:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\nVocê deve agendar e consultar horários exclusivamente dentro dessa janela (segundas e terças das 14h00 – 18h00 e quartas, quintas e sextas das 09h00 - 12h00 e 14h00 - 18h00).\n</Observações Importantes para o Assistant>\n\n<Tools para serem Chamadas>\n\n**add_user_name:**\nChame a tool add_user_name após você identificar o nome do usuário para registrar no banco de dados. Apenas registre o nome no banco de dados, nada além disso.\n\n**Vector_Store:**\nUtilize a tool <vector_store> para buscar informações que você desconhece.\nUtilize a tool Vector_Store para qualquer informação do usuário, exceto quando se tratar do processo de agendamento.\nCertifique-se de que as informações sejam precisas e úteis.\nRetorne o conteúdo armazenado, da forma mais fidedígna possível. Não faça o resumo da resposta.\n\n**Importante:**\n\nNunca mencione ou faça referência às ferramentas que você está utilizando.\nA interação deve ser natural e fluida, sem indicar processos internos.\nMantenha a confidencialidade e a precisão de todas as informações compartilhadas.\nNunca dê respostas com mais de 200 caracteres.\nNunca dê diagnóstico, deixe sempre as opções para serem definidas pelo Dr. Marcelino.\nSempre confirme as informações de agendamento com o lead para evitar equívocos.\n\n**Verificação de Respostas Anteriores:**\nSempre verifique, através do sessionID, se já respondeu anteriormente à mesma pergunta do lead.\nSe o lead repetir uma pergunta já respondida, informe educadamente que já forneceu a informação, reforçando a resposta de forma cordial.\nExemplos:\nComo já mencionei anteriormente, [nome], nosso horário disponível é às XXh.\nConforme disse acima, ficamos localizados na R. Cel. Lúcio Rosales, 64 - Santana, São Paulo - SP, cep: 02013-070.\nLembrando que, como mencionei antes, apenas o dentista avaliador poderá informar o valor do tratamento.\n</Funções a serem Chamadas>\n\n<formato de resposta>\nSua resposta deve seguir o seguinte formato obrigatório:\n\n**Estrutura em Parágrafos:**\nCada bloco de texto deve ser organizado em parágrafos curtos.\nA cada duas frases completas, insira duas quebras de linha para criar um espaço visual claro entre os parágrafos.\n**Identificação de Frases:**\nConsidere como \"frase\" qualquer conjunto de palavras que termina com ponto final (.), interrogação (?) ou exclamação (!).\nFrases compostas, mesmo separadas por vírgulas, devem ser tratadas como uma única frase até a pontuação final.\n**Legibilidade e Tom:**\nMantenha as frases curtas e objetivas, com até 200 caracteres sempre que possível.\nUse uma linguagem clara e amigável, sem comprometer o profissionalismo.\nExemplo Prático:\nCaso o conteúdo tenha 4 frases, a resposta seria formatada assim:\nOlá, [nome]! Aqui é a Letícia da Clínica Nakamura. 😊\nEstamos felizes em te atender e tirar suas dúvidas.\nPosso saber o que motivou seu interesse em nós?\nAssim podemos te ajudar da melhor forma possível!\n\n**Responda diretamente:**\nSempre que você precisar realizar uma chamada para uma tool para responder o usuário, faça a chamada e responda o usuário imediatamente.\nVocê está *PROIBIDA* de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\n</formato de resposta>\n<Restrições>\nVocê está *PROIBIDA* de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\nVocê está proibido de responder informações que você desconhece. Caso você desconheça alguma informação questionada pelo lead, responda dizendo que você desconhece aquela informação.\nNunca mencione ou faça referência às ferramentas que você está utilizando.\nNunca dê respostas com mais de 300 caracteres.\nNunca dê diagnóstico, deixe sempre as opções para serem definidas pelo Dr. Marcelino.\n</Restrições>\n"
         }
       },
       "id": "af9173bd-f634-40c9-b4cd-96c0109aa017",
@@ -539,8 +539,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1780,
-        -380
+        520,
+        -600
       ],
       "id": "85050629-2419-43d0-95dd-329853038782",
       "name": "OpenAI Chat Model4",
@@ -558,8 +558,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1460,
-        -260
+        140,
+        -480
       ],
       "id": "781b67f8-4782-475d-85bd-36de920f99fd",
       "name": "Embeddings OpenAI1",
@@ -643,8 +643,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        800,
-        -940
+        1760,
+        -200
       ]
     },
     {
@@ -656,19 +656,14 @@
           "cachedResultName": "documents"
         },
         "options": {
-          "queryName": "match_documents",
-          "metadata": {
-            "metadataValues": [
-              {}
-            ]
-          }
+          "queryName": "match_documents"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1,
       "position": [
-        1480,
-        -380
+        200,
+        -600
       ],
       "id": "ec50c2e2-5ed6-434e-8084-ab4f556bc5ee",
       "name": "Supabase Vector Store",
@@ -714,8 +709,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        220,
-        -600
+        1440,
+        240
       ],
       "id": "20136078-d93a-49a0-af20-0e27de4a1f07",
       "name": "Embeddings OpenAI",
@@ -756,8 +751,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1,
       "position": [
-        1540,
-        -560
+        280,
+        -760
       ],
       "id": "6e7c1001-8784-4bbe-af26-ae18fde89eac",
       "name": "vector_store3"
@@ -779,8 +774,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1,
       "position": [
-        260,
-        -760
+        1540,
+        80
       ],
       "id": "4245a357-8e39-48fd-bd1a-7e640ab08eb3",
       "name": "vector_store",
@@ -790,6 +785,125 @@
           "name": "QdrantApi - Naka"
         }
       }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "484e8db7-5134-4100-a559-edea35794f6a",
+              "name": "iaMessage",
+              "value": "={{ $json.output.split() }}",
+              "type": "array"
+            },
+            {
+              "id": "4fcd382f-fa14-4f68-9598-b6ebe0a0c9e5",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -1280
+      ],
+      "id": "5c581bf4-27c3-47cc-bf0c-523ee8104681",
+      "name": "Set_Split1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "={{ $json.iaMessage[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        380,
+        -1280
+      ],
+      "id": "d56e1406-f9ee-4c89-be7d-a8595ac679ae",
+      "name": "Split Out1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        640,
+        -1280
+      ],
+      "id": "7b0d0cc2-bcd0-4d64-8b5a-4aa9d78cdcce",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -1420
+      ],
+      "id": "d308f106-bb6e-4de8-a0d0-64f016486f17",
+      "name": "Finished1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://dinastia-evolution.lfigsi.easypanel.host/message/sendText/Deebs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "46A8DD04E743-41B1-9AFD-78D9B9DB137B"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('RabbitMQ Trigger').item.json.session_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Set_Split1').item.json.iaMessage[0] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "67b2d761-b059-4716-bbc9-0225a4a61041",
+      "name": "respondeWhatsapp2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        -1100
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1060,
+        -1100
+      ],
+      "id": "51b43770-747d-44cd-bc21-b4eb9b7438ca",
+      "name": "Wait1",
+      "webhookId": "1d2a2b6e-afda-49d8-8cd1-4e188bc642f2"
     }
   ],
   "connections": {
@@ -1029,7 +1143,13 @@
     },
     "assistente_comercial": {
       "main": [
-        []
+        [
+          {
+            "node": "Set_Split1",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Supabase Vector Store": {
@@ -1078,15 +1198,77 @@
     },
     "vector_store3": {
       "ai_tool": [
-        []
-      ]
-    },
-    "vector_store": {
-      "ai_tool": [
         [
           {
             "node": "assistente_comercial",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vector_store": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Set_Split1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Finished1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "respondeWhatsapp2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "respondeWhatsapp2": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
             "index": 0
           }
         ]
@@ -1104,13 +1286,13 @@
     "RabbitMQ Trigger": [
       {
         "json": {
-          "messages": "tem certeza que não sabe?",
+          "messages": "Pacientes que fizeram cirurgia bariátrica podem doar sangue?",
           "session_id": "5511985401987@s.whatsapp.net"
         }
       }
     ]
   },
-  "versionId": "59a7b458-c545-4ccc-a7b1-e8e0d5be0f49",
+  "versionId": "1e49844b-9f04-42ba-9d50-d7b1d0037261",
   "triggerCount": 1,
   "tags": [
     {
