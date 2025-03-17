@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-02-23T01:27:16.574Z",
-  "updatedAt": "2025-03-10T01:20:43.441Z",
+  "updatedAt": "2025-03-17T03:13:53.817Z",
   "id": "1FCYJ0YDO7Ng7EuV",
   "name": "#01 | Recebe Dados e Insere na Fila",
   "active": true,
@@ -63,7 +63,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "0a46c3f1-6a24-4187-abb1-dfd7e062188c",
+  "versionId": "602d68d6-cc3c-48f1-a25b-5f861f95fb24",
   "triggerCount": 1,
   "tags": [
     {
