@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-06T01:30:32.843Z",
-  "updatedAt": "2025-03-17T03:55:30.820Z",
+  "updatedAt": "2025-03-17T14:06:06.748Z",
   "id": "PvuBg6xf5oH0LwAH",
   "name": "#5| Agente de Atendimento - Naka",
   "active": true,
@@ -746,7 +746,7 @@
       "parameters": {
         "name": "vector_store",
         "description": "Chame esta tool quando o usuário fizer alguma pergunta relacionada a tratamentos, técnicas cirúrgicas, refluxo, profissionais envolvidos, convênios, valores, redes sociais da clínica, etc.",
-        "topK": 10
+        "topK": 20
       },
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1,
@@ -1292,7 +1292,7 @@
       }
     ]
   },
-  "versionId": "1e49844b-9f04-42ba-9d50-d7b1d0037261",
+  "versionId": "61dab567-a001-4e50-a5ae-20a38c750461",
   "triggerCount": 1,
   "tags": [
     {
