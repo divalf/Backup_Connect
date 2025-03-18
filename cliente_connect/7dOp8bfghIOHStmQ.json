@@ -1,0 +1,235 @@
+{
+  "createdAt": "2025-03-17T19:32:54.527Z",
+  "updatedAt": "2025-03-17T19:50:43.330Z",
+  "id": "7dOp8bfghIOHStmQ",
+  "name": "Transcrever Audio - Base64",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d21d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        -20
+      ],
+      "id": "52f30e8e-4f80-48dd-8714-004b2e7412be",
+      "name": "Webhook",
+      "webhookId": "63c98e07-a03c-4b7f-baee-8ebac7473489"
+    },
+    {
+      "parameters": {
+        "content": "TRANSCREVER ÁUDIO BASE 64\n",
+        "height": 80,
+        "width": 740
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -180
+      ],
+      "id": "fa82bd28-7809-4e55-99b6-ed504a991572",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2ce32791-d1f5-41f7-9bb8-3eb1e1097575",
+              "name": "base64",
+              "value": "={{ $json.body.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        -20
+      ],
+      "id": "9476ca1a-ccb6-4c84-ae10-d2e1e0cb30f6",
+      "name": "EXTRAI_BASE64"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "fileName": "audioOGG",
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        -20
+      ],
+      "id": "599d9c25-d702-411b-9368-406b7a030d5d",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        140,
+        -20
+      ],
+      "id": "7a207184-1841-4415-9833-4c352875bd44",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "EXTRAI_BASE64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRAI_BASE64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "primary-production-1821.up.railway.app",
+            "user-agent": "axios/1.7.9",
+            "content-length": "6200",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "146.190.59.46",
+            "x-forwarded-host": "primary-production-1821.up.railway.app",
+            "x-forwarded-proto": "https",
+            "x-railway-edge": "railway/us-west1",
+            "x-railway-request-id": "RNdMKTuyR9mTBtdGWkIubQ_3987874068",
+            "x-real-ip": "146.190.59.46",
+            "x-request-start": "1742240127727"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "Ofir",
+            "data": {
+              "key": {
+                "remoteJid": "5511985401987@s.whatsapp.net",
+                "fromMe": false,
+                "id": "7A3EC92F8CCEC434960D049A3E1D4898"
+              },
+              "pushName": "Dival S Filho 😎",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "audioMessage": {
+                  "url": "https://mmg.whatsapp.net/v/t62.7117-24/19145149_999820122093157_7757561649216683402_n.enc?ccb=11-4&oh=01_Q5AaIZZ-bhwwWRXA8LK-A4IZuN8h-yCws5-UOqIAGhMb8h9n&oe=67FFEBD7&_nc_sid=5e03e0&mms3=true",
+                  "mimetype": "audio/ogg; codecs=opus",
+                  "fileSha256": "ek+/mCQW6WVwN8Fbf60Mu02rflRIZYQ99R+Fi9kRV9k=",
+                  "fileLength": "3360",
+                  "seconds": 1,
+                  "ptt": true,
+                  "mediaKey": "dZbItC0o6Z6rNChYqm4QhgAvncXkhSiVYJLMefEKMgk=",
+                  "fileEncSha256": "uHqrNJ0Hcr2jt1YU8nSqkMYssSQGGXMx39HQDb+yj6o=",
+                  "directPath": "/v/t62.7117-24/19145149_999820122093157_7757561649216683402_n.enc?ccb=11-4&oh=01_Q5AaIZZ-bhwwWRXA8LK-A4IZuN8h-yCws5-UOqIAGhMb8h9n&oe=67FFEBD7&_nc_sid=5e03e0",
+                  "mediaKeyTimestamp": "1742240126",
+                  "waveform": "AAAAAAAWPFRVVVJQOycmLDhKVlZVUU5MS0AxLjhBSE5NTDYdIzZAQUE/PDs5Oj07ODc5Ojk4Ojw4MyMNAAAAAA=="
+                },
+                "messageContextInfo": {
+                  "deviceListMetadata": {
+                    "senderKeyHash": "1Ap1zzec0Ceisg==",
+                    "senderTimestamp": "1741317792",
+                    "recipientKeyHash": "uW1XRMx6LXFzNw==",
+                    "recipientTimestamp": "1742009060"
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": "FCzOxqsrD0bCZVhrUVr1STfNy2yFVTSkw/69GjZbI/U="
+                },
+                "base64": "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"
+              },
+              "contextInfo": null,
+              "messageType": "audioMessage",
+              "messageTimestamp": 1742240127,
+              "instanceId": "1f617cf7-0352-442c-8759-1dd6a92b586c",
+              "source": "android"
+            },
+            "destination": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
+            "date_time": "2025-03-17T16:35:27.614Z",
+            "sender": "5511932081209@s.whatsapp.net",
+            "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
+            "apikey": "199604EDFDB7-477B-9F21-8DB8DB4A060D"
+          },
+          "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "6e83227b-4ca3-4e51-8cdd-594052c49149",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-10T16:43:32.633Z",
+      "updatedAt": "2025-03-10T16:43:32.633Z",
+      "id": "L307GdwEDRROFLG5",
+      "name": "Criador Digital"
+    },
+    {
+      "createdAt": "2025-03-17T19:34:03.740Z",
+      "updatedAt": "2025-03-17T19:34:03.740Z",
+      "id": "M3oF1hF2pAN9SLRE",
+      "name": "D21D"
+    }
+  ]
+}
