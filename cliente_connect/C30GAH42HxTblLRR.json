@@ -1,10 +1,58 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-15T03:59:53.000Z",
+  "updatedAt": "2025-03-17T20:07:07.752Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
   "active": false,
   "nodes": [
+    {
+      "parameters": {
+        "content": "SETAR VARÍÁVEIS\n",
+        "height": 520,
+        "width": 1620,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1540,
+        -320
+      ],
+      "id": "aaf6de75-0b31-4f9f-a6d9-7c3327177f32",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d21d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        -120
+      ],
+      "id": "b24609b2-dfa2-49b4-9a30-c836d8009f98",
+      "name": "Webhook",
+      "webhookId": "43605103-f50c-4293-86a4-8a12ce130726"
+    },
+    {
+      "parameters": {
+        "content": "FILTROS\n",
+        "height": 520,
+        "width": 1020,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        100,
+        -320
+      ],
+      "id": "692403a2-7f0c-4819-bd8a-ee2234abe49b",
+      "name": "Sticky Note"
+    },
     {
       "parameters": {
         "assignments": {
@@ -12,61 +60,55 @@
             {
               "id": "197d384d-c4c1-40d0-8ee2-b62e5af3c05c",
               "name": "userName",
-              "value": "={{ $('PARSE').item.json.event.Info.PushName }}",
+              "value": "={{ $json.body.data.pushName }}",
               "type": "string"
             },
             {
               "id": "57233cf4-2452-4455-bccb-ea83e9fca64e",
               "name": "userNumber",
-              "value": "={{ $('PARSE').item.json.event.Info.Chat }}",
+              "value": "={{ $json.body.sender.split('@')[0] }}",
               "type": "string"
             },
             {
               "id": "e78ef7e8-a0c9-4350-9060-93e503e6e16c",
               "name": "messageSender",
-              "value": "={{ \n  ($json.mySender || \"\")\n    .replace(/\\\\n/g, \"\")    // Remove as sequências literais \"\\n\"\n    .replace(/[\\r\\n]+/g, \"\") // Remove quebras de linha reais\n    .trim() \n}}\n\n\n\n\n\n\n",
+              "value": "={{ $json.body.data.key.remoteJid.split('@')[0] }}\n\n",
               "type": "string"
             },
             {
               "id": "11c94d0a-7238-4e75-b0d4-ce004f01a53b",
               "name": "fromMe",
-              "value": "={{ $('PARSE').item.json.event.Info.IsFromMe ? 'outgoing' : 'incoming'}}",
+              "value": "={{ $json.body.data.key.fromMe ? 'outgoing' : 'incoming' }}",
               "type": "string"
-            },
-            {
-              "id": "180a4fb3-d59d-4b72-8201-2a37450219c8",
-              "name": "isGroup",
-              "value": "={{ $('PARSE').item.json.event.Info.IsGroup }}",
-              "type": "boolean"
             },
             {
               "id": "9fa17f5a-6ea4-47b4-b2ba-f419fa32bd1d",
               "name": "messageContent",
-              "value": "={{ $('PARSE').item.json.event.Message.conversation }}",
+              "value": "={{ $json.body.data.message.audioMessage.mimetype }}",
               "type": "string"
             },
             {
               "id": "05a34ef6-b52f-47be-a05c-a43422685f91",
               "name": "messageType",
-              "value": "={{ $('PARSE').item.json.event.Info.MediaType }}",
+              "value": "={{ $json.body.data.messageType }}",
               "type": "string"
             },
             {
               "id": "729b66e5-b9c6-4e33-a24f-206f7d46f3f4",
               "name": "messageID",
-              "value": "={{ $('PARSE').item.json.event.Info.ID }}",
+              "value": "={{ $json.body.data.key.id }}",
               "type": "string"
             },
             {
               "id": "03ccb2c8-2b94-4bd4-90f0-de118a00706f",
               "name": "messageTimestamp",
-              "value": "={{ $('PARSE').item.json.event.Message.messageContextInfo.deviceListMetadata.senderTimestamp }}",
+              "value": "={{ $json.body.data.messageTimestamp }}",
               "type": "number"
             },
             {
               "id": "54ca0173-3d29-40a9-83e5-91ffe2f68580",
               "name": "messageMimetype",
-              "value": "={{ $('PARSE').item.json.event.Message.audioMessage.mimetype }}",
+              "value": "={{ $json.body.data.message.audioMessage.mimetype }}",
               "type": "string"
             },
             {
@@ -84,13 +126,13 @@
             {
               "id": "ec98d971-219d-47be-80af-d1c8d389d3cc",
               "name": "apiToken",
-              "value": "={{ $('Webhook').item.json.body.token }}",
+              "value": "={{ $json.body.apikey }}",
               "type": "string"
             },
             {
               "id": "8bee3b72-d27c-4427-883e-823de5e9bd86",
               "name": "apiBaseURL",
-              "value": "https://www.avisaapi.com.br/api",
+              "value": "https://primary-production-1821.up.railway.app",
               "type": "string"
             }
           ]
@@ -100,105 +142,22 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -140,
-        -200
+        -1300,
+        -120
       ],
-      "id": "42f8555a-1166-447f-a375-6774c55b2e2e",
+      "id": "5cf627eb-e32d-445a-aaa5-833f5b25cd87",
       "name": "SET_VARIAVEIS"
-    },
-    {
-      "parameters": {
-        "mode": "raw",
-        "jsonOutput": "={{ $json.body.jsonData }}",
-        "includeOtherFields": true,
-        "include": "selected",
-        "includeFields": "={{ $json.body.token }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -920,
-        -200
-      ],
-      "id": "3b4907fe-4f78-44cb-b902-1c03b829256a",
-      "name": "PARSE"
-    },
-    {
-      "parameters": {
-        "content": "SETAR VARÍÁVEIS\n",
-        "height": 420,
-        "width": 1180,
-        "color": 4
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -1160,
-        -320
-      ],
-      "id": "aaf6de75-0b31-4f9f-a6d9-7c3327177f32",
-      "name": "Sticky Note1"
-    },
-    {
-      "parameters": {
-        "content": "FILTROS\n",
-        "height": 420,
-        "width": 1160,
-        "color": 2
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        40,
-        -320
-      ],
-      "id": "a6484a53-0a14-4ff5-80fc-d74b17342893",
-      "name": "Sticky Note"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        560,
-        -300
+        380,
+        -280
       ],
-      "id": "7dca9299-c8fd-49f8-9da2-64d38c07f068",
-      "name": "OUTGOING"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "e543a6db-34dd-4dc7-bfe2-bac2b5d0a614",
-              "leftValue": "={{ $('SET_VARIAVEIS').item.json.fromMe }}",
-              "rightValue": "outgoing",
-              "operator": {
-                "type": "string",
-                "operation": "notEquals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        320,
-        -80
-      ],
-      "id": "833f4533-20b8-42b9-98de-526439bd09f2",
-      "name": "INCOMING?"
+      "id": "8c6dce24-6fba-4e28-82d1-711e58cd4214",
+      "name": "IS_GROUP"
     },
     {
       "parameters": {
@@ -228,22 +187,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        100,
-        -200
+        140,
+        -180
       ],
-      "id": "96755ff4-9de9-4b10-891f-c48939d8330f",
+      "id": "c8384498-010f-472c-8e3b-6b7faa5a7293",
       "name": "IS_GROUP?"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        320,
-        -300
-      ],
-      "id": "4742f555-5d4a-416d-8ce5-8c0c9cb7d8fe",
-      "name": "IS_GROUP"
     },
     {
       "parameters": {
@@ -256,8 +204,86 @@
           },
           "conditions": [
             {
-              "id": "39dd8c0c-09a5-45f3-9b36-e87acc7dea20",
-              "leftValue": "={{ $('PARSE').item.json.event.Info.MediaType }}",
+              "id": "e543a6db-34dd-4dc7-bfe2-bac2b5d0a614",
+              "leftValue": "={{ $('SET_VARIAVEIS').item.json.fromMe }}",
+              "rightValue": "incoming",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        -60
+      ],
+      "id": "c7e382b7-268f-4ec9-b5d7-6ece3e0f8ac0",
+      "name": "INCOMING?"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=atendimento:{{ $('INCOMING?').item.json.userNumber }}",
+        "value": "true",
+        "expire": true,
+        "ttl": "={{ $('SET_VARIAVEIS').item.json.messageAtendimentoHumano }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        640,
+        40
+      ],
+      "id": "2b89a56e-cd4e-4ad0-9d02-15767dcb149d",
+      "name": "SET_ATENDIMENTO",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "atendimento",
+        "key": "=atendimento:{{ $('SET_VARIAVEIS').item.json.messageSender }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        620,
+        -280
+      ],
+      "id": "e7fc5866-70ef-4110-ac34-c45f6d9ab3ab",
+      "name": "GET_ATENDIMENTO",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e4a279cb-3b64-410b-a8b9-873e10acbdd6",
+              "leftValue": "={{ $json.atendimento }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -273,113 +299,274 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -760,
-        -200
+        840,
+        -280
       ],
-      "id": "9b386819-6203-4243-88e8-5d4cc29bc7b6",
-      "name": "TEST_SENDER"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "d21d",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -1120,
-        -200
-      ],
-      "id": "b24609b2-dfa2-49b4-9a30-c836d8009f98",
-      "name": "Webhook",
-      "webhookId": "43605103-f50c-4293-86a4-8a12ce130726"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "e338c5fb-002b-4dc4-9a2c-116d2ae30d11",
-              "name": "mySender",
-              "value": "={{$('PARSE').item.json.event.Info.Sender.split(':')[0]}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -540,
-        -300
-      ],
-      "id": "5a2833d9-f2a2-434b-b395-222943579c7c",
-      "name": "MYSENDER01"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "da6fbd0d-80a3-46e9-9da5-0273e4a8c61b",
-              "name": "mySender",
-              "value": "={{\n$('PARSE').item.json.event.Info.Sender.split('@')[0]\n}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -540,
-        -100
-      ],
-      "id": "7fd358dd-6219-41c3-984f-f6c4e7b4ea84",
-      "name": "MYSENDER02"
+      "id": "99c21a6b-6973-4273-9398-fc726048a874",
+      "name": "If"
     },
     {
       "parameters": {},
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
       "position": [
-        -340,
-        -200
+        920,
+        40
       ],
-      "id": "b6bcb509-ca8b-4b71-909f-9a3c65f5e656",
-      "name": "MYSENDER"
+      "id": "6870a423-4076-49fc-8e8a-ce6e5054e3c9",
+      "name": "ESPERAR"
     },
     {
       "parameters": {
-        "operation": "set",
-        "key": "=atendimento. {{ $json.userNumber }}",
-        "value": "true"
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2ce32791-d1f5-41f7-9bb8-3eb1e1097575",
+              "name": "base64",
+              "value": "={{ $('Webhook').item.json.body.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.redis",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        540,
-        20
+        -860,
+        -280
       ],
-      "id": "b64040ba-a9da-48fe-b15c-90592dd22891",
-      "name": "Redis",
+      "id": "51f60788-3f85-4afe-84de-036b904bd287",
+      "name": "EXTRAI_BASE64"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "49e69490-7950-4c8b-ad0d-99d706bc0537"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87508378-704a-4b8c-82bc-9d64696c6c16",
+                    "leftValue": "{{ $json.messageType }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dbb1f51d-6e8b-421c-aaa6-951f9f45a867",
+                    "leftValue": "{{ $json.messageType }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "de54aefd-528b-4f83-9aee-a7bd788d896a",
+                    "leftValue": "{{ $json.messageType }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2fcad5f4-6332-4bc6-aeb4-9ab55e91419f",
+                    "leftValue": "{{ $json.messageType }}",
+                    "rightValue": "video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1100,
+        -160
+      ],
+      "id": "42b3f8b4-87b1-444c-8bf2-ca85569a92bd",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "fileName": "audioOGG",
+          "mimeType": "=audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -700,
+        -280
+      ],
+      "id": "4fd7b155-22fd-4de5-bb48-739389c5ed26",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -280,
+        -160
+      ],
+      "id": "780edf01-d722-4ab5-bf9d-87af7e16faf2",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e3595b1-a095-4762-909f-e3b0a12734de",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -100,
+        -120
+      ],
+      "id": "df2f2cca-4bc7-4833-a310-da1463af5bd0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -540,
+        -280
+      ],
+      "id": "0b31d863-6693-40f7-84d0-9b0790346360",
+      "name": "TRANSCREVER_AUDIO",
       "credentials": {
-        "redis": {
-          "id": "xOCLtYh6T6QG0qLM",
-          "name": "Redis - Connect"
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "TRANSCRIÇÃO BASE64 - EVOLUTION\n",
+        "width": 1020,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -540
+      ],
+      "id": "132aeea1-8733-41cf-abdb-05eb70d0855a",
+      "name": "Sticky Note2"
     }
   ],
   "connections": {
-    "PARSE": {
+    "Webhook": {
       "main": [
         [
           {
-            "node": "TEST_SENDER",
+            "node": "SET_VARIAVEIS",
             "type": "main",
             "index": 0
           }
@@ -390,25 +577,7 @@
       "main": [
         [
           {
-            "node": "IS_GROUP?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "INCOMING?": {
-      "main": [
-        [
-          {
-            "node": "OUTGOING",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Redis",
+            "node": "Switch",
             "type": "main",
             "index": 0
           }
@@ -433,62 +602,135 @@
         ]
       ]
     },
-    "TEST_SENDER": {
+    "INCOMING?": {
       "main": [
         [
           {
-            "node": "MYSENDER01",
+            "node": "GET_ATENDIMENTO",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "MYSENDER02",
+            "node": "SET_ATENDIMENTO",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Webhook": {
+    "GET_ATENDIMENTO": {
       "main": [
         [
           {
-            "node": "PARSE",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "MYSENDER01": {
+    "If": {
       "main": [
+        [],
         [
           {
-            "node": "MYSENDER",
+            "node": "ESPERAR",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "MYSENDER02": {
+    "EXTRAI_BASE64": {
       "main": [
         [
           {
-            "node": "MYSENDER",
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "EXTRAI_BASE64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
             "type": "main",
             "index": 1
           }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
         ]
       ]
     },
-    "MYSENDER": {
+    "Convert to File": {
       "main": [
         [
           {
-            "node": "SET_VARIAVEIS",
+            "node": "TRANSCREVER_AUDIO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "IS_GROUP?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TRANSCREVER_AUDIO": {
+      "main": [
+        [
+          {
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -504,105 +746,73 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "PARSE": [
-      {
-        "json": {
-          "event": {
-            "Info": {
-              "Chat": "5511985401987@s.whatsapp.net",
-              "Sender": "5511985401987:77@s.whatsapp.net",
-              "IsFromMe": true,
-              "IsGroup": false,
-              "BroadcastListOwner": "",
-              "ID": "3EB0D521BF5F0120676407",
-              "ServerID": 0,
-              "Type": "text",
-              "PushName": "Dival S Filho 😎",
-              "Timestamp": "2025-03-14T03:01:57Z",
-              "Category": "",
-              "Multicast": false,
-              "MediaType": "",
-              "Edit": "",
-              "MsgBotInfo": {
-                "EditType": "",
-                "EditTargetID": "",
-                "EditSenderTimestampMS": "0001-01-01T00:00:00Z"
-              },
-              "MsgMetaInfo": {
-                "TargetID": "",
-                "TargetSender": ""
-              },
-              "VerifiedName": null,
-              "DeviceSentMeta": null
-            },
-            "Message": {
-              "conversation": "oie...",
-              "messageContextInfo": {
-                "deviceListMetadata": {
-                  "senderKeyHash": "1Ap1zzec0Ceisg==",
-                  "senderTimestamp": 1741317792,
-                  "senderAccountType": 0,
-                  "receiverAccountType": 0,
-                  "recipientKeyHash": "7h91T+RtaUt+0Q==",
-                  "recipientTimestamp": 1741137156
-                },
-                "deviceListMetadataVersion": 2,
-                "messageSecret": "IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184="
-              }
-            },
-            "IsEphemeral": false,
-            "IsViewOnce": false,
-            "IsViewOnceV2": false,
-            "IsViewOnceV2Extension": false,
-            "IsDocumentWithCaption": false,
-            "IsLottieSticker": false,
-            "IsEdit": false,
-            "SourceWebMsg": null,
-            "UnavailableRequestID": "",
-            "RetryCount": 0,
-            "NewsletterMeta": null,
-            "RawMessage": {
-              "conversation": "oie...",
-              "messageContextInfo": {
-                "deviceListMetadata": {
-                  "senderKeyHash": "1Ap1zzec0Ceisg==",
-                  "senderTimestamp": 1741317792,
-                  "senderAccountType": 0,
-                  "receiverAccountType": 0,
-                  "recipientKeyHash": "7h91T+RtaUt+0Q==",
-                  "recipientTimestamp": 1741137156
-                },
-                "deviceListMetadataVersion": 2,
-                "messageSecret": "IROusn7JEFqgq0sz9sQoeONgbMepjcDtVizwMu5t184="
-              }
-            }
-          },
-          "type": "Message"
-        }
-      }
-    ],
     "Webhook": [
       {
         "json": {
           "headers": {
             "host": "primary-production-1821.up.railway.app",
-            "user-agent": "go-resty/2.16.2 (https://github.com/go-resty/resty)",
-            "content-length": "2251",
-            "accept-encoding": "gzip",
-            "content-type": "application/x-www-form-urlencoded",
-            "x-forwarded-for": "138.197.95.114",
+            "user-agent": "axios/1.7.9",
+            "content-length": "5410",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "146.190.59.46",
             "x-forwarded-host": "primary-production-1821.up.railway.app",
             "x-forwarded-proto": "https",
-            "x-railway-edge": "railway/us-east4",
-            "x-railway-request-id": "J_pqj5qvQ7GPlyb6cdzXmg_882434190",
-            "x-real-ip": "138.197.95.114",
-            "x-request-start": "1742009167272"
+            "x-railway-edge": "railway/us-west1",
+            "x-railway-request-id": "uQoYjM-XSdu6pihRZCSJdg_3485859946",
+            "x-real-ip": "146.190.59.46",
+            "x-request-start": "1742241431636"
           },
           "params": {},
           "query": {},
           "body": {
-            "jsonData": "{\"event\":{\"Info\":{\"Chat\":\"5511985401987@s.whatsapp.net\",\"Sender\":\"5511985401987:77@s.whatsapp.net\",\"IsFromMe\":false,\"IsGroup\":false,\"BroadcastListOwner\":\"\",\"ID\":\"3EB04BF2B0998DABF933CB\",\"ServerID\":0,\"Type\":\"text\",\"PushName\":\"Dival S Filho 😎\",\"Timestamp\":\"2025-03-15T03:26:07Z\",\"Category\":\"\",\"Multicast\":false,\"MediaType\":\"\",\"Edit\":\"\",\"MsgBotInfo\":{\"EditType\":\"\",\"EditTargetID\":\"\",\"EditSenderTimestampMS\":\"0001-01-01T00:00:00Z\"},\"MsgMetaInfo\":{\"TargetID\":\"\",\"TargetSender\":\"\"},\"VerifiedName\":null,\"DeviceSentMeta\":null},\"Message\":{\"conversation\":\"Boa Noite!!!\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"uW1XRMx6LXFzNw==\",\"recipientTimestamp\":1741916289},\"deviceListMetadataVersion\":2,\"messageSecret\":\"RdmuJ7JPv4mOubtX7XHH2MzQ+FBw9c1aiJkblx5aSOk=\"}},\"IsEphemeral\":false,\"IsViewOnce\":false,\"IsViewOnceV2\":false,\"IsViewOnceV2Extension\":false,\"IsDocumentWithCaption\":false,\"IsLottieSticker\":false,\"IsEdit\":false,\"SourceWebMsg\":null,\"UnavailableRequestID\":\"\",\"RetryCount\":0,\"NewsletterMeta\":null,\"RawMessage\":{\"conversation\":\"Boa Noite!!!\",\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"1Ap1zzec0Ceisg==\",\"senderTimestamp\":1741317792,\"senderAccountType\":0,\"receiverAccountType\":0,\"recipientKeyHash\":\"uW1XRMx6LXFzNw==\",\"recipientTimestamp\":1741916289},\"deviceListMetadataVersion\":2,\"messageSecret\":\"RdmuJ7JPv4mOubtX7XHH2MzQ+FBw9c1aiJkblx5aSOk=\"}}},\"type\":\"Message\"}",
-            "token": "zyMDajkbmOlCm29MVBxxZHsC9c4w5pTDO1VZh9IwbCUi55FC3Ieu1YwEdeHD"
+            "event": "messages.upsert",
+            "instance": "Ofir",
+            "data": {
+              "key": {
+                "remoteJid": "5511985401987@s.whatsapp.net",
+                "fromMe": false,
+                "id": "DBC022D14764B617D5D234FA7C2C321D"
+              },
+              "pushName": "Dival S Filho 😎",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "audioMessage": {
+                  "url": "https://mmg.whatsapp.net/v/t62.7117-24/11820303_1738007233421325_4102523626946764684_n.enc?ccb=11-4&oh=01_Q5AaIVZeW9vBFkH1hivi-c9Rc_do9Q-Ezs2_jX91Tj0zfRP_&oe=67FFD62C&_nc_sid=5e03e0&mms3=true",
+                  "mimetype": "audio/ogg; codecs=opus",
+                  "fileSha256": "GYu/HzP/oZlMiOlM5oJkbKmhe/tD5Zlb+UrPKaqX37M=",
+                  "fileLength": "2765",
+                  "seconds": 1,
+                  "ptt": true,
+                  "mediaKey": "DPygMVISkuW+6h9x0QTTmih647gAdNslZlMRoAEg/lQ=",
+                  "fileEncSha256": "IByUkkPZNC0cbdy19l8F4zefz6jygKcvZCx6BUql0jg=",
+                  "directPath": "/v/t62.7117-24/11820303_1738007233421325_4102523626946764684_n.enc?ccb=11-4&oh=01_Q5AaIVZeW9vBFkH1hivi-c9Rc_do9Q-Ezs2_jX91Tj0zfRP_&oe=67FFD62C&_nc_sid=5e03e0",
+                  "mediaKeyTimestamp": "1742241430",
+                  "waveform": "AAAAAAAAFDJRUVJSUlFRUVJPTEhFQT47OC0jGxcTDQYAEyczMC0sKysnIyY3SE1MTEtLSEA4Nzg6JA4AAAAAAA=="
+                },
+                "messageContextInfo": {
+                  "deviceListMetadata": {
+                    "senderKeyHash": "1Ap1zzec0Ceisg==",
+                    "senderTimestamp": "1741317792",
+                    "recipientKeyHash": "uW1XRMx6LXFzNw==",
+                    "recipientTimestamp": "1742009060"
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": "PNqYFn9P+HIp9vnhnEHrlz7+7QCB2L5QA8Z/EYRF9PA="
+                },
+                "base64": "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"
+              },
+              "contextInfo": null,
+              "messageType": "audioMessage",
+              "messageTimestamp": 1742241431,
+              "instanceId": "1f617cf7-0352-442c-8759-1dd6a92b586c",
+              "source": "android"
+            },
+            "destination": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
+            "date_time": "2025-03-17T16:57:11.529Z",
+            "sender": "5511932081209@s.whatsapp.net",
+            "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
+            "apikey": "199604EDFDB7-477B-9F21-8DB8DB4A060D"
           },
           "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
           "executionMode": "test"
@@ -610,7 +820,7 @@
       }
     ]
   },
-  "versionId": "4b0706ad-e4bf-407b-9f7d-2c600fd3f25f",
+  "versionId": "b4376b5d-e824-4d2c-87a9-4cc339ccd22d",
   "triggerCount": 0,
   "tags": [
     {
@@ -620,10 +830,10 @@
       "name": "Criador Digital"
     },
     {
-      "createdAt": "2025-03-14T00:12:56.248Z",
-      "updatedAt": "2025-03-14T00:12:56.248Z",
-      "id": "4eNvKdFMUSJAYyOR",
-      "name": "Teste"
+      "createdAt": "2025-03-17T19:34:03.740Z",
+      "updatedAt": "2025-03-17T19:34:03.740Z",
+      "id": "M3oF1hF2pAN9SLRE",
+      "name": "D21D"
     }
   ]
 }
