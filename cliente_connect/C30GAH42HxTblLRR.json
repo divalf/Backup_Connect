@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-17T20:07:07.752Z",
+  "updatedAt": "2025-03-18T20:25:35.752Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
   "active": false,
@@ -9,13 +9,13 @@
       "parameters": {
         "content": "SETAR VARÍÁVEIS\n",
         "height": 520,
-        "width": 1620,
+        "width": 1940,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1540,
+        -1860,
         -320
       ],
       "id": "aaf6de75-0b31-4f9f-a6d9-7c3327177f32",
@@ -30,7 +30,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1500,
+        -1800,
         -120
       ],
       "id": "b24609b2-dfa2-49b4-9a30-c836d8009f98",
@@ -142,56 +142,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1300,
+        -1600,
         -120
       ],
       "id": "5cf627eb-e32d-445a-aaa5-833f5b25cd87",
       "name": "SET_VARIAVEIS"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        380,
-        -280
-      ],
-      "id": "8c6dce24-6fba-4e28-82d1-711e58cd4214",
-      "name": "IS_GROUP"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "de39cd6f-e424-4c2f-934c-cf7dc3aef584",
-              "leftValue": "={{ $('SET_VARIAVEIS').item.json.isGroup }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        140,
-        -180
-      ],
-      "id": "c8384498-010f-472c-8e3b-6b7faa5a7293",
-      "name": "IS_GROUP?"
     },
     {
       "parameters": {
@@ -220,8 +175,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        380,
-        -60
+        200,
+        -120
       ],
       "id": "c7e382b7-268f-4ec9-b5d7-6ece3e0f8ac0",
       "name": "INCOMING?"
@@ -237,7 +192,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        640,
+        560,
         40
       ],
       "id": "2b89a56e-cd4e-4ad0-9d02-15767dcb149d",
@@ -259,7 +214,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        620,
+        540,
         -280
       ],
       "id": "e7fc5866-70ef-4110-ac34-c45f6d9ab3ab",
@@ -299,7 +254,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        840,
+        760,
         -280
       ],
       "id": "99c21a6b-6973-4273-9398-fc726048a874",
@@ -310,7 +265,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        920,
+        840,
         40
       ],
       "id": "6870a423-4076-49fc-8e8a-ce6e5054e3c9",
@@ -333,7 +288,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -860,
+        -1160,
         -280
       ],
       "id": "51f60788-3f85-4afe-84de-036b904bd287",
@@ -464,7 +419,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -1100,
+        -1400,
         -160
       ],
       "id": "42b3f8b4-87b1-444c-8bf2-ca85569a92bd",
@@ -482,7 +437,7 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -700,
+        -1000,
         -280
       ],
       "id": "4fd7b155-22fd-4de5-bb48-739389c5ed26",
@@ -495,34 +450,11 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        -280,
+        -360,
         -160
       ],
       "id": "780edf01-d722-4ab5-bf9d-87af7e16faf2",
       "name": "Merge"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "2e3595b1-a095-4762-909f-e3b0a12734de",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -100,
-        -120
-      ],
-      "id": "df2f2cca-4bc7-4833-a310-da1463af5bd0",
-      "name": "Edit Fields"
     },
     {
       "parameters": {
@@ -533,7 +465,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -540,
+        -820,
         -280
       ],
       "id": "0b31d863-6693-40f7-84d0-9b0790346360",
@@ -559,6 +491,191 @@
       ],
       "id": "132aeea1-8733-41cf-abdb-05eb70d0855a",
       "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e3595b1-a095-4762-909f-e3b0a12734de",
+              "name": "userMessage",
+              "value": "={{ $json.payload }}",
+              "type": "string"
+            },
+            {
+              "id": "c3c040e4-465d-4de6-95a7-cd86585bb6cb",
+              "name": "sessionID",
+              "value": "={{ $('Switch').item.json.messageSender }}",
+              "type": "string"
+            },
+            {
+              "id": "3a19f6e5-92e9-448b-98ec-1d445466ecb6",
+              "name": "messageTimestamp",
+              "value": "={{ $('Switch').item.json.messageTimestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "3727f105-a785-48f7-a34a-f4175918cd61",
+              "name": "messageID",
+              "value": "={{ $('Switch').item.json.messageID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -120,
+        -120
+      ],
+      "id": "df2f2cca-4bc7-4833-a310-da1463af5bd0",
+      "name": "SET_PAYLOAD"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $json.text,\nmessageTimestamp: $('SET_VARIAVEIS').item.json.messageTimestamp, messageId: $('SET_VARIAVEIS').item.json.messageID })}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -280
+      ],
+      "id": "9977410e-9600-4664-b87b-7592bf7c0886",
+      "name": "Audio Data"
+    },
+    {
+      "parameters": {
+        "content": "ESPERANDO MENDAGEM\n",
+        "height": 520,
+        "width": 1180,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        -320
+      ],
+      "id": "d8a8a6b7-8a49-4b1d-bffe-47689432272b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "=temporario.{{ $('SET_PAYLOAD').item.json.sessionID }}",
+        "messageData": "={{ $('SET_PAYLOAD').item.json.userMessage }}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        -140
+      ],
+      "id": "035a289b-a2a5-4d26-ae26-9da997b0e046",
+      "name": "PUSH",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "messagens",
+        "key": "=temporario.{{ $('SET_PAYLOAD').item.json.sessionID }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -140
+      ],
+      "id": "4e8f684b-6e04-45b6-97d0-a6f816d27227",
+      "name": "GET",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ JSON.parse($json.messagens?.first() || '{}').messageId }}",
+                    "rightValue": "={{ $('SET_VARIAVEIS').item.json.messageID }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "cc9fe878-645b-44d0-8e5f-c53ecf9e9863"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f5830cee-4806-44c6-9c32-78ad726edc91",
+                    "leftValue": "={{DateTime.fromSeconds(JSON.parse($json.messagens?.last() || '{}').messageTimestamp)}}\n",
+                    "rightValue": "={{$now.minus(15, seconds)}}",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "before"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1620,
+        -140
+      ],
+      "id": "4b45c55b-4ae7-4395-8bc2-65d10e52eaa3",
+      "name": "SWITCH_BUFFER"
     }
   ],
   "connections": {
@@ -578,24 +695,6 @@
         [
           {
             "node": "Switch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IS_GROUP?": {
-      "main": [
-        [
-          {
-            "node": "IS_GROUP",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "INCOMING?",
             "type": "main",
             "index": 0
           }
@@ -633,7 +732,13 @@
     },
     "If": {
       "main": [
-        [],
+        [
+          {
+            "node": "PUSH",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "ESPERAR",
@@ -708,18 +813,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "IS_GROUP?",
+            "node": "SET_PAYLOAD",
             "type": "main",
             "index": 0
           }
@@ -730,7 +824,51 @@
       "main": [
         [
           {
+            "node": "Audio Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SET_PAYLOAD": {
+      "main": [
+        [
+          {
+            "node": "INCOMING?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Data": {
+      "main": [
+        [
+          {
             "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUSH": {
+      "main": [
+        [
+          {
+            "node": "GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET": {
+      "main": [
+        [
+          {
+            "node": "SWITCH_BUFFER",
             "type": "main",
             "index": 0
           }
@@ -752,16 +890,16 @@
           "headers": {
             "host": "primary-production-1821.up.railway.app",
             "user-agent": "axios/1.7.9",
-            "content-length": "5410",
+            "content-length": "977",
             "accept-encoding": "gzip, compress, deflate, br",
             "content-type": "application/json",
             "x-forwarded-for": "146.190.59.46",
             "x-forwarded-host": "primary-production-1821.up.railway.app",
             "x-forwarded-proto": "https",
             "x-railway-edge": "railway/us-west1",
-            "x-railway-request-id": "uQoYjM-XSdu6pihRZCSJdg_3485859946",
+            "x-railway-request-id": "s7uDEsvdTN2MEEJBUzEbiA_603909319",
             "x-real-ip": "146.190.59.46",
-            "x-request-start": "1742241431636"
+            "x-request-start": "1742329452620"
           },
           "params": {},
           "query": {},
@@ -772,44 +910,32 @@
               "key": {
                 "remoteJid": "5511985401987@s.whatsapp.net",
                 "fromMe": false,
-                "id": "DBC022D14764B617D5D234FA7C2C321D"
+                "id": "3EB0AEB9742560838CB022"
               },
               "pushName": "Dival S Filho 😎",
               "status": "DELIVERY_ACK",
               "message": {
-                "audioMessage": {
-                  "url": "https://mmg.whatsapp.net/v/t62.7117-24/11820303_1738007233421325_4102523626946764684_n.enc?ccb=11-4&oh=01_Q5AaIVZeW9vBFkH1hivi-c9Rc_do9Q-Ezs2_jX91Tj0zfRP_&oe=67FFD62C&_nc_sid=5e03e0&mms3=true",
-                  "mimetype": "audio/ogg; codecs=opus",
-                  "fileSha256": "GYu/HzP/oZlMiOlM5oJkbKmhe/tD5Zlb+UrPKaqX37M=",
-                  "fileLength": "2765",
-                  "seconds": 1,
-                  "ptt": true,
-                  "mediaKey": "DPygMVISkuW+6h9x0QTTmih647gAdNslZlMRoAEg/lQ=",
-                  "fileEncSha256": "IByUkkPZNC0cbdy19l8F4zefz6jygKcvZCx6BUql0jg=",
-                  "directPath": "/v/t62.7117-24/11820303_1738007233421325_4102523626946764684_n.enc?ccb=11-4&oh=01_Q5AaIVZeW9vBFkH1hivi-c9Rc_do9Q-Ezs2_jX91Tj0zfRP_&oe=67FFD62C&_nc_sid=5e03e0",
-                  "mediaKeyTimestamp": "1742241430",
-                  "waveform": "AAAAAAAAFDJRUVJSUlFRUVJPTEhFQT47OC0jGxcTDQYAEyczMC0sKysnIyY3SE1MTEtLSEA4Nzg6JA4AAAAAAA=="
-                },
+                "conversation": "Boa Tarde!!",
                 "messageContextInfo": {
                   "deviceListMetadata": {
                     "senderKeyHash": "1Ap1zzec0Ceisg==",
                     "senderTimestamp": "1741317792",
+                    "senderAccountType": "E2EE",
+                    "receiverAccountType": "E2EE",
                     "recipientKeyHash": "uW1XRMx6LXFzNw==",
                     "recipientTimestamp": "1742009060"
                   },
                   "deviceListMetadataVersion": 2,
-                  "messageSecret": "PNqYFn9P+HIp9vnhnEHrlz7+7QCB2L5QA8Z/EYRF9PA="
-                },
-                "base64": "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"
+                  "messageSecret": "sXY9uLP9GvcoCHSP6f6ebpq/bfmdJXlBDjaX7BolfEM="
+                }
               },
-              "contextInfo": null,
-              "messageType": "audioMessage",
-              "messageTimestamp": 1742241431,
+              "messageType": "conversation",
+              "messageTimestamp": 1742329452,
               "instanceId": "1f617cf7-0352-442c-8759-1dd6a92b586c",
-              "source": "android"
+              "source": "web"
             },
             "destination": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
-            "date_time": "2025-03-17T16:57:11.529Z",
+            "date_time": "2025-03-18T17:24:12.509Z",
             "sender": "5511932081209@s.whatsapp.net",
             "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
             "apikey": "199604EDFDB7-477B-9F21-8DB8DB4A060D"
@@ -820,7 +946,7 @@
       }
     ]
   },
-  "versionId": "b4376b5d-e824-4d2c-87a9-4cc339ccd22d",
+  "versionId": "2d55b3eb-8973-4bf3-a3a9-55fe65d9cd3e",
   "triggerCount": 0,
   "tags": [
     {
