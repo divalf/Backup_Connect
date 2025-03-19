@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-06T01:14:26.344Z",
-  "updatedAt": "2025-03-12T01:36:15.651Z",
+  "updatedAt": "2025-03-18T13:53:59.652Z",
   "id": "c2ZwwI10S4m8K94r",
   "name": "#4 | Gerencia Fila de Mensagens - Naka",
   "active": true,
@@ -142,7 +142,9 @@
       "name": "Verify Buffer Status"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "amount": 15
+      },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
@@ -590,8 +592,19 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "53dd0f26-a854-43f5-9cc9-5014c922b13f",
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "user_message": "{\"userMessage\":\"Ela tem 15 anos.\",\"messageTimestamp\":\"1742221618\",\"messageId\":\"3EB0B68E3153E0507E5AC6\"}\n",
+          "sessionID": "5511985401987@s.whatsapp.net",
+          "messageTimestamp": "1742221618",
+          "messageID": "3EB0B68E3153E0507E5AC6"
+        }
+      }
+    ]
+  },
+  "versionId": "3eaa5805-3234-4330-8f0b-bd924f9430a1",
   "triggerCount": 1,
   "tags": [
     {
