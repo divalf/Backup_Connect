@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-10T01:26:55.857Z",
-  "updatedAt": "2025-03-12T20:41:11.661Z",
+  "updatedAt": "2025-03-19T02:28:26.649Z",
   "id": "jmwQUM352d4NjGNB",
   "name": "#8| RAG - Naka",
   "active": true,
@@ -302,7 +302,7 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "value": "1Nsm05q4UmFPeL6DbvcO8aL46hUTXSRtE",
+          "value": "1L7cUBq1mH5EzW5bOJ_zX1G8QBG1IoZ5s",
           "mode": "id"
         },
         "event": "fileUpdated",
@@ -336,7 +336,7 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "value": "1Nsm05q4UmFPeL6DbvcO8aL46hUTXSRtE",
+          "value": "1L7cUBq1mH5EzW5bOJ_zX1G8QBG1IoZ5s",
           "mode": "id"
         },
         "event": "fileCreated",
@@ -650,17 +650,17 @@
   },
   "staticData": {
     "node:Arquivo Atualizado": {
-      "lastTimeChecked": "2025-03-17T03:30:11Z"
+      "lastTimeChecked": "2025-03-19T02:28:26Z"
     },
     "node:Arquivo Criado": {
-      "lastTimeChecked": "2025-03-17T03:30:07Z"
+      "lastTimeChecked": "2025-03-19T02:28:27Z"
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "16fe0a56-789f-4249-9ee6-cb7361286f2d",
+  "versionId": "1adab305-8632-44a4-9874-481dd46b3fd9",
   "triggerCount": 2,
   "tags": [
     {
