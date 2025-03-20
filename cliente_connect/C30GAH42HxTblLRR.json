@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-18T20:25:35.752Z",
+  "updatedAt": "2025-03-20T01:58:16.722Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -208,7 +208,7 @@
       "parameters": {
         "operation": "get",
         "propertyName": "atendimento",
-        "key": "=atendimento:{{ $('SET_VARIAVEIS').item.json.messageSender }}",
+        "key": "={{ $('SET_PAYLOAD').item.json.sessionID }}",
         "options": {}
       },
       "type": "n8n-nodes-base.redis",
@@ -582,8 +582,8 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1260,
-        -140
+        860,
+        -1040
       ],
       "id": "035a289b-a2a5-4d26-ae26-9da997b0e046",
       "name": "PUSH",
@@ -604,8 +604,8 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1440,
-        -140
+        1040,
+        -1040
       ],
       "id": "4e8f684b-6e04-45b6-97d0-a6f816d27227",
       "name": "GET",
@@ -625,7 +625,7 @@
                 "options": {
                   "caseSensitive": true,
                   "leftValue": "",
-                  "typeValidation": "strict",
+                  "typeValidation": "loose",
                   "version": 2
                 },
                 "conditions": [
@@ -640,14 +640,16 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "Nada"
             },
             {
               "conditions": {
                 "options": {
                   "caseSensitive": true,
                   "leftValue": "",
-                  "typeValidation": "strict",
+                  "typeValidation": "loose",
                   "version": 2
                 },
                 "conditions": [
@@ -662,20 +664,239 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "Segue"
             }
           ]
         },
-        "options": {}
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Espera"
+        }
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1620,
-        -140
+        1220,
+        -1040
       ],
       "id": "4b45c55b-4ae7-4395-8bc2-65d10e52eaa3",
       "name": "SWITCH_BUFFER"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        -860
+      ],
+      "id": "b48f1cbd-c860-44e9-81bc-d1be98334efb",
+      "name": "Wait",
+      "webhookId": "9cc1e839-f122-4131-98f3-e0fc6389f829"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=temporario.{{ $('SET_PAYLOAD').item.json.sessionID }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -1040
+      ],
+      "id": "e8bd2e48-44e0-4da3-a94b-a14be14dcb6d",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "temporario.{{ $('SET_PAYLOAD').item.json.sessionID }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -820
+      ],
+      "id": "fcba2a03-5e85-49d4-9e45-c092fcc235e8",
+      "name": "PUSH1",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('SET_PAYLOAD').item.json.sessionID }}",
+        "messageData": "={{ $('SET_PAYLOAD').item.json.userMessage }}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        -140
+      ],
+      "id": "359b417f-42c4-47c4-a274-a7caf05627eb",
+      "name": "Push Messages",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ (() => { \n    const messages = $json.messages || []; // Array de mensagens\n\n    if (messages.length > 0) {\n        try {\n            // Retorna o tipo e o conteúdo inicial da mensagem para depuração\n            let firstMessageEscaped = messages[0];\n            let debugInfo = `Tipo de messages[0]: ${typeof firstMessageEscaped} | Valor: ${firstMessageEscaped}`;\n\n            // Se for string, fazer o parse\n            if (typeof firstMessageEscaped === 'string') {\n                firstMessageEscaped = JSON.parse(firstMessageEscaped);\n                debugInfo += ` | Após primeiro JSON.parse: ${JSON.stringify(firstMessageEscaped)}`;\n            }\n\n            // Se ainda for string, fazer outro parse (caso tenha dupla serialização)\n            let firstMessage = firstMessageEscaped;\n            if (typeof firstMessageEscaped === 'string') {\n                firstMessage = JSON.parse(firstMessageEscaped);\n                debugInfo += ` | Após segundo JSON.parse: ${JSON.stringify(firstMessage)}`;\n            }\n\n            // Retorna o messageId ou debugInfo\n            return firstMessage.messageId || `messageId não encontrado | ${debugInfo}`;\n        } catch (error) {\n            return `Erro no parsing: ${error.message}`;\n        }\n    }\n    \n    return \"Array vazio\";\n})()}}",
+                    "rightValue": "={{ $('SET_VARIAVEIS').item.json.messageID }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "0882e4f5-aa91-46be-a73c-386792f7b19b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Nothing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ec3063b2-cc0d-468d-8af2-022500faec37",
+                    "leftValue": "={{ \n  (() => {\n    // 1. Acessar o campo `messages` no JSON\n    const messages = $json.messages;\n\n    // 2. Verificar se `messages` existe e é uma array\n    if (!messages || !Array.isArray(messages) || messages.length === 0) {\n      return 'Erro: Campo `messages` está vazio ou ausente.';\n    }\n\n    // 3. Pegar o último item da array\n    const lastItem = messages[messages.length - 1];\n\n    // 4. Verificar se `lastItem` é uma string válida\n    if (!lastItem || typeof lastItem !== 'string') {\n      return 'Erro: Último item não é uma string válida.';\n    }\n\n    // 5. Limpar os caracteres de escape e remover aspas externas\n    const cleanedItem = lastItem\n      .replace(/^\"|\"$/g, '') // Remove aspas externas\n      .replace(/\\\\\"/g, '\"')  // Substitui \\\" por \"\n      .replace(/\\\\\\\\/g, '\\\\'); // Substitui \\\\ por \\\n\n    // 6. Parsear o JSON\n    let parsedItem;\n    try {\n      parsedItem = JSON.parse(cleanedItem);\n    } catch (e) {\n      return `Erro: Não foi possível parsear o JSON do último item (${e.message}).`;\n    }\n\n    // 7. Extrair o campo `messageTimestamp`\n    const timestamp = parsedItem.messageTimestamp;\n    if (!timestamp) {\n      return 'Erro: Campo `messageTimestamp` não encontrado.';\n    }\n\n    // 8. Converter o timestamp para ISO 8601\n    try {\n      return new Date(Number(timestamp)).toISOString();\n    } catch (e) {\n      return 'Erro: Não foi possível converter o timestamp.';\n    }\n  })()\n}}",
+                    "rightValue": "={{ \n    (() => {\n        const now = new Date(); // Obtém a data e hora atual\n        now.setSeconds(now.getSeconds() - 30); // Subtrai 30 segundos\n        return `${now.toISOString()}`; // Retorna no formato ISO\n    })() \n}}",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "before"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Continue"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Wait"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1820,
+        -140
+      ],
+      "id": "26992a4d-6a33-45d8-b9b4-4d2e9fb5db6d",
+      "name": "Verify Buffer Status"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('RabbitMQ Trigger').item.json.sessionID }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        -140
+      ],
+      "id": "a3dbf5c4-cfa2-4c23-8716-2d091aa4ab58",
+      "name": "Delete Buffer",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        -300
+      ],
+      "id": "f9ab12e1-057f-4a95-9a2a-0ffc78da7a05",
+      "name": "Nothing"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "messages",
+        "key": "={{ $('SET_VARIAVEIS').item.json.userNumber }}",
+        "keyType": "list",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -140
+      ],
+      "id": "fa2ccbdb-0542-47ff-b671-f4090c6900f0",
+      "name": "Get_Messages",
+      "credentials": {
+        "redis": {
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        -140
+      ],
+      "id": "af66d39a-ad8c-44e7-a8c9-a5c66708f6ec",
+      "name": "Wait2",
+      "webhookId": "178f389c-a56e-47f7-b247-f704946c9259"
     }
   ],
   "connections": {
@@ -734,7 +955,7 @@
       "main": [
         [
           {
-            "node": "PUSH",
+            "node": "Wait2",
             "type": "main",
             "index": 0
           }
@@ -874,6 +1095,94 @@
           }
         ]
       ]
+    },
+    "SWITCH_BUFFER": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push Messages": {
+      "main": [
+        [
+          {
+            "node": "Get_Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Buffer Status": {
+      "main": [
+        [
+          {
+            "node": "Nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Buffer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Messages": {
+      "main": [
+        [
+          {
+            "node": "Verify Buffer Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Push Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -890,16 +1199,16 @@
           "headers": {
             "host": "primary-production-1821.up.railway.app",
             "user-agent": "axios/1.7.9",
-            "content-length": "977",
+            "content-length": "5011",
             "accept-encoding": "gzip, compress, deflate, br",
             "content-type": "application/json",
             "x-forwarded-for": "146.190.59.46",
             "x-forwarded-host": "primary-production-1821.up.railway.app",
             "x-forwarded-proto": "https",
             "x-railway-edge": "railway/us-west1",
-            "x-railway-request-id": "s7uDEsvdTN2MEEJBUzEbiA_603909319",
+            "x-railway-request-id": "23ctLgpmQjmZ1nhll_AzuA_2654280189",
             "x-real-ip": "146.190.59.46",
-            "x-request-start": "1742329452620"
+            "x-request-start": "1742434073633"
           },
           "params": {},
           "query": {},
@@ -910,44 +1219,56 @@
               "key": {
                 "remoteJid": "5511985401987@s.whatsapp.net",
                 "fromMe": false,
-                "id": "3EB0AEB9742560838CB022"
+                "id": "346038603FF0A48B47296FF6E9107ABC"
               },
               "pushName": "Dival S Filho 😎",
               "status": "DELIVERY_ACK",
               "message": {
-                "conversation": "Boa Tarde!!",
+                "audioMessage": {
+                  "url": "https://mmg.whatsapp.net/v/t62.7117-24/22559346_2271732919875621_190724801515475685_n.enc?ccb=11-4&oh=01_Q5AaIQfKkJt_dllz9v7S8_cl3ianTz_5xU5F35O1h8njy-uH&oe=6802E094&_nc_sid=5e03e0&mms3=true",
+                  "mimetype": "audio/ogg; codecs=opus",
+                  "fileSha256": "mv61Q/3LZnl9ydTAk9+d9cCWXZfNinAywwGkR5Li8AA=",
+                  "fileLength": "2472",
+                  "seconds": 1,
+                  "ptt": true,
+                  "mediaKey": "oMTp8yJrpSg1OxdR0KIjWP12QdU5JSftGsv990Gjwjs=",
+                  "fileEncSha256": "8oaItfDlbu0TG6R7cMjib75a09b+RYDka7HlAOHsntc=",
+                  "directPath": "/v/t62.7117-24/22559346_2271732919875621_190724801515475685_n.enc?ccb=11-4&oh=01_Q5AaIQfKkJt_dllz9v7S8_cl3ianTz_5xU5F35O1h8njy-uH&oe=6802E094&_nc_sid=5e03e0",
+                  "mediaKeyTimestamp": "1742434072",
+                  "waveform": "AAAAAAAAAAAAAAAAAAAAAAABAhInPENDQz86NS4nHx8nLzEvLSsoJigxOkFERkdGRUNCQUBBQ0REQ0AqFAArQw=="
+                },
                 "messageContextInfo": {
                   "deviceListMetadata": {
                     "senderKeyHash": "1Ap1zzec0Ceisg==",
                     "senderTimestamp": "1741317792",
-                    "senderAccountType": "E2EE",
-                    "receiverAccountType": "E2EE",
                     "recipientKeyHash": "uW1XRMx6LXFzNw==",
                     "recipientTimestamp": "1742009060"
                   },
                   "deviceListMetadataVersion": 2,
-                  "messageSecret": "sXY9uLP9GvcoCHSP6f6ebpq/bfmdJXlBDjaX7BolfEM="
-                }
+                  "messageSecret": "T05xJxTFJUvLdsdYA3akuK/utZqQKkl0Y8gTxgfveFk="
+                },
+                "base64": "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"
               },
-              "messageType": "conversation",
-              "messageTimestamp": 1742329452,
+              "contextInfo": null,
+              "messageType": "audioMessage",
+              "messageTimestamp": 1742434073,
               "instanceId": "1f617cf7-0352-442c-8759-1dd6a92b586c",
-              "source": "web"
+              "source": "android"
             },
-            "destination": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
-            "date_time": "2025-03-18T17:24:12.509Z",
+            "destination": "https://primary-production-1821.up.railway.app/webhook/d21d",
+            "date_time": "2025-03-19T22:27:53.519Z",
             "sender": "5511932081209@s.whatsapp.net",
             "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
             "apikey": "199604EDFDB7-477B-9F21-8DB8DB4A060D"
           },
-          "webhookUrl": "https://primary-production-1821.up.railway.app/webhook-test/d21d",
-          "executionMode": "test"
+          "webhookUrl": "https://primary-production-1821.up.railway.app/webhook/d21d",
+          "executionMode": "production"
         }
       }
     ]
   },
-  "versionId": "2d55b3eb-8973-4bf3-a3a9-55fe65d9cd3e",
-  "triggerCount": 0,
+  "versionId": "c28b0c07-59bc-428a-82ad-9e7052e1b900",
+  "triggerCount": 1,
   "tags": [
     {
       "createdAt": "2025-03-10T16:43:32.633Z",
