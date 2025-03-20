@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-02-26T00:16:35.699Z",
-  "updatedAt": "2025-03-10T01:23:28.596Z",
+  "updatedAt": "2025-03-20T01:51:15.667Z",
   "id": "Ek8nZX3FtKVoBTst",
   "name": "#4 | Gerencia Fila de Mensagens",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -239,7 +239,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -1200,
+        -1180,
         140
       ],
       "id": "9a5c9370-6af2-4fa9-9bba-7fe88a2670d7",
@@ -590,8 +590,19 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "a19aaa6f-0ff2-4c70-b660-a3a9ece5677e",
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "user_message": "{\"userMessage\":\"Boa Noite!\",\"messageTimestamp\":\"1740533748\",\"messageId\":\"3EB0AB67148F7D759BC61B\"}\n",
+          "sessionID": "5511985401987@s.whatsapp.net",
+          "messageTimestamp": "1740533748",
+          "messageID": "3EB0AB67148F7D759BC61B"
+        }
+      }
+    ]
+  },
+  "versionId": "663a5c6f-a197-482c-822f-3568426bb38e",
   "triggerCount": 1,
   "tags": [
     {
