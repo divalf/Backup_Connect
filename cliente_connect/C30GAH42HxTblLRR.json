@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-21T03:28:42.368Z",
+  "updatedAt": "2025-03-23T00:48:55.749Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
   "active": true,
@@ -65,14 +65,14 @@
             },
             {
               "id": "e78ef7e8-a0c9-4350-9060-93e503e6e16c",
-              "name": "user.Number",
-              "value": "={{ $json.body.data.key.remoteJid.split('@')[0] }}\n\n",
+              "name": "message.Sender",
+              "value": "={{ $json.body.data.key.remoteJid }}\n\n",
               "type": "string"
             },
             {
               "id": "57233cf4-2452-4455-bccb-ea83e9fca64e",
-              "name": "message.Sender",
-              "value": "={{ $json.body.sender.split('@')[0] }}",
+              "name": "user.Number",
+              "value": "={{ $json.body.sender }}",
               "type": "string"
             },
             {
@@ -83,8 +83,14 @@
             },
             {
               "id": "9fa17f5a-6ea4-47b4-b2ba-f419fa32bd1d",
-              "name": "message.Content",
+              "name": "message.ContentAudio",
               "value": "={{ $json.body.data.message.audioMessage.mimetype }}",
+              "type": "string"
+            },
+            {
+              "id": "080aa96e-9226-44df-b631-1e9fde687b96",
+              "name": "message.ContentTexto",
+              "value": "={{ $json.body.data.message.conversation }}",
               "type": "string"
             },
             {
@@ -101,7 +107,7 @@
             },
             {
               "id": "03ccb2c8-2b94-4bd4-90f0-de118a00706f",
-              "name": "message.Timestamp",
+              "name": "message.timestamp",
               "value": "={{ $json.body.data.messageTimestamp }}",
               "type": "number"
             },
@@ -119,7 +125,7 @@
             },
             {
               "id": "1ae0bf16-ba78-402d-bfe1-91315cc3cf1f",
-              "name": "message.AtendimentoHumano",
+              "name": "message.Atendimento",
               "value": "720",
               "type": "string"
             },
@@ -184,23 +190,23 @@
     {
       "parameters": {
         "operation": "set",
-        "key": "=atendimento:{{ $json.sessionID }}",
+        "key": "=atendimento:{{ $json.user.Number }}",
         "value": "true",
         "expire": true,
-        "ttl": "={{ $('SET_VARIAVEIS').item.json.messageAtendimentoHumano }}"
+        "ttl": "={{ $('SET_VARIAVEIS').item.json.message.AtendimentoHumano }}"
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        560,
+        540,
         40
       ],
       "id": "2b89a56e-cd4e-4ad0-9d02-15767dcb149d",
       "name": "SET_ATENDIMENTO",
       "credentials": {
         "redis": {
-          "id": "68kS7JueUisb4P6J",
-          "name": "Redis - d21d"
+          "id": "xOCLtYh6T6QG0qLM",
+          "name": "Redis - Connect"
         }
       }
     },
@@ -289,7 +295,7 @@
       "typeVersion": 3.4,
       "position": [
         -1160,
-        -280
+        -380
       ],
       "id": "51f60788-3f85-4afe-84de-036b904bd287",
       "name": "EXTRAI_BASE64"
@@ -331,8 +337,8 @@
                 "conditions": [
                   {
                     "id": "87508378-704a-4b8c-82bc-9d64696c6c16",
-                    "leftValue": "{{ $json.messageType }}",
-                    "rightValue": "text",
+                    "leftValue": "={{ $json.message.Type }}",
+                    "rightValue": "conversation",
                     "operator": {
                       "type": "string",
                       "operation": "equals",
@@ -438,7 +444,7 @@
       "typeVersion": 1.1,
       "position": [
         -1000,
-        -280
+        -380
       ],
       "id": "4fd7b155-22fd-4de5-bb48-739389c5ed26",
       "name": "Convert to File"
@@ -466,7 +472,7 @@
       "typeVersion": 1.8,
       "position": [
         -820,
-        -280
+        -380
       ],
       "id": "0b31d863-6693-40f7-84d0-9b0790346360",
       "name": "TRANSCREVER_AUDIO",
@@ -476,21 +482,6 @@
           "name": "OpenAi - Connecta"
         }
       }
-    },
-    {
-      "parameters": {
-        "content": "TRANSCRIÇÃO BASE64 - EVOLUTION\n",
-        "width": 1020,
-        "color": 6
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -1200,
-        -540
-      ],
-      "id": "132aeea1-8733-41cf-abdb-05eb70d0855a",
-      "name": "Sticky Note2"
     },
     {
       "parameters": {
@@ -511,7 +502,7 @@
             {
               "id": "3a19f6e5-92e9-448b-98ec-1d445466ecb6",
               "name": "message.Timestamp",
-              "value": "={{ $('Switch').item.json.message.Timestamp }}",
+              "value": "={{ $('Switch').item.json.message.timestamp }}",
               "type": "string"
             },
             {
@@ -532,29 +523,6 @@
       ],
       "id": "df2f2cca-4bc7-4833-a310-da1463af5bd0",
       "name": "SET_PAYLOAD"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
-              "name": "payload",
-              "value": "={{ JSON.stringify({ userMessage: $json.text,\nmessageTimestamp: $('SET_VARIAVEIS').item.json.messageTimestamp, messageId: $('SET_VARIAVEIS').item.json.messageID })}}\n",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -640,
-        -280
-      ],
-      "id": "9977410e-9600-4664-b87b-7592bf7c0886",
-      "name": "Audio Data"
     },
     {
       "parameters": {
@@ -630,7 +598,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ JSON.parse($json.messages?.first() || '{}').messageId }}",
+                    "leftValue": "={{ JSON.parse($json.messages?.first() || '{}').ID }}",
                     "rightValue": "={{ $('SET_VARIAVEIS').item.json.message.ID }}",
                     "operator": {
                       "type": "string",
@@ -655,8 +623,8 @@
                 "conditions": [
                   {
                     "id": "f5830cee-4806-44c6-9c32-78ad726edc91",
-                    "leftValue": "={{\nDateTime.fromISO(JSON.parse($json.messages?.last() || '{}' ).Timestamp)\n}}\n\n",
-                    "rightValue": "={{$now.minus(15, seconds)}}",
+                    "leftValue": "=\n{{ DateTime.fromSeconds(JSON.parse($json.messages[$json.messages.length - 1]).timestamp, { zone: 'America/Sao_Paulo' }).minus({ hours: 1 }).toISO() }}\n\n\n",
+                    "rightValue": "={{$now.minus(15, 'seconds')}}",
                     "operator": {
                       "type": "dateTime",
                       "operation": "before"
@@ -702,7 +670,7 @@
     {
       "parameters": {
         "operation": "delete",
-        "key": "=temp.11985401987"
+        "key": "=5511985401987"
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
@@ -924,6 +892,91 @@
       ],
       "id": "a4e6b624-c6ad-4418-b954-2cff963c098b",
       "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "# DESAFIO GESTOR DE AGENTES | CRIADOR DIGITAL",
+        "height": 80,
+        "width": 940,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1860,
+        -520
+      ],
+      "id": "4de1534f-c294-4068-995d-a32394ccfc7a",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $('SET_VARIAVEIS').item.json.message.ContentTexto,\nmessageTimestamp: $('SET_VARIAVEIS').item.json.message.timestamp , messageId: $('SET_VARIAVEIS').item.json.message.ID })}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -220
+      ],
+      "id": "49400aea-29e6-456a-ad1d-41ee5baf89d1",
+      "name": "TEXT_DATA"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
+              "name": "payload",
+              "value": "={{ JSON.stringify({ userMessage: $json.text,\nmessageTimestamp: $('SET_VARIAVEIS').item.json.messageTimestamp, messageId: $('SET_VARIAVEIS').item.json.messageID })}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -380
+      ],
+      "id": "9977410e-9600-4664-b87b-7592bf7c0886",
+      "name": "AUDIO_DATA"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "707f6da9-bec1-4d84-9793-c7b5fb5583f4",
+              "name": "message",
+              "value": "=\n{{ $('SWITCH_BUFFER').item.json.messages.map(value => JSON.parse(value).content).join('\\n') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2080,
+        -200
+      ],
+      "id": "812b160c-ee89-406f-a654-fefa1f0835dd",
+      "name": "CONCATENA"
     }
   ],
   "connections": {
@@ -1018,9 +1071,9 @@
         ],
         [
           {
-            "node": "Merge",
+            "node": "TEXT_DATA",
             "type": "main",
-            "index": 1
+            "index": 0
           }
         ],
         [
@@ -1072,7 +1125,7 @@
       "main": [
         [
           {
-            "node": "Audio Data",
+            "node": "AUDIO_DATA",
             "type": "main",
             "index": 0
           }
@@ -1084,17 +1137,6 @@
         [
           {
             "node": "INCOMING?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Audio Data": {
-      "main": [
-        [
-          {
-            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -1216,6 +1258,39 @@
           }
         ]
       ]
+    },
+    "AUDIO_DATA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TEXT_DATA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "DELETE": {
+      "main": [
+        [
+          {
+            "node": "CONCATENA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1232,16 +1307,16 @@
           "headers": {
             "host": "primary-production-1821.up.railway.app",
             "user-agent": "axios/1.7.9",
-            "content-length": "12723",
+            "content-length": "969",
             "accept-encoding": "gzip, compress, deflate, br",
             "content-type": "application/json",
             "x-forwarded-for": "146.190.59.46",
             "x-forwarded-host": "primary-production-1821.up.railway.app",
             "x-forwarded-proto": "https",
             "x-railway-edge": "railway/us-west1",
-            "x-railway-request-id": "GCs5Qzy4QXqn9b9EjfVCWw_3167001623",
+            "x-railway-request-id": "NKgDmlz4RUScNV3WYwLfDg_3167001623",
             "x-real-ip": "146.190.59.46",
-            "x-request-start": "1742527014133"
+            "x-request-start": "1742688627061"
           },
           "params": {},
           "query": {},
@@ -1252,56 +1327,32 @@
               "key": {
                 "remoteJid": "5511985401987@s.whatsapp.net",
                 "fromMe": false,
-                "id": "3EB08EB4D20A4DBF50029D"
+                "id": "3EB0CD38E8234C4E9395AC"
               },
               "pushName": "Dival S Filho 😎",
               "status": "DELIVERY_ACK",
               "message": {
-                "audioMessage": {
-                  "url": "https://mmg.whatsapp.net/v/t62.7117-24/33482696_1208755714256489_4332936648951647678_n.enc?ccb=11-4&oh=01_Q5AaIWahr40FSsXGsuRlhZ5KopJKlxDf1tqe7i6i4b6_Ce1Z&oe=6804484F&_nc_sid=5e03e0&mms3=true",
-                  "mimetype": "audio/ogg; codecs=opus",
-                  "fileSha256": "77Rwz57jAwnXbXl2kUl8Nf0v5MdAjWEqfZ3NkjAiW8w=",
-                  "fileLength": "8122",
-                  "seconds": 3,
-                  "ptt": true,
-                  "mediaKey": "A+6nldob9GOXqIAT9G+q2RRTpXW5rKBQuREcN79FNt8=",
-                  "fileEncSha256": "xYcKbTDAGbVfvz68UF0tCXfsLVWF3oGxbbozyg02gZY=",
-                  "directPath": "/v/t62.7117-24/33482696_1208755714256489_4332936648951647678_n.enc?ccb=11-4&oh=01_Q5AaIWahr40FSsXGsuRlhZ5KopJKlxDf1tqe7i6i4b6_Ce1Z&oe=6804484F&_nc_sid=5e03e0",
-                  "mediaKeyTimestamp": "1742527012",
-                  "contextInfo": {
-                    "disappearingMode": {
-                      "initiator": "CHANGED_IN_CHAT"
-                    }
-                  },
-                  "waveform": "IBEDCAwMDA0QHSckJ0VbVlRcWj8uMjxTX1xXUEQyKzAsHyxQXFZORTgoIBwVDRQiFwQKGBkYDwQCAgoTEQ8WHg==",
-                  "viewOnce": false
-                },
+                "conversation": "Teste 01",
                 "messageContextInfo": {
                   "deviceListMetadata": {
-                    "senderKeyHash": "1Ap1zzec0Ceisg==",
-                    "senderTimestamp": "1741317792",
+                    "senderKeyHash": "OG65I6BDI4V+0g==",
+                    "senderTimestamp": "1742595366",
                     "senderAccountType": "E2EE",
                     "receiverAccountType": "E2EE",
                     "recipientKeyHash": "ey9k2dHOiS12Wg==",
-                    "recipientTimestamp": "1742009060"
+                    "recipientTimestamp": "1742443804"
                   },
                   "deviceListMetadataVersion": 2,
-                  "messageSecret": "XrI61QyRN70BGmJfLHe7fpC06lSQL8/jNBwSG9mhMes="
-                },
-                "base64": "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"
-              },
-              "contextInfo": {
-                "disappearingMode": {
-                  "initiator": "CHANGED_IN_CHAT"
+                  "messageSecret": "+0P/33PZbRwQrIuXHt4P1F1o3D0e7wGUMNRXjyG5Uh4="
                 }
               },
-              "messageType": "audioMessage",
-              "messageTimestamp": 1742527013,
+              "messageType": "conversation",
+              "messageTimestamp": 1742688626,
               "instanceId": "1f617cf7-0352-442c-8759-1dd6a92b586c",
               "source": "web"
             },
             "destination": "https://primary-production-1821.up.railway.app/webhook/d21d",
-            "date_time": "2025-03-21T00:16:53.958Z",
+            "date_time": "2025-03-22T21:10:26.915Z",
             "sender": "5511932081209@s.whatsapp.net",
             "server_url": "https://dinastia-evolution.lfigsi.easypanel.host",
             "apikey": "199604EDFDB7-477B-9F21-8DB8DB4A060D"
@@ -1312,7 +1363,7 @@
       }
     ]
   },
-  "versionId": "44dc22f5-1d2c-4ff2-80bc-d77362f21043",
+  "versionId": "b14a93ef-158b-4121-aa2b-b2b05ef82018",
   "triggerCount": 1,
   "tags": [
     {
