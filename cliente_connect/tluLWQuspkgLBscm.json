@@ -1,0 +1,1045 @@
+{
+  "createdAt": "2025-03-22T17:35:25.341Z",
+  "updatedAt": "2025-03-23T00:09:25.919Z",
+  "id": "tluLWQuspkgLBscm",
+  "name": "My workflow 2",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0bb5511-8d02-4d7d-aa8d-c16102e34313",
+              "name": "user.name",
+              "value": "={{ $('PARSE').item.json.event.Info.PushName }}",
+              "type": "string"
+            },
+            {
+              "id": "66405e8b-9117-4c83-b2b2-76faf0c2c959",
+              "name": "user.number",
+              "value": "={{ $('PARSE').item.json.event.Info.Chat }}",
+              "type": "string"
+            },
+            {
+              "id": "928f3e20-266b-40fa-8297-8113cc9e718d",
+              "name": "message.sender",
+              "value": "={{ $('PARSE').item.json.event.Info.Sender.split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "5c6c98bf-595a-4e95-84c3-1d5a73c558fa",
+              "name": "message.origem",
+              "value": "={{ $('PARSE').item.json.event.Info.IsFromMe ? 'outgoing' : 'incoming' }}",
+              "type": "string"
+            },
+            {
+              "id": "40baa5a7-8eb0-4c45-b9bc-0967cb0a053f",
+              "name": "message.group",
+              "value": "={{ $('PARSE').item.json.event.Info.IsGroup }}",
+              "type": "boolean"
+            },
+            {
+              "id": "6827f62c-8cc0-40c1-b74a-a07c392abafa",
+              "name": "message.id",
+              "value": "={{ $('PARSE').item.json.event.Info.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "9ca882c3-dfbc-46b1-afe9-a0562d11879a",
+              "name": "message.type",
+              "value": "={{ $('PARSE').item.json.event.Info.MediaType }}",
+              "type": "string"
+            },
+            {
+              "id": "4036c683-03e1-4e25-b5f8-a0b1caa4abd6",
+              "name": "message.timestamp",
+              "value": "={{ $('PARSE').item.json.event.Info.Timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "6b73391d-ad4f-4969-9e1f-c697285f0b06",
+              "name": "message.content",
+              "value": "={{ $json.text }} {{ $json.event.Message.conversation }} {{ $json.event.Message.extendedTextMessage.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c7d9cb83-1534-4330-9159-698229fcc9b6",
+              "name": "api.token",
+              "value": "={{ $('Webhook').item.json.body.token }}",
+              "type": "string"
+            },
+            {
+              "id": "53bf14df-f843-4db6-8398-daa973f61155",
+              "name": "message.timeout",
+              "value": "10",
+              "type": "string"
+            },
+            {
+              "id": "14568540-9744-4e17-92eb-481596a0a042",
+              "name": "message.atendimento",
+              "value": "720",
+              "type": "string"
+            },
+            {
+              "id": "d0511c4a-1708-445a-b058-a5f5c726b1ed",
+              "name": "api.baseurl",
+              "value": "https://www.avisaapi.com.br/api",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        340
+      ],
+      "id": "5613210f-d3c2-45c7-9c56-7e8c038a156d",
+      "name": "SET_VARIAVEIS"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.body.jsonData }}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        340
+      ],
+      "id": "a48206f5-cc88-4c57-ab8f-51fec559b33f",
+      "name": "PARSE"
+    },
+    {
+      "parameters": {
+        "content": "## SETAR VARIAVEIS\n",
+        "height": 520,
+        "width": 1360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        120
+      ],
+      "id": "c25bf634-01d0-4787-aec5-db67277d87b5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## FILTROS\n",
+        "height": 520,
+        "width": 820,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        120
+      ],
+      "id": "ea4f8718-e428-4f77-853f-83c670ae09cb",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5958a47a-5848-49c1-9551-2da2b401ac47",
+              "leftValue": "={{ $('SET_VARIAVEIS').item.json.message.origem }}",
+              "rightValue": "incoming",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1460,
+        340
+      ],
+      "id": "13d49282-dd80-4efd-9145-d14e14ecf28b",
+      "name": "INCOMING"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bdd0dad1-2a16-4837-b287-6af8ff9c56ec",
+              "leftValue": "={{ $('PARSE').item.json.event.Info.IsGroup }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        260
+      ],
+      "id": "d81ae6b8-21c0-4992-8ed3-33083ac7fb2e",
+      "name": "GRUPO"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        520,
+        140
+      ],
+      "id": "a4add9e8-729d-4724-a39c-0c754ca7a939",
+      "name": "IGNORAR"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=atendimento.{{ $('INCOMING').item.json.user.number }}",
+        "value": "true",
+        "expire": true,
+        "ttl": "={{ $json.message.atendimento }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1700,
+        460
+      ],
+      "id": "f43c1d54-1256-49ab-887e-0a89bd3d8b2d",
+      "name": "SET_ATENDIMENTO",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c98a30ac-0ee0-43f8-958b-0160cdbf2495",
+              "leftValue": "={{ $json.atendimento }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1940,
+        200
+      ],
+      "id": "975f9bbb-5f19-4b3c-958d-f0563f85ebcd",
+      "name": "IF"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1940,
+        480
+      ],
+      "id": "c6ba5353-1237-467d-9ea4-c4f23f63f8a4",
+      "name": "ESPERA"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "=atendimento",
+        "key": "=atendimento.{{ $('SET_VARIAVEIS').item.json.user.number }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1700,
+        200
+      ],
+      "id": "7255439b-c23a-421c-ad85-e909cfc66715",
+      "name": "GET_ATENDIMENTO",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ad282034-aeb1-465e-9522-430cb89cf97b",
+                    "leftValue": "={{ $json.event.Info.MediaType }}",
+                    "rightValue": "ptt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Áudio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event.Info.Type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "138ffeb6-84ba-46aa-9891-a16ed36a5007"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "76c357bf-4ce3-4205-8e56-b941ecb6ea35",
+                    "leftValue": "={{ $json.event.Info.MediaType }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "09134377-2f5d-4e5b-a0de-2e59b64106cc",
+                    "leftValue": "={{ $json.event.Info.MediaType }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Documento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "62c817df-d193-4c80-a735-aed7c8d68bc8",
+                    "leftValue": "={{ $json.event.Info.MediaType }}",
+                    "rightValue": "video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vídeo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        520,
+        300
+      ],
+      "id": "515f12f2-bbde-4813-9d08-057c0bb2e334",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        800,
+        160
+      ],
+      "id": "202f1a75-ddda-4621-b684-234e683b810e",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1080,
+        300
+      ],
+      "id": "351bf21e-979c-4995-b574-03dbf3ce9f36",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "desafio",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        20,
+        340
+      ],
+      "id": "3e425229-4eac-418d-8f0c-08f041474108",
+      "name": "Webhook",
+      "webhookId": "b0b3056c-6985-4be0-9cd3-264fdb90598f"
+    },
+    {
+      "parameters": {
+        "content": "# ESPERA MENSAGENS\n",
+        "height": 520,
+        "width": 1280,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2220,
+        120
+      ],
+      "id": "a7dfbe3c-e977-44b1-94b4-826095e843f5",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "=temp.{{ $('SET_VARIAVEIS').item.json.user.number }}",
+        "messageData": "={{ JSON.stringify($('SET_VARIAVEIS').item.json.message) }}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        260
+      ],
+      "id": "dcee57d6-ed58-4086-bd96-ea1a51aa5969",
+      "name": "PUSH",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ JSON.parse($json.messages?.first() || '{}').id }}",
+                    "rightValue": "={{ $('SET_VARIAVEIS').item.json.message.id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "f9414ea1-3c7e-495a-b94f-91e51203d8ee"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "nada"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a2aafb32-380d-4510-810a-888831d36437",
+                    "leftValue": "={{  DateTime\n    .fromISO(JSON.parse($json.messages?.last() || '{}').timestamp) }}",
+                    "rightValue": "={{ $now.minus(15, 'seconds' )}}",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "before"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "segue"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "espera"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2720,
+        260
+      ],
+      "id": "af7560ec-0d0a-4102-beed-1ee838cb10ba",
+      "name": "SWITCH_BUFFER"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2860,
+        420
+      ],
+      "id": "bc0988f5-1cb9-4c97-a84e-97d2ef9fd045",
+      "name": "Wait",
+      "webhookId": "0c79fdc9-0b54-44c2-9c89-536af6331c76"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "messages",
+        "key": "=temp.{{ $('SET_VARIAVEIS').item.json.user.number }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2520,
+        260
+      ],
+      "id": "df306958-683e-4d99-b82f-cbcea64ac452",
+      "name": "GET",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=temp.{{ $('SET_VARIAVEIS').item.json.user.number }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3000,
+        260
+      ],
+      "id": "bb0b57a8-7a14-4d78-94f1-6f334208b858",
+      "name": "DELETE",
+      "credentials": {
+        "redis": {
+          "id": "68kS7JueUisb4P6J",
+          "name": "Redis - d21d"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1efb168-243b-4ca0-9910-bb8d67132c74",
+              "name": "message",
+              "value": "={{ $json.messages.map(value => JSON.parse(value).content).join('\\n') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3220,
+        260
+      ],
+      "id": "ffb8a1d0-5d68-4136-b5c0-24d8e311c33c",
+      "name": "CONCATENA"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "365df801-3093-482a-977e-5f02840d2d3a",
+              "name": "resultado",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3540,
+        260
+      ],
+      "id": "6bd9abf7-89c3-4daa-b6d1-f0a9716e7665",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        140
+      ],
+      "id": "bde19bd9-5b76-4e0b-8aa5-a0993913b793",
+      "name": "NADA"
+    },
+    {
+      "parameters": {
+        "content": "# DESAFIO GESTOR DE AGENTES | CRIADOR DIGITAL",
+        "height": 80,
+        "width": 940,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a9c9fa46-52c9-4cfa-b87f-2f2f4206f611",
+      "name": "Sticky Note3"
+    }
+  ],
+  "connections": {
+    "PARSE": {
+      "main": [
+        [
+          {
+            "node": "GRUPO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SET_VARIAVEIS": {
+      "main": [
+        [
+          {
+            "node": "INCOMING",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GRUPO": {
+      "main": [
+        [
+          {
+            "node": "IGNORAR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INCOMING": {
+      "main": [
+        [
+          {
+            "node": "GET_ATENDIMENTO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SET_ATENDIMENTO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "PUSH",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ESPERA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET_ATENDIMENTO": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "SET_VARIAVEIS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "PARSE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PUSH": {
+      "main": [
+        [
+          {
+            "node": "GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SWITCH_BUFFER": {
+      "main": [
+        [
+          {
+            "node": "NADA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DELETE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET": {
+      "main": [
+        [
+          {
+            "node": "SWITCH_BUFFER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE": {
+      "main": [
+        [
+          {
+            "node": "CONCATENA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CONCATENA": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "hooks-d21d.criador.digital",
+            "user-agent": "go-resty/2.16.2 (https://github.com/go-resty/resty)",
+            "content-length": "2269",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "138.197.95.114",
+            "cf-ipcountry": "US",
+            "cf-ray": "91fc7fe17b2ea8d0-EWR",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/x-www-form-urlencoded",
+            "x-forwarded-for": "138.197.95.114, 104.23.190.99",
+            "x-forwarded-host": "hooks-d21d.criador.digital",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "8815bb946f0c",
+            "x-real-ip": "104.23.190.99"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "jsonData": "{\"event\":{\"Info\":{\"Chat\":\"553199857100@s.whatsapp.net\",\"Sender\":\"553199857100:50@s.whatsapp.net\",\"IsFromMe\":false,\"IsGroup\":false,\"BroadcastListOwner\":\"\",\"ID\":\"3F940E1CD687490621CF\",\"ServerID\":0,\"Type\":\"text\",\"PushName\":\"Rhavi da Silva\",\"Timestamp\":\"2025-03-13T15:17:40Z\",\"Category\":\"\",\"Multicast\":false,\"MediaType\":\"\",\"Edit\":\"\",\"MsgBotInfo\":{\"EditType\":\"\",\"EditTargetID\":\"\",\"EditSenderTimestampMS\":\"0001-01-01T00:00:00Z\"},\"MsgMetaInfo\":{\"TargetID\":\"\",\"TargetSender\":\"\"},\"VerifiedName\":null,\"DeviceSentMeta\":null},\"Message\":{\"extendedTextMessage\":{\"text\":\"teste3\",\"contextInfo\":{\"expiration\":0,\"ephemeralSettingTimestamp\":0,\"disappearingMode\":{\"initiator\":0}}},\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"e4MpoP2v44Rh9g==\",\"senderTimestamp\":1741207464,\"recipientKeyHash\":\"+grgDfOGS/Ie6A==\",\"recipientTimestamp\":1741807318},\"deviceListMetadataVersion\":2}},\"IsEphemeral\":false,\"IsViewOnce\":false,\"IsViewOnceV2\":false,\"IsViewOnceV2Extension\":false,\"IsDocumentWithCaption\":false,\"IsLottieSticker\":false,\"IsEdit\":false,\"SourceWebMsg\":null,\"UnavailableRequestID\":\"\",\"RetryCount\":0,\"NewsletterMeta\":null,\"RawMessage\":{\"extendedTextMessage\":{\"text\":\"teste3\",\"contextInfo\":{\"expiration\":0,\"ephemeralSettingTimestamp\":0,\"disappearingMode\":{\"initiator\":0}}},\"messageContextInfo\":{\"deviceListMetadata\":{\"senderKeyHash\":\"e4MpoP2v44Rh9g==\",\"senderTimestamp\":1741207464,\"recipientKeyHash\":\"+grgDfOGS/Ie6A==\",\"recipientTimestamp\":1741807318},\"deviceListMetadataVersion\":2}}},\"type\":\"Message\"}",
+            "token": "QZtwVWjC7upVSThOOZumWSH9rY5fjRJDw5JwxoGwVLgAMpezwuegx4w9zTKN"
+          },
+          "webhookUrl": "https://criadordigital-n8n-webhook.59hv10.easypanel.host/webhook/desafio",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "10cc3a2e-a6e5-4ba0-bdaa-16e9ce61c75b",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-20T01:06:16.640Z",
+      "updatedAt": "2025-03-20T01:06:16.640Z",
+      "id": "G2pGnAy3ggyYLXSW",
+      "name": "Aulas Criador Digital"
+    },
+    {
+      "createdAt": "2025-03-20T01:06:16.644Z",
+      "updatedAt": "2025-03-20T01:06:16.644Z",
+      "id": "g50YXY3ljY3Ynn3l",
+      "name": "criador.digital"
+    }
+  ]
+}
