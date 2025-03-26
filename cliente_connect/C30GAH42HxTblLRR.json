@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-23T21:12:47.661Z",
+  "updatedAt": "2025-03-26T01:23:44.849Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
   "active": true,
@@ -1441,7 +1441,7 @@
       }
     ]
   },
-  "versionId": "655a417c-6249-457b-8c8c-bff2429890e0",
+  "versionId": "12d8e7ba-98c0-4745-a188-f4ea728deadc",
   "triggerCount": 1,
   "tags": [
     {
