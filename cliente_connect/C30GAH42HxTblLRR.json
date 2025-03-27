@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-14T00:12:35.624Z",
-  "updatedAt": "2025-03-26T01:23:44.849Z",
+  "updatedAt": "2025-03-27T00:29:56.853Z",
   "id": "C30GAH42HxTblLRR",
   "name": "Fluxo Base de Whatsapp - D21D",
   "active": true,
@@ -83,14 +83,8 @@
             },
             {
               "id": "9fa17f5a-6ea4-47b4-b2ba-f419fa32bd1d",
-              "name": "message.ContentAudio",
-              "value": "={{ $json.body.data.message.audioMessage.mimetype }}",
-              "type": "string"
-            },
-            {
-              "id": "080aa96e-9226-44df-b631-1e9fde687b96",
-              "name": "message.ContentTexto",
-              "value": "={{ $json.body.data.message.conversation }}",
+              "name": "message.Content",
+              "value": "={{ $json.body.data.message.conversation }}{{ $json.body.data.message.audioMessage.mimetype }}",
               "type": "string"
             },
             {
@@ -914,7 +908,7 @@
             {
               "id": "b8161c56-ebd6-4af3-a479-57ee3f7fd968",
               "name": "payload",
-              "value": "={{ JSON.stringify({ userMessage: $('SET_VARIAVEIS').item.json.message.ContentTexto,\nmessageTimestamp: $('SET_VARIAVEIS').item.json.message.timestamp , messageId: $('SET_VARIAVEIS').item.json.message.ID })}}\n",
+              "value": "={{ JSON.stringify({ userMessage: $('SET_VARIAVEIS').item.json.message.Content,\nmessageTimestamp: $('SET_VARIAVEIS').item.json.message.timestamp , messageId: $('SET_VARIAVEIS').item.json.message.ID })}}\n",
               "type": "string"
             }
           ]
@@ -1033,6 +1027,197 @@
       ],
       "id": "1f799e9b-653c-4fe1-9c51-b613aacd3795",
       "name": "TESTE"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('Variáveis').item.json.telefone }}",
+        "messageData": "={{ $('Variáveis').item.json.mensagem }}",
+        "tail": true
+      },
+      "id": "f52b2b41-959d-4339-81a2-e6e69ea7d65c",
+      "name": "Redis",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1620,
+        -1060
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "={{ $('Variáveis').item.json.telefone }}",
+        "options": {}
+      },
+      "id": "659b73a0-7a53-42fd-b45b-777e7d032096",
+      "name": "Redis1",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        -1060
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "37f63b88-4a52-4421-aa95-db9114e521bc",
+              "name": "listaMensagens",
+              "value": "={{ $json.propertyName.join(', ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4a10a861-cb21-4cba-a005-a266c2c247ad",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -980,
+        -1160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Variáveis').item.json.telefone }}"
+      },
+      "id": "9d31e6de-4200-4ee6-8638-0d99dc98d39d",
+      "name": "Redis2",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        -1160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('Variáveis').item.json.telefone }}",
+        "messageData": "={{ $('Variáveis').item.json.mensagem }}",
+        "tail": true
+      },
+      "id": "27a1853a-7cec-42a4-8ba7-57ecce676142",
+      "name": "Redis3",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1780,
+        -1220
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('Variáveis').item.json.telefone }}",
+        "messageData": "={{ $('Webhook').item.json[\"body\"][\"data\"][\"message\"][\"imageMessage\"][\"caption\"] }}, {{ $json.content.replace(/\\n/g, \"\\\\n\").replace(/['\"]/g, '').trim()  }}",
+        "tail": true
+      },
+      "id": "a4e4d932-cd7b-4524-8a90-26e4450916dc",
+      "name": "Redis4",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1780,
+        -900
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('Variáveis').item.json.telefone }}",
+        "messageData": "={{ $json.content.replace(/\\n/g, \"\\\\n\").replace(/['\"]/g, '').trim()  }}",
+        "tail": true
+      },
+      "id": "c615ee2d-e149-4bd9-b40d-472cd7149476",
+      "name": "Redis5",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1780,
+        -1060
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "725dbf29-24a9-4364-89c2-5601a3f0738f",
+      "name": "Wait1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1460,
+        -1060
+      ],
+      "webhookId": "46245788-c582-4b3a-9ca9-97769757ccad"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "21fd20d7-f940-4a66-91d5-5ea4c031bb50",
+              "leftValue": "={{ $json.propertyName.last() }}",
+              "rightValue": "={{ $('Variáveis').item.json.mensagem }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "857c54c2-b1d8-4c91-9b6f-17bc3373e0da",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1140,
+        -1060
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f3a8db82-bd9a-4ff1-aca3-f4ce02f2156f",
+      "name": "No Operation, do nothing1",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        -980
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Mensagem Picotada",
+        "height": 80,
+        "width": 376,
+        "color": 5
+      },
+      "id": "e1c38190-6870-4538-b8d5-2e1b42087b56",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1460,
+        -1280
+      ]
     }
   ],
   "connections": {
@@ -1369,10 +1554,107 @@
           }
         ]
       ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Redis2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis3": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis4": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis5": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Redis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": null,
   "meta": {
@@ -1441,7 +1723,7 @@
       }
     ]
   },
-  "versionId": "12d8e7ba-98c0-4745-a188-f4ea728deadc",
+  "versionId": "30357c66-1a4d-46d2-9f65-c243e972934d",
   "triggerCount": 1,
   "tags": [
     {
