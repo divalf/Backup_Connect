@@ -1,0 +1,202 @@
+{
+  "createdAt": "2025-03-29T00:07:39.096Z",
+  "updatedAt": "2025-03-29T02:04:14.644Z",
+  "id": "U3ElCP8c89VaJYyS",
+  "name": "Meu Primeiro MCP -  AIRBNB",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -340
+      ],
+      "id": "7c93e170-6c32-4528-8eb8-32ccac1ecc58",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeTool",
+        "toolName": "={{ $json.tools[0].name }}",
+        "toolParameters": "={\n \"location\":\"guarujá\"\n\n}"
+      },
+      "type": "n8n-nodes-mcp.mcpClient",
+      "typeVersion": 1,
+      "position": [
+        120,
+        -340
+      ],
+      "id": "14149b50-f8a6-479f-a551-a32df77acf08",
+      "name": "EXECUTE",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "KiRmYnKch31FdZLP",
+          "name": "MCP - Airbnb"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -280,
+        -140
+      ],
+      "id": "29723f3c-4047-4db9-b3f8-ea36e3d91726",
+      "name": "When chat message received",
+      "webhookId": "bc8d76c6-222b-4a35-b4ee-da8ab9469b7c",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -60,
+        -140
+      ],
+      "id": "56c9c202-11ae-4d75-9865-8e00a31429b1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        60
+      ],
+      "id": "c996c517-32ff-4da0-b23c-6eb39f577ded",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        200,
+        40
+      ],
+      "id": "2dd5138f-4150-4752-ae97-af16be9f00a8",
+      "name": "MCP Client",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "KiRmYnKch31FdZLP",
+          "name": "MCP - Airbnb"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-mcp.mcpClient",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -340
+      ],
+      "id": "ad1427ec-965b-459e-8f96-87d796b9a9fd",
+      "name": "LIST_TOOLS",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "KiRmYnKch31FdZLP",
+          "name": "MCP - Airbnb"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "LIST_TOOLS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LIST_TOOLS": {
+      "main": [
+        [
+          {
+            "node": "EXECUTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3e7aa0bd-997d-4fe4-9c1a-2ded5fff1cda",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-03-29T00:07:52.926Z",
+      "updatedAt": "2025-03-29T00:07:52.926Z",
+      "id": "Uahp0UOQkfQVlKey",
+      "name": "MCP"
+    }
+  ]
+}
