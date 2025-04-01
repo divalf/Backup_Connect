@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-03-29T00:07:39.096Z",
-  "updatedAt": "2025-03-29T02:04:14.644Z",
+  "updatedAt": "2025-03-31T18:41:27.543Z",
   "id": "U3ElCP8c89VaJYyS",
   "name": "Meu Primeiro MCP -  AIRBNB",
   "active": false,
@@ -10,11 +10,12 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -320,
-        -340
+        -760,
+        -480
       ],
       "id": "7c93e170-6c32-4528-8eb8-32ccac1ecc58",
-      "name": "When clicking ‘Test workflow’"
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
     },
     {
       "parameters": {
@@ -25,8 +26,8 @@
       "type": "n8n-nodes-mcp.mcpClient",
       "typeVersion": 1,
       "position": [
-        120,
-        -340
+        -320,
+        -480
       ],
       "id": "14149b50-f8a6-479f-a551-a32df77acf08",
       "name": "EXECUTE",
@@ -44,13 +45,12 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -280,
-        -140
+        -760,
+        -220
       ],
       "id": "29723f3c-4047-4db9-b3f8-ea36e3d91726",
       "name": "When chat message received",
-      "webhookId": "bc8d76c6-222b-4a35-b4ee-da8ab9469b7c",
-      "disabled": true
+      "webhookId": "bc8d76c6-222b-4a35-b4ee-da8ab9469b7c"
     },
     {
       "parameters": {
@@ -59,8 +59,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.8,
       "position": [
-        -60,
-        -140
+        -540,
+        -220
       ],
       "id": "56c9c202-11ae-4d75-9865-8e00a31429b1",
       "name": "AI Agent"
@@ -77,8 +77,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -160,
-        60
+        -600,
+        -80
       ],
       "id": "c996c517-32ff-4da0-b23c-6eb39f577ded",
       "name": "OpenAI Chat Model",
@@ -91,28 +91,11 @@
     },
     {
       "parameters": {},
-      "type": "n8n-nodes-mcp.mcpClientTool",
-      "typeVersion": 1,
-      "position": [
-        200,
-        40
-      ],
-      "id": "2dd5138f-4150-4752-ae97-af16be9f00a8",
-      "name": "MCP Client",
-      "credentials": {
-        "mcpClientApi": {
-          "id": "KiRmYnKch31FdZLP",
-          "name": "MCP - Airbnb"
-        }
-      }
-    },
-    {
-      "parameters": {},
       "type": "n8n-nodes-mcp.mcpClient",
       "typeVersion": 1,
       "position": [
-        -100,
-        -340
+        -540,
+        -480
       ],
       "id": "ad1427ec-965b-459e-8f96-87d796b9a9fd",
       "name": "LIST_TOOLS",
@@ -122,6 +105,55 @@
           "name": "MCP - Airbnb"
         }
       }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -80
+      ],
+      "id": "2dd5138f-4150-4752-ae97-af16be9f00a8",
+      "name": "AIRBNB_LIST",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "KiRmYnKch31FdZLP",
+          "name": "MCP - Airbnb"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeTool",
+        "toolName": "={{ $fromAI(\"tool\",\"the tool selected\") }}",
+        "toolParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tool_Parameters', ``, 'json') }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -80
+      ],
+      "id": "372b940f-8d85-490a-a5a8-4cd2fa2d7b64",
+      "name": "AIRBNB_EXECUTE",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "KiRmYnKch31FdZLP",
+          "name": "MCP - Airbnb"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -440,
+        -80
+      ],
+      "id": "fa493c5d-b237-4a3a-a358-a2ef36c0665c",
+      "name": "Simple Memory"
     }
   ],
   "connections": {
@@ -158,7 +190,18 @@
         ]
       ]
     },
-    "MCP Client": {
+    "LIST_TOOLS": {
+      "main": [
+        [
+          {
+            "node": "EXECUTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AIRBNB_LIST": {
       "ai_tool": [
         [
           {
@@ -169,12 +212,23 @@
         ]
       ]
     },
-    "LIST_TOOLS": {
-      "main": [
+    "AIRBNB_EXECUTE": {
+      "ai_tool": [
         [
           {
-            "node": "EXECUTE",
-            "type": "main",
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -189,7 +243,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "3e7aa0bd-997d-4fe4-9c1a-2ded5fff1cda",
+  "versionId": "e9437295-5fab-426b-a123-b64d775f0fc2",
   "triggerCount": 0,
   "tags": [
     {
