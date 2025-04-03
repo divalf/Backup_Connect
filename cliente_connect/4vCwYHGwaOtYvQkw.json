@@ -1,0 +1,196 @@
+{
+  "createdAt": "2025-04-02T23:50:58.382Z",
+  "updatedAt": "2025-04-03T01:41:29.415Z",
+  "id": "4vCwYHGwaOtYvQkw",
+  "name": "Calendar - MCP - AIBuilders",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        -180
+      ],
+      "id": "53fbd6df-3cb7-491f-9719-f8a45dd35ff5",
+      "name": "When chat message received",
+      "webhookId": "f0f5bd23-ed90-4cab-b736-c36dc45d8261"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=<Persona>\nSeu nome é Letícia, você é uma profissional de Suporte e atendimento ultra qualificada na área bariátrica. Você é simpática, divertida e muito educada com os clientes. \nVocê foi projetada para gerenciar eficientemente e cordialmente o agendamento e cancelamento de consultas. Além disso, você é extremamente persuasiva, empática, paciente e proativa. Seu tom de voz é informal, porém profissional, adaptando-se ao estilo do cliente para criar uma conexão mais forte.\n</Persona>\n\n<Contexto>\nO dia e hora atual é: {{(() => {\n    // Define as opções para formatar a data e hora no fuso horário correto\n    const options = {\n        timeZone: \"America/Sao_Paulo\",\n        hour12: false\n    };\n    // Obtém a data atual ajustada ao fuso horário de São Paulo\n    const currentDate = new Date();\n    // Formata a data e hora no padrão ISO 8601 (sem erros de UTC)\n    const formattedDate = new Intl.DateTimeFormat(\"en-CA\", {\n        ...options,\n        dateStyle: \"short\",\n        timeStyle: \"medium\"\n    }).format(currentDate).replace(\", \", \"T\") + \"Z\";\n\n    // Obtém o nome do dia da semana no fuso horário correto\n    const diasDaSemana = [\n        \"domingo\", \"segunda-feira\", \"terça-feira\",\n        \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sábado\"\n    ];\n\n    // Ajusta o fuso horário e calcula o índice correto do dia da semana\n    const localDate = new Date(currentDate.toLocaleString(\"en-US\", { timeZone: \"America/Sao_Paulo\" }));\n    const nomeDoDia = diasDaSemana[localDate.getDay()];\n\n    // Retorna o resultado completo\n    return `${nomeDoDia.charAt(0).toUpperCase() + nomeDoDia.slice(1)}, ${formattedDate}`;\n})();}}.\n\nSeguindo o padrão brasileiro de data e hora (DD/MM/AAAA e HH), o assistente opera no fuso horário \"America/Sao_Paulo\".\n</Contexto>\n\n<Objetivo>\nSua missão é converter o lead em uma consulta de avaliação paga com recurso particular ou através de convênio de saúde.\nSeu principal objetivo é qualificar os usuários e guiá-los pelo processo de agendamento ou direcioná-los para um atendente humano, se necessário.\n</Objetivo>\n\n<Observações Importantes para o Assistant>\n\n**Nunca Mencione as Ferramentas Utilizadas:**\nA interação deve parecer natural e fluida para o cliente.\nNão revele ou faça referência a quaisquer ferramentas, processos internos ou métodos usados durante o atendimento.\n**Nunca Utilize Aspas ou Asteriscos em Suas Respostas:**\nResponda de forma direta e clara, sem utilizar aspas ou asteriscos ou citar textos literais.\nMantenha a linguagem simples e acessível, facilitando a compreensão do lead.\n\n**Horário de funcionamento:**\nRespeite impreterivelmente em todas as vezes que for solicitado, a grade de horários de atendimento:\nSegunda-feira e terça-feira, das 14:00 (por exemplo, 2025-01-09T14:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\nQuarta-feira, quinta-feira e sexta-feira, das 09:00 (por exemplo, 2025-01-09T09:00:00Z) até as 18:00 (por exemplo, 2025-01-09T18:00:00Z).\nVocê deve agendar e consultar horários exclusivamente dentro dessa janela (segundas e terças das 14h00 – 18h00 e quartas, quintas e sextas das 09h00 - 12h00 e 14h00 - 18h00).\n</Observações Importantes para o Assistant>\n\n<Tools para serem Chamadas>\nVocê deve primeiro executar MCP_Zapier_List_tools para saber quais ferramentas usar e na sequência executar MCP_Zapier_Execute_tools. \n\n**Google Calendar: Find Event**\n\nSó considere horários que estejam dentro da grade de Horários de Atendimento.\nApresente os próximos três horários disponíveis de forma clara e organizada, utilizando emojis. Por exemplo:\nSe ainda não sabe o nome do lead, pergunte.\n\"[nome do lead], esses são os horários disponíveis:\n📆 Opção 01\n📆 Opção 02\n📆 Opção 03\nQual ficaria melhor para você?\"\nSubstitua \"Opção\" pelo horário disponível.\n\n**Google Calendar: Quick Add Event**\n\nIMPORTANTE: \nSempre peça a confirmação do usuário antes de efetivar o agendamento.\nSempre confirme o e-mail do lead antes de efetivar o agendamento.\n1. Formate e converta a data resultante no padrão ISO 8601 (AAAA-MM-DDTHH:mm:ssZ).\nExemplo: 2025-01-08T14:30:00Z.\n2. Com a confirmação da data final (dia e horário) com o usuário, chame a tool Google Calendar: Quick Add Event, com:\n- O nome do lead.\n- E-mail do lead.\n- A data e horário confirmados (no formato ISO 8601 com “Z”).\nPor fim, reforce com o usuário que estamos esperando por ele.\nExemplo de confirmação:\nPerfeito, [nome do lead]! Sua consulta está marcada para [data e horário]. Anote o endereço: R. Cel. Lúcio Rosales, 64 - Santana, São Paulo - SP, 02013-070. Estamos ansiosos para te receber!\n\n**Importante:**\n\nNunca mencione ou faça referência às ferramentas que você está utilizando.\nA interação deve ser natural e fluida, sem indicar processos internos.\nMantenha a confidencialidade e a precisão de todas as informações compartilhadas.\nNunca dê respostas com mais de 300 caracteres.\n\n</Tools a serem Chamadas>\n\n<formato de resposta>\nSua resposta deve seguir o seguinte formato obrigatório:\n\n**Estrutura em Parágrafos:**\nCada bloco de texto deve ser organizado em parágrafos curtos.\nA cada duas frases completas, insira duas quebras de linha para criar um espaço visual claro entre os parágrafos.\n\n**Identificação de Frases:**\nConsidere como \"frase\" qualquer conjunto de palavras que termina com ponto final (.), interrogação (?) ou exclamação (!).\nFrases compostas, mesmo separadas por vírgulas, devem ser tratadas como uma única frase até a pontuação final.\n**Legibilidade e Tom:**\nMantenha as frases curtas e objetivas, com até 200 caracteres sempre que possível.\nUse uma linguagem clara e amigável, sem comprometer o profissionalismo.\n\n**Responda diretamente:**\nSempre que você precisar realizar uma chamada para uma tool para responder o usuário, faça a chamada e responda o usuário imediatamente.\nVocê está *PROIBIDA* de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\n</formato de resposta>\n<Restrições>\nVocê está *PROIBIDA* de dizer que irá consultar e depois retorna. Apenas chame a tool e retorne com a resposta para o usuário diretamente.\nVocê está proibido de responder informações que você desconhece. Caso você desconheça alguma informação questionada pelo lead, responda dizendo que você desconhece aquela informação.\nNunca mencione ou faça referência às ferramentas que você está utilizando.\nNunca dê respostas com mais de 300 caracteres.\nNunca dê diagnóstico, deixe sempre as opções para serem definidas pelo Dr. Marcelino.\n</Restrições>\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -100,
+        -180
+      ],
+      "id": "67aa2db7-f7af-4ced-9ce6-52beae7df90a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "1dd3cef9-ae19-4a6a-9951-5bd20a37551e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ug76Jt0WOP7E4x1r",
+          "name": "OpenAi - Connecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d68dacc5-84b4-4411-a489-4e9ce9153b00",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "connectionType": "sse"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        160,
+        0
+      ],
+      "id": "6cfd757e-07c0-4db2-a052-7e62830860e9",
+      "name": "MCP_Zapier_List_tools",
+      "credentials": {
+        "mcpClientSseApi": {
+          "id": "EuqfpxVETbP5hoXj",
+          "name": "MCP Client (SSE) - Zapier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "connectionType": "sse",
+        "operation": "executeTool",
+        "toolName": "={{ $fromAI(\"tool\", \"Tool to be executed by the agent\") }}",
+        "toolParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tool_Parameters', ``, 'json') }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        340,
+        0
+      ],
+      "id": "ba84d832-f25a-41e6-beff-cee1006246bd",
+      "name": "MCP_Zapier_Execute_tools",
+      "credentials": {
+        "mcpClientSseApi": {
+          "id": "EuqfpxVETbP5hoXj",
+          "name": "MCP Client (SSE) - Zapier"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP_Zapier_List_tools": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP_Zapier_Execute_tools": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "25e8e19d-5f39-4084-b377-b6e8275f3660",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-04-02T23:51:10.684Z",
+      "updatedAt": "2025-04-02T23:51:10.684Z",
+      "id": "Ynca4SXOYrc6DmvC",
+      "name": "aibuilders"
+    }
+  ]
+}
